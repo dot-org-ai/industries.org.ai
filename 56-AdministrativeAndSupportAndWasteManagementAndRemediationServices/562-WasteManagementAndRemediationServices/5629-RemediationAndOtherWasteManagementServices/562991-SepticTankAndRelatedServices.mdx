@@ -7,58 +7,217 @@ subsector: Waste Management and Remediation Services
 subsectorCode: 562
 group: Remediation and Other Waste Management Services
 groupCode: 5629
-action: Remediate
-object: Septic Tank
+action: Service
+object: Septic System
 ---
 
 # Septic Tank and Related Services
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for septic and portable sanitation operations. Models services including tank pumping, cesspool cleaning, and portable toilet rental and servicing.
 
 ## Overview
 
-This U.S. industry comprises establishments primarily engaged in (1) pumping (i.e., cleaning) septic tanks and cesspools and/or (2) renting and/or servicing portable toilets. Cross-References. Establishments primarily engaged in--
+Septic tank and related services include pumping septic tanks and cesspools, as well as renting and servicing portable toilets for events and construction sites. This definition exposes actions for service delivery, events for scheduling automation, and searches for customer and route management.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| HomeOwner | Residential client with septic system |
+| PropertyManager | Manages properties with onsite wastewater |
+| EventOrganizer | Rents portable toilets for gatherings |
+| ConstructionContractor | Needs portable sanitation for job sites |
+| WastewaterPlant | Receives pumped septage for treatment |
+| HealthDepartment | Regulates septic systems and sanitation |
+| EquipmentDealer | Provides pump trucks and portable units |
+| ChemicalSupplier | Provides treatment additives and deodorizers |
+
+## Roles
+
+| Role | Description |
+|------|-------------|
+| Owner | Owns the business and manages operations |
+| OperationsManager | Coordinates scheduling and routes |
+| PumpTruckDriver | Operates vacuum truck for pumping |
+| ServiceTechnician | Maintains and services portable units |
+| RouteCoordinator | Plans efficient service routes |
+| CustomerService | Books appointments and handles inquiries |
+| DeliveryDriver | Transports portable toilets |
+| MaintenanceTech | Repairs equipment and trucks |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| SepticSystem | Customer onsite wastewater treatment |
+| PumpingJob | Scheduled tank pumping appointment |
+| PortableToilet | Rental sanitation unit |
+| RentalContract | Agreement for portable unit placement |
+| VacuumTruck | Vehicle for pumping operations |
+| Route | Planned sequence of service stops |
+| DisposalTicket | Receipt from treatment plant |
+| Invoice | Bill for services rendered |
+| MaintenanceRecord | Equipment service history |
+| ServiceArea | Geographic coverage zone |
+| ChemicalTreatment | Additive applied to systems |
+| Inspection | Assessment of system condition |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| scheduleService | Book pumping or portable service appointment |
+| planRoute | Create efficient sequence of stops |
+| pumpTank | Vacuum contents from septic tank |
+| pumpCesspool | Empty cesspool or holding tank |
+| disposeWaste | Deliver septage to treatment facility |
+| deliverUnit | Place portable toilet at site |
+| serviceUnit | Clean and restock portable toilet |
+| relocateUnit | Move portable to new location |
+| pickupUnit | Retrieve portable after rental ends |
+| inspectSystem | Assess septic system condition |
+| addTreatment | Apply biological or chemical additives |
+| invoiceCustomer | Bill for services rendered |
+| maintainEquipment | Service trucks and portable units |
+| recordDisposal | Document waste delivery to plant |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| serviceScheduled | Appointment booked |
+| routeDispatched | Truck departed on route |
+| tankPumped | Septic tank emptied |
+| wasteDisposed | Septage delivered to plant |
+| unitDelivered | Portable toilet placed |
+| unitServiced | Portable cleaned and restocked |
+| unitRelocated | Portable moved to new site |
+| unitPickedUp | Portable retrieved |
+| inspectionCompleted | System assessment finished |
+| treatmentApplied | Additive added to system |
+| invoiceSent | Bill sent to customer |
+| paymentReceived | Customer payment processed |
+| equipmentServiced | Truck or unit maintenance completed |
+| disposalRecorded | Waste documentation filed |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| findAppointments | List scheduled services by date |
+| getCustomers | Retrieve clients with service history |
+| getRentals | List active portable toilet placements |
+| getRoutes | View planned service sequences |
+| checkAvailability | Find open scheduling slots |
+| getDisposalTickets | Retrieve plant delivery records |
+| getEquipmentStatus | View truck and unit availability |
+| findOverdueService | List customers due for pumping |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[scheduleService] --> B[planRoute]
+    B --> C{Service Type}
+    C -->|Pumping| D[pumpTank]
+    C -->|Portable Delivery| E[deliverUnit]
+    C -->|Portable Service| F[serviceUnit]
+    D --> G[disposeWaste]
+    G --> H[recordDisposal]
+    E --> I[Schedule Servicing]
+    F --> J{Rental Active?}
+    J -->|Yes| K[Continue Service]
+    J -->|No| L[pickupUnit]
+    H --> M[invoiceCustomer]
+    I --> M
+    K --> F
+    L --> M
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    S[SepticService]
+
+    S -->|serves| HomeOwner
+    S -->|serves| PropertyManager
+    S -->|serves| EventOrganizer
+    S -->|serves| ConstructionContractor
+    S -->|delivers to| WastewaterPlant
+    S -->|reports to| HealthDepartment
+    S -->|buys from| EquipmentDealer
+    S -->|buys from| ChemicalSupplier
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { serviceSepticSystem } from '@headlessly/service-septic-system'
+
+const septic = serviceSepticSystem()
+
+// Schedule septic pumping
+const appointment = await septic.scheduleService({
+  customerId: 'homeowner-123',
+  serviceType: 'septicPumping',
+  address: '456 Rural Road',
+  tankSize: 1000,
+  preferredDate: '2024-04-15',
+  accessNotes: 'Tank lid under deck'
+})
+
+// Deliver portable toilets for event
+const rental = await septic.deliverUnit({
+  customerId: 'eventco-789',
+  siteAddress: '100 Festival Grounds',
+  unitType: 'standard',
+  quantity: 20,
+  deliveryDate: '2024-05-01',
+  rentalDuration: 3,
+  serviceFrequency: 'daily'
+})
+
+// Pump septic tank
+await septic.pumpTank({
+  appointmentId: appointment.id,
+  truckId: 'vac-truck-01',
+  gallonsPumped: 950,
+  systemCondition: 'good'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-schedule next service
+septic.tankPumped(async ({ customerId, gallonsPumped, systemCondition }) => {
+  const nextServiceMonths = systemCondition === 'good' ? 36 : 24
+
+  await septic.scheduleService({
+    customerId,
+    serviceType: 'septicPumping',
+    preferredDate: addMonths(new Date(), nextServiceMonths),
+    reminder: true
+  })
+})
+
+// Auto-service portables on schedule
+septic.serviceInterval(async ({ rentalId, lastServiceDate }) => {
+  const rental = await septic.getRentals({ id: rentalId })
+
+  if (rental.serviceFrequency === 'daily') {
+    await septic.serviceUnit({
+      rentalId,
+      scheduledDate: addDays(lastServiceDate, 1)
+    })
+  }
+})
+```
+
+## Related
+
+- [Remediation Services](./562910-RemediationServices.mdx)
+- [All Other Miscellaneous Waste Management Services](./562998-AllOtherMiscellaneousWasteManagementServices.mdx)
