@@ -13,58 +13,196 @@ object: Fluid Milk
 
 # Fluid Milk Manufacturing
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for fluid milk processing operations. Models pasteurization, homogenization, packaging, and distribution of milk and dairy substitutes for retail and foodservice.
 
 ## Overview
 
-This U.S. industry comprises establishments primarily engaged in (1) manufacturing processed milk products, such as pasteurized milk or cream and sour cream and/or (2) manufacturing fluid milk dairy substitutes from soybeans and other nondairy substances. Cross-References. Establishments primarily engaged in--
+This U.S. industry comprises establishments primarily engaged in (1) manufacturing processed milk products, such as pasteurized milk or cream and sour cream and/or (2) manufacturing fluid milk dairy substitutes from soybeans and other nondairy substances. This definition exposes actions for receiving raw milk, processing, quality testing, and packaging for distribution.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| DairyFarm | Supplies raw milk from dairy operations |
+| MilkCooperative | Aggregates and markets milk from member farms |
+| PackagingSupplier | Provides bottles, cartons, and containers |
+| RetailGrocer | Purchases fluid milk for retail sale |
+| FoodserviceDistributor | Distributes to restaurants and institutions |
+| SchoolDistributor | Supplies milk to school lunch programs |
+| EquipmentVendor | Supplies pasteurizers and homogenizers |
+| Regulator | USDA and state dairy inspectors |
 
 ## Roles
 
 | Role | Description |
 |------|-------------|
-| TODO | TODO |
+| PlantManager | Oversees daily processing operations |
+| QualityManager | Ensures product safety and compliance |
+| ReceivingOperator | Tests and accepts incoming raw milk |
+| PasteurizerOperator | Runs heat treatment equipment |
+| PackagingOperator | Operates filling and sealing lines |
+| LabTechnician | Performs microbiological and chemical tests |
+| MaintenanceTechnician | Maintains processing equipment |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| RawMilk | Unprocessed milk from dairy farms |
+| PasteurizedMilk | Heat-treated milk safe for consumption |
+| Cream | High-fat dairy product separated from milk |
+| SourCream | Cultured cream product |
+| DairySubstitute | Plant-based milk alternatives |
+| Tanker | Bulk transport vessel for raw milk |
+| Batch | Traceable production quantity |
+| SCC | Somatic cell count quality metric |
+| Container | Retail packaging unit |
+| ShelfLife | Product freshness window |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| receiveRawMilk | Accept tanker delivery and perform initial testing |
+| testQuality | Analyze for bacteria, antibiotics, and composition |
+| separate | Split milk into skim and cream fractions |
+| standardize | Adjust fat content to target levels |
+| homogenize | Break down fat globules for uniform texture |
+| pasteurize | Heat treat to eliminate harmful bacteria |
+| culture | Add bacterial cultures for cultured products |
+| fortify | Add vitamins A and D as required |
+| fill | Package into retail containers |
+| label | Apply date codes and product information |
+| palletize | Stack cases for shipping |
+| ship | Dispatch refrigerated loads to customers |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| milkReceived | Raw milk tested and accepted into storage |
+| milkRejected | Raw milk failed quality tests |
+| batchSeparated | Cream and skim fractions created |
+| batchStandardized | Fat content adjusted |
+| batchHomogenized | Fat globules processed |
+| batchPasteurized | Heat treatment completed |
+| batchCultured | Cultures added for sour cream |
+| batchFortified | Vitamins added |
+| batchFilled | Containers filled and sealed |
+| batchReleased | Quality approved for distribution |
+| orderShipped | Product dispatched to customer |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| findTankers | List incoming milk deliveries |
+| getInventory | Check finished goods stock by SKU |
+| getOrders | Retrieve orders by customer or delivery date |
+| getQualityResults | View test results by batch |
+| getProductionSchedule | View planned processing runs |
+| findExpiring | List products approaching sell-by date |
+| getSupplierHistory | Review quality history by farm |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[receiveRawMilk] --> B[testQuality]
+    B --> C{Passed?}
+    C -->|Yes| D[separate]
+    C -->|No| E[Reject]
+    D --> F[standardize]
+    F --> G[homogenize]
+    G --> H[pasteurize]
+    H --> I{Product Type?}
+    I -->|Fluid Milk| J[fortify]
+    I -->|Sour Cream| K[culture]
+    J --> L[fill]
+    K --> L
+    L --> M[label]
+    M --> N[palletize]
+    N --> O{Quality Check}
+    O -->|Pass| P[ship]
+    O -->|Fail| Q[Hold]
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    P[Processor]
+
+    P -->|buys from| DairyFarm
+    P -->|buys from| MilkCooperative
+    P -->|buys from| PackagingSupplier
+    P -->|sells to| RetailGrocer
+    P -->|sells to| FoodserviceDistributor
+    P -->|sells to| SchoolDistributor
+    P -->|equipment from| EquipmentVendor
+    P -->|inspected by| Regulator
+```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { processFluidMilk } from '@headlessly/process-fluid-milk'
+
+const plant = processFluidMilk()
+
+// Receive and test incoming raw milk
+const delivery = await plant.receiveRawMilk({
+  tankerId: 'TK-2024-0142',
+  farmId: 'meadow-dairy',
+  volume: 6000,
+  unit: 'gallons',
+  temperature: 38
+})
+
+const quality = await plant.testQuality({
+  deliveryId: delivery.id,
+  tests: ['bacteria', 'antibiotics', 'scc', 'butterfat']
+})
+
+// Process whole milk batch
+await plant.standardize({
+  batchId: delivery.batchId,
+  targetFat: 3.25
+})
+
+await plant.homogenize({ batchId: delivery.batchId })
+await plant.pasteurize({
+  batchId: delivery.batchId,
+  method: 'HTST',
+  temperature: 161,
+  holdTime: 15
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-fortify after pasteurization
+plant.batchPasteurized(async ({ batchId, productType }) => {
+  if (productType === 'fluid-milk') {
+    await plant.fortify({
+      batchId,
+      vitaminA: 2000,
+      vitaminD: 400,
+      unit: 'IU-per-quart'
+    })
+  }
+})
+
+// Auto-alert on quality failures
+plant.milkRejected(async ({ deliveryId, farmId, reason }) => {
+  await plant.notifySupplier({
+    farmId,
+    subject: 'Milk Delivery Rejected',
+    reason,
+    deliveryId
+  })
+})
 ```

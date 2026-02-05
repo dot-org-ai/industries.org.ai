@@ -7,58 +7,215 @@ subsector: Administrative and Support Services
 subsectorCode: 561
 group: Services to Buildings and Dwellings
 groupCode: 5617
-action: Clean
-object: Services Buildings
+action: Service
+object: Building
 ---
 
 # Other Services to Buildings and Dwellings
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for specialized building services. Models service operations including pool maintenance, chimney cleaning, gutter cleaning, and pressure washing.
 
 ## Overview
 
-This industry comprises establishments primarily engaged in providing services to buildings and dwellings (except exterminating and pest control; janitorial; landscaping care and maintenance; and carpet and upholstery cleaning). Illustrative Examples: Building exterior cleaning services (except sandblasting, window cleaning) Swimming pool cleaning and maintenance services Chimney cleaning services Ventilation duct cleaning services Drain or gutter cleaning services Cross-References. Establishmen
+Other services to buildings and dwellings includes specialized maintenance such as swimming pool cleaning, chimney sweeping, gutter cleaning, pressure washing, and ventilation duct cleaning. This definition exposes actions for service delivery, events for workflow automation, and searches for scheduling and customer management.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| HomeOwner | Residential client requesting building services |
+| PropertyManager | Manages multiple properties requiring maintenance |
+| HOAManager | Coordinates services for community common areas |
+| EquipmentSupplier | Provides specialized cleaning and maintenance equipment |
+| ChemicalVendor | Supplies pool chemicals, cleaning agents, and sealants |
+| InsuranceCompany | Provides liability coverage and processes claims |
+| Inspector | Certifies work meets code requirements |
+| RealEstateAgent | Coordinates pre-sale inspections and cleaning |
+
+## Roles
+
+| Role | Description |
+|------|-------------|
+| Owner | Owns the business and sets strategic direction |
+| OperationsManager | Oversees daily scheduling and crew assignments |
+| ServiceTechnician | Performs specialized maintenance and cleaning |
+| PoolTechnician | Maintains swimming pools and spas |
+| ChimneyTechnician | Inspects and cleans chimneys and flues |
+| Scheduler | Books appointments and manages customer communications |
+| QualityInspector | Verifies completed work meets standards |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| Property | Building or dwelling receiving services |
+| ServiceOrder | Work request with job specifications |
+| SwimmingPool | Pool or spa requiring maintenance |
+| Chimney | Flue system requiring cleaning or inspection |
+| Gutter | Rain gutter and downspout system |
+| HVAC | Heating, ventilation, and air conditioning system |
+| Equipment | Pressure washers, vacuums, and specialized tools |
+| Chemical | Cleaning agents, pool chemicals, and treatments |
+| Estimate | Price quote for requested services |
+| Invoice | Bill for completed services |
+| MaintenancePlan | Recurring service agreement |
+| SafetyReport | Documentation of inspections and certifications |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| assessProperty | Evaluate service needs and site conditions |
+| createEstimate | Prepare price quote for requested work |
+| scheduleService | Book appointment with customer |
+| cleanPool | Vacuum, skim, and chemically treat swimming pool |
+| balanceChemicals | Test and adjust pool water chemistry |
+| inspectChimney | Examine flue for creosote buildup and damage |
+| sweepChimney | Remove soot and creosote from chimney |
+| cleanGutters | Remove debris from gutters and downspouts |
+| pressureWash | Clean exterior surfaces with high-pressure water |
+| cleanDucts | Remove dust and debris from HVAC ductwork |
+| sealSurfaces | Apply protective sealant to cleaned surfaces |
+| documentCondition | Record before and after conditions |
+| processPayment | Collect payment from customer |
+| scheduleRecurring | Set up ongoing maintenance visits |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| propertyAssessed | Initial evaluation completed |
+| estimateProvided | Quote sent to customer |
+| estimateAccepted | Customer approved the quote |
+| serviceScheduled | Appointment confirmed |
+| technicianArrived | Technician on-site at property |
+| serviceStarted | Work began on property |
+| serviceCompleted | All work finished |
+| issueDiscovered | Problem found requiring additional work |
+| paymentReceived | Customer payment processed |
+| recurringScheduled | Maintenance plan established |
+| inspectionPassed | Work certified by inspector |
+| warrantyIssued | Service warranty provided to customer |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| findAppointments | List scheduled jobs by date or technician |
+| getCustomers | Retrieve customers with service history |
+| getProperties | List properties with filters for service type |
+| checkAvailability | Find open time slots for scheduling |
+| getEstimates | List pending estimates awaiting approval |
+| getMaintenancePlans | View active recurring service agreements |
+| getEquipmentStatus | Check equipment availability and maintenance |
+| findOverdueServices | List properties due for scheduled maintenance |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[assessProperty] --> B[createEstimate]
+    B --> C{Accepted?}
+    C -->|Yes| D[scheduleService]
+    C -->|No| E[End]
+    D --> F[Perform Service]
+    F --> G{Pool Service?}
+    G -->|Yes| H[cleanPool]
+    H --> I[balanceChemicals]
+    G -->|No| J{Chimney?}
+    J -->|Yes| K[inspectChimney]
+    K --> L[sweepChimney]
+    J -->|No| M{Gutters?}
+    M -->|Yes| N[cleanGutters]
+    M -->|No| O[pressureWash]
+    I --> P[documentCondition]
+    L --> P
+    N --> P
+    O --> P
+    P --> Q[processPayment]
+    Q --> R{Recurring?}
+    R -->|Yes| S[scheduleRecurring]
+    R -->|No| T[Complete]
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    S[ServiceCompany]
+
+    S -->|serves| HomeOwner
+    S -->|serves| PropertyManager
+    S -->|coordinates with| HOAManager
+    S -->|buys from| EquipmentSupplier
+    S -->|buys from| ChemicalVendor
+    S -->|insures with| InsuranceCompany
+    S -->|works with| Inspector
+    S -->|receives referrals from| RealEstateAgent
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { serviceBuilding } from '@headlessly/service-building'
+
+const service = serviceBuilding()
+
+// Assess a property for pool service
+const assessment = await service.assessProperty({
+  propertyId: 'prop-789',
+  address: '123 Sunset Drive',
+  serviceTypes: ['poolMaintenance', 'gutterCleaning'],
+  features: { poolSize: 'large', stories: 2 }
+})
+
+// Create estimate for services
+const estimate = await service.createEstimate({
+  propertyId: 'prop-789',
+  services: [
+    { type: 'poolMaintenance', frequency: 'weekly' },
+    { type: 'gutterCleaning', frequency: 'quarterly' }
+  ]
+})
+
+// Schedule recurring pool maintenance
+await service.scheduleRecurring({
+  propertyId: 'prop-789',
+  serviceType: 'poolMaintenance',
+  frequency: 'weekly',
+  preferredDay: 'wednesday',
+  startDate: '2024-04-01'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-alert for discovered issues
+service.issueDiscovered(async ({ serviceOrderId, propertyId, issue }) => {
+  await sendAlert({
+    to: propertyId,
+    message: `During service, we found: ${issue.description}`,
+    recommendedAction: issue.recommendation,
+    urgency: issue.severity
+  })
+})
+
+// Auto-schedule next service after completion
+service.serviceCompleted(async ({ serviceOrderId, maintenancePlanId }) => {
+  if (maintenancePlanId) {
+    const plan = await service.getMaintenancePlans({ id: maintenancePlanId })
+    await service.scheduleService({
+      propertyId: plan.propertyId,
+      nextDate: calculateNextDate(plan.frequency)
+    })
+  }
+})
+```
+
+## Related
+
+- [Landscaping Services](./561730-LandscapingServices.mdx)
+- [Carpet and Upholstery Cleaning Services](./561740-CarpetAndUpholsteryCleaningServices.mdx)

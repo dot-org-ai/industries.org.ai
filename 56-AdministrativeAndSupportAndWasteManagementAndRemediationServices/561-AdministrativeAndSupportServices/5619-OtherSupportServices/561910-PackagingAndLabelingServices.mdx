@@ -7,58 +7,214 @@ subsector: Administrative and Support Services
 subsectorCode: 561
 group: Other Support Services
 groupCode: 5619
-action: Support
-object: Packaging Labeling
+action: Package
+object: Product
 ---
 
 # Packaging and Labeling Services
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for contract packaging and labeling operations. Models the complete fulfillment lifecycle from receiving materials through packaging, labeling, and shipping.
 
 ## Overview
 
-This industry comprises establishments primarily engaged in packaging client-owned materials. The services may include labeling and/or imprinting the package. Illustrative Examples: Apparel and textile folding and packaging services Kit assembling and packaging services Blister packaging services Shrink wrapping services Gift wrapping services Cross-References. Establishments primarily engaged in--
+Packaging and labeling services provide contract packaging of client-owned products including blister packaging, shrink wrapping, kit assembly, gift wrapping, and product labeling. This definition exposes actions for production operations, events for workflow automation, and searches for inventory and order management.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| BrandOwner | Client whose products are being packaged |
+| Retailer | Receives packaged products for sale |
+| MaterialSupplier | Provides packaging materials and containers |
+| LabelPrinter | Produces custom labels and printed materials |
+| FreightCarrier | Transports finished goods to destinations |
+| QualityAuditor | Inspects packaging for compliance |
+| CustomsBroker | Handles import/export documentation |
+| WarehousePartner | Provides overflow storage capacity |
+
+## Roles
+
+| Role | Description |
+|------|-------------|
+| PlantManager | Oversees facility operations and production |
+| ProductionSupervisor | Manages packaging lines and crew |
+| PackagingOperator | Operates packaging machinery and hand-packs |
+| QualityTechnician | Inspects products and packaging for defects |
+| InventoryClerk | Tracks materials and finished goods |
+| ShippingCoordinator | Arranges outbound logistics |
+| AccountManager | Manages client relationships and projects |
+| WarehouseWorker | Receives, stores, and retrieves materials |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| WorkOrder | Client order specifying packaging requirements |
+| Product | Client-owned item to be packaged |
+| PackagingMaterial | Boxes, pouches, blister cards, and wrapping |
+| Label | Printed identification applied to packages |
+| Kit | Assembly of multiple items into single package |
+| Batch | Production run of packaged units |
+| Pallet | Unit load of finished goods for shipping |
+| Inventory | Stock of materials and finished goods |
+| Shipment | Outbound delivery of packaged products |
+| Specification | Client requirements for packaging and labeling |
+| QualityReport | Documentation of inspection results |
+| Invoice | Bill for packaging services rendered |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| receiveMaterials | Accept and inspect incoming products and supplies |
+| createWorkOrder | Set up packaging job with specifications |
+| allocateInventory | Reserve materials for production run |
+| setupLine | Configure packaging equipment for job |
+| packageProduct | Place products into packaging containers |
+| applyLabel | Attach labels with required information |
+| assembleKit | Combine multiple items into kit packages |
+| shrinkWrap | Apply heat-shrink film to packages |
+| inspectQuality | Verify packaging meets specifications |
+| palletize | Stack packages onto pallets for shipping |
+| generateShipment | Create shipping documents and labels |
+| shipOrder | Release finished goods to carrier |
+| reconcileInventory | Update stock counts after production |
+| invoiceClient | Bill client for completed services |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| materialsReceived | Products and supplies checked in |
+| workOrderCreated | Packaging job entered into system |
+| productionStarted | Packaging line began running |
+| batchCompleted | Production run finished |
+| qualityApproved | Inspection passed |
+| qualityRejected | Inspection failed, rework required |
+| orderPalletized | Products ready for shipment |
+| shipmentDispatched | Carrier picked up order |
+| inventoryLow | Material stock below threshold |
+| invoiceSent | Bill sent to client |
+| paymentReceived | Client payment processed |
+| specificationChanged | Client updated requirements |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| findWorkOrders | List orders by client, status, or date |
+| getInventory | Check stock levels for materials or products |
+| findBatches | Retrieve production batches by job or date |
+| getShipments | List shipments by carrier, destination, or status |
+| checkCapacity | View available production line capacity |
+| getQualityReports | Retrieve inspection results for batches |
+| findClients | List clients with filters for volume or product type |
+| getInvoices | Retrieve invoices by client or payment status |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[receiveMaterials] --> B[createWorkOrder]
+    B --> C[allocateInventory]
+    C --> D[setupLine]
+    D --> E[packageProduct]
+    E --> F{Kit Assembly?}
+    F -->|Yes| G[assembleKit]
+    F -->|No| H[applyLabel]
+    G --> H
+    H --> I{Shrink Wrap?}
+    I -->|Yes| J[shrinkWrap]
+    I -->|No| K[inspectQuality]
+    J --> K
+    K --> L{Passed?}
+    L -->|Yes| M[palletize]
+    L -->|No| N[Rework]
+    N --> E
+    M --> O[generateShipment]
+    O --> P[shipOrder]
+    P --> Q[reconcileInventory]
+    Q --> R[invoiceClient]
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    P[PackagingCompany]
+
+    P -->|serves| BrandOwner
+    P -->|ships to| Retailer
+    P -->|buys from| MaterialSupplier
+    P -->|buys from| LabelPrinter
+    P -->|ships via| FreightCarrier
+    P -->|audited by| QualityAuditor
+    P -->|works with| CustomsBroker
+    P -->|uses| WarehousePartner
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { packageProduct } from '@headlessly/package-product'
+
+const packaging = packageProduct()
+
+// Receive materials from client
+const receipt = await packaging.receiveMaterials({
+  clientId: 'brand-123',
+  items: [
+    { sku: 'PROD-001', quantity: 10000, condition: 'good' },
+    { sku: 'BOX-SM', quantity: 12000, type: 'material' }
+  ],
+  purchaseOrder: 'PO-45678'
+})
+
+// Create work order for packaging job
+const workOrder = await packaging.createWorkOrder({
+  clientId: 'brand-123',
+  productSku: 'PROD-001',
+  quantity: 10000,
+  packagingType: 'blisterCard',
+  labelRequirements: { upc: true, lotCode: true, expiration: true },
+  dueDate: '2024-04-15'
+})
+
+// Start production run
+await packaging.setupLine({
+  workOrderId: workOrder.id,
+  lineNumber: 3,
+  operators: ['op-101', 'op-102']
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-reorder materials when low
+packaging.inventoryLow(async ({ materialSku, currentStock, reorderPoint }) => {
+  const supplier = await packaging.getPreferredSupplier({ sku: materialSku })
+  await createPurchaseOrder({
+    supplierId: supplier.id,
+    sku: materialSku,
+    quantity: supplier.minimumOrder
+  })
+})
+
+// Notify client when shipment dispatched
+packaging.shipmentDispatched(async ({ workOrderId, trackingNumber, carrier }) => {
+  const workOrder = await packaging.findWorkOrders({ id: workOrderId })
+  await notifyClient({
+    clientId: workOrder.clientId,
+    message: `Order shipped via ${carrier}`,
+    trackingNumber
+  })
+})
+```
+
+## Related
+
+- [Convention and Trade Show Organizers](./561920-ConventionAndTradeShowOrganizers.mdx)
+- [All Other Support Services](./561990-AllOtherSupportServices.mdx)

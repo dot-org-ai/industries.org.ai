@@ -13,58 +13,191 @@ object: Creamery Butter
 
 # Creamery Butter Manufacturing
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for creamery butter production operations. Models cream separation, churning, working, packaging, and distribution of butter and butter blends.
 
 ## Overview
 
-This U.S. industry comprises establishments primarily engaged in manufacturing creamery butter from milk and/or processed milk products. Cross-References.
+This U.S. industry comprises establishments primarily engaged in manufacturing creamery butter from milk and/or processed milk products. This definition exposes actions for cream separation, pasteurization, churning, and packaging for retail and foodservice channels.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| DairyFarm | Supplies raw milk and cream |
+| CreamSupplier | Provides bulk cream for butter production |
+| SaltSupplier | Supplies food-grade salt for salted butter |
+| CultureSupplier | Provides bacterial cultures for cultured butter |
+| PackagingSupplier | Provides wrappers, tubs, and cartons |
+| RetailGrocer | Purchases butter for retail sale |
+| FoodserviceDistributor | Distributes to restaurants and bakeries |
+| FoodManufacturer | Uses butter as ingredient |
 
 ## Roles
 
 | Role | Description |
 |------|-------------|
-| TODO | TODO |
+| PlantManager | Oversees butter production operations |
+| QualityManager | Ensures product meets grade standards |
+| ChurnOperator | Runs churning and working equipment |
+| PackagingOperator | Operates wrapping and cartoning lines |
+| LabTechnician | Tests moisture, fat, and salt content |
+| ColdStorageManager | Manages refrigerated inventory |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| Cream | High-fat dairy input for churning |
+| Butterfat | Fat content extracted during churning |
+| Buttermilk | Liquid byproduct of churning |
+| Butter | Finished churned product |
+| SaltedButter | Butter with added salt |
+| UnsaltedButter | Sweet cream butter without salt |
+| CulturedButter | Butter made from fermented cream |
+| WhippedButter | Aerated butter product |
+| Batch | Traceable production quantity |
+| Grade | USDA quality classification |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| receiveCream | Accept and test incoming cream deliveries |
+| pasteurize | Heat treat cream before churning |
+| ripen | Culture cream for cultured butter |
+| churn | Agitate cream to separate butterfat |
+| drain | Remove buttermilk from butter granules |
+| wash | Rinse butter to remove residual buttermilk |
+| work | Knead butter to uniform consistency |
+| salt | Add salt to specified level |
+| mold | Form butter into blocks or prints |
+| wrap | Package in foil or parchment |
+| grade | Evaluate and assign USDA grade |
+| store | Place in cold storage |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| creamReceived | Cream tested and accepted |
+| creamPasteurized | Heat treatment completed |
+| creamRipened | Cultures developed flavor |
+| butterChurned | Fat separated from buttermilk |
+| butterWorked | Moisture and texture adjusted |
+| butterSalted | Salt incorporated |
+| butterMolded | Shaped into final form |
+| butterWrapped | Packaging completed |
+| butterGraded | USDA grade assigned |
+| batchReleased | Quality approved for sale |
+| orderShipped | Product dispatched |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| findCreamLots | List available cream inventory |
+| getInventory | Check butter stock by grade and type |
+| getOrders | Retrieve orders by customer |
+| getGradeHistory | View grading results by batch |
+| getButtermilkVolume | Track byproduct production |
+| getProductionSchedule | View planned churning runs |
+| findByGrade | List butter by USDA grade |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[receiveCream] --> B[pasteurize]
+    B --> C{Cultured?}
+    C -->|Yes| D[ripen]
+    C -->|No| E[churn]
+    D --> E
+    E --> F[drain]
+    F --> G[wash]
+    G --> H[work]
+    H --> I{Salted?}
+    I -->|Yes| J[salt]
+    I -->|No| K[mold]
+    J --> K
+    K --> L[wrap]
+    L --> M[grade]
+    M --> N{Grade OK?}
+    N -->|Yes| O[store]
+    N -->|No| P[Rework]
+    O --> Q[ship]
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    P[Processor]
+
+    P -->|buys from| DairyFarm
+    P -->|buys from| CreamSupplier
+    P -->|buys from| SaltSupplier
+    P -->|buys from| CultureSupplier
+    P -->|buys from| PackagingSupplier
+    P -->|sells to| RetailGrocer
+    P -->|sells to| FoodserviceDistributor
+    P -->|sells to| FoodManufacturer
+```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { processCreameryButter } from '@headlessly/process-creamery-butter'
+
+const plant = processCreameryButter()
+
+// Receive cream and begin production
+const cream = await plant.receiveCream({
+  supplierId: 'dairy-gold',
+  volume: 2000,
+  unit: 'gallons',
+  butterfatPercent: 40
+})
+
+await plant.pasteurize({
+  batchId: cream.batchId,
+  temperature: 185,
+  holdTime: 15
+})
+
+// Churn and process butter
+await plant.churn({
+  batchId: cream.batchId,
+  temperature: 55,
+  duration: 45
+})
+
+await plant.work({
+  batchId: cream.batchId,
+  targetMoisture: 16
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-salt based on product type
+plant.butterWorked(async ({ batchId, productType }) => {
+  if (productType === 'salted') {
+    await plant.salt({
+      batchId,
+      saltPercent: 1.5
+    })
+  }
+})
+
+// Auto-grade after packaging
+plant.butterWrapped(async ({ batchId }) => {
+  const gradeResult = await plant.grade({ batchId })
+
+  if (gradeResult.grade === 'AA') {
+    await plant.assignPremiumPricing({ batchId })
+  }
+})
 ```

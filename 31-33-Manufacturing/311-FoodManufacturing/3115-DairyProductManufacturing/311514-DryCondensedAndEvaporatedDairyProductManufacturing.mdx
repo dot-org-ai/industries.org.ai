@@ -8,63 +8,204 @@ subsectorCode: 311
 group: Dairy Product Manufacturing
 groupCode: 3115
 action: Process
-object: Dry
+object: Dry Dairy Products
 ---
 
 # Dry, Condensed, and Evaporated Dairy Product Manufacturing
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for dry, condensed, and evaporated dairy manufacturing operations. Models evaporation, spray drying, and packaging of shelf-stable milk products.
 
 ## Overview
 
-This U.S. industry comprises establishments primarily engaged in manufacturing dry, condensed, and evaporated milk and dairy substitute products. Cross-References. Establishments primarily engaged in--
+This U.S. industry comprises establishments primarily engaged in manufacturing dry, condensed, and evaporated milk and dairy substitute products. This definition exposes actions for concentrating, drying, and packaging milk powder, evaporated milk, and sweetened condensed milk.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| DairyFarm | Supplies raw milk for processing |
+| MilkCooperative | Aggregates bulk milk supply |
+| SugarSupplier | Provides sugar for sweetened condensed milk |
+| PackagingSupplier | Provides cans, bags, and containers |
+| FoodManufacturer | Uses dry dairy as ingredient |
+| BakerySupplier | Distributes to commercial bakeries |
+| ExportTrader | Handles international sales |
+| InfantFormulaProducer | Uses milk powder for formula |
 
 ## Roles
 
 | Role | Description |
 |------|-------------|
-| TODO | TODO |
+| PlantManager | Oversees production operations |
+| EvaporatorOperator | Runs vacuum evaporation equipment |
+| DryerOperator | Controls spray drying systems |
+| QualityManager | Ensures product specifications |
+| LabTechnician | Tests moisture, protein, and fat content |
+| PackagingOperator | Operates filling and sealing lines |
+| WarehouseManager | Manages dry goods storage |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| RawMilk | Fresh milk input |
+| ConcentratedMilk | Partially evaporated milk |
+| EvaporatedMilk | Shelf-stable concentrated milk |
+| SweetenedCondensedMilk | Sugar-added concentrated milk |
+| MilkPowder | Spray-dried milk solids |
+| WholeMilkPowder | Full-fat dried milk |
+| SkimMilkPowder | Fat-free dried milk |
+| WheyPowder | Dried whey byproduct |
+| Batch | Traceable production lot |
+| MoistureContent | Critical quality parameter |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| receiveMilk | Accept and test incoming milk |
+| pasteurize | Heat treat for safety |
+| standardize | Adjust fat content |
+| evaporate | Remove water under vacuum |
+| addSugar | Incorporate sugar for SCM |
+| homogenize | Ensure uniform consistency |
+| sprayDry | Convert liquid to powder |
+| fluidize | Agglomerate powder for instant dissolving |
+| cool | Reduce temperature after drying |
+| sift | Remove oversized particles |
+| fill | Package into cans or bags |
+| seal | Close containers for shelf stability |
+| palletize | Stack for storage and shipping |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| milkReceived | Raw milk accepted |
+| milkPasteurized | Heat treatment complete |
+| milkEvaporated | Water removed |
+| sugarAdded | Sweetener incorporated |
+| productDried | Powder created |
+| productCooled | Temperature stabilized |
+| productSifted | Particle size verified |
+| containerFilled | Product packaged |
+| containerSealed | Package closed |
+| batchReleased | Quality approved |
+| orderShipped | Product dispatched |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| findMilkLots | List incoming milk deliveries |
+| getInventory | Check finished goods by product type |
+| getOrders | Retrieve orders by customer or date |
+| getMoistureReports | View moisture test results |
+| getProductionSchedule | View planned runs |
+| findByShelfLife | List products by expiration |
+| getExportDocuments | Retrieve certificates for international sales |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[receiveMilk] --> B[pasteurize]
+    B --> C[standardize]
+    C --> D[evaporate]
+    D --> E{Product Type?}
+    E -->|Evaporated| F[homogenize]
+    E -->|Condensed| G[addSugar]
+    E -->|Powder| H[sprayDry]
+    F --> I[fill]
+    G --> I
+    H --> J[fluidize]
+    J --> K[cool]
+    K --> L[sift]
+    L --> I
+    I --> M[seal]
+    M --> N{Quality OK?}
+    N -->|Yes| O[palletize]
+    N -->|No| P[Hold]
+    O --> Q[ship]
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    P[Processor]
+
+    P -->|buys from| DairyFarm
+    P -->|buys from| MilkCooperative
+    P -->|buys from| SugarSupplier
+    P -->|buys from| PackagingSupplier
+    P -->|sells to| FoodManufacturer
+    P -->|sells to| BakerySupplier
+    P -->|sells to| ExportTrader
+    P -->|sells to| InfantFormulaProducer
+```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { processDryDairyProducts } from '@headlessly/process-dry-dairy-products'
+
+const plant = processDryDairyProducts()
+
+// Produce skim milk powder
+const milk = await plant.receiveMilk({
+  cooperativeId: 'midwest-dairy',
+  volume: 50000,
+  unit: 'gallons',
+  butterfatPercent: 3.5
+})
+
+await plant.pasteurize({
+  batchId: milk.batchId,
+  method: 'HTST'
+})
+
+await plant.standardize({
+  batchId: milk.batchId,
+  targetFat: 0.1 // skim
+})
+
+await plant.evaporate({
+  batchId: milk.batchId,
+  targetSolids: 48
+})
+
+await plant.sprayDry({
+  batchId: milk.batchId,
+  inletTemp: 180,
+  outletTemp: 90,
+  unit: 'celsius'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-agglomerate for instant powder
+plant.productDried(async ({ batchId, productType }) => {
+  if (productType === 'instant-skim') {
+    await plant.fluidize({
+      batchId,
+      lecithinSpray: true
+    })
+  }
+})
+
+// Auto-generate export certificates
+plant.batchReleased(async ({ batchId, destination }) => {
+  if (destination === 'export') {
+    await plant.generateCertificate({
+      batchId,
+      type: 'phytosanitary',
+      market: destination
+    })
+  }
+})
 ```
