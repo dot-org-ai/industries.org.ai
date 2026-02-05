@@ -1,0 +1,232 @@
+---
+name: Cane Sugar Manufacturing
+naics: 311314
+sector: Manufacturing
+sectorCode: 31-33
+subsector: Food Manufacturing
+subsectorCode: 311
+group: Sugar and Confectionery Product Manufacturing
+groupCode: 3113
+action: Manufacture
+object: Cane Sugar
+---
+
+# Cane Sugar Manufacturing
+
+> Business-as-Code definition for cane sugar manufacturing operations. Models sugarcane milling and raw sugar production, plus refining of raw sugar into white granulated and specialty sugars.
+
+## Overview
+
+This U.S. industry comprises establishments primarily engaged in processing sugarcane and/or refining cane sugar from raw cane sugar. This definition exposes actions for cane milling, juice clarification, evaporation, raw sugar crystallization, and refining processes including affination, melting, and recrystallization.
+
+## Actors
+
+| Actor | Description |
+|-------|-------------|
+| CaneGrower | Produces sugarcane for harvest and delivery |
+| CaneHauler | Transports cut cane from fields to mill |
+| RawSugarTrader | Supplies raw sugar for refining |
+| ChemicalSupplier | Provides lime, sulfur, and refining chemicals |
+| PackagingSupplier | Supplies bags, boxes, and bulk packaging |
+| FoodManufacturer | Purchases sugar for food production |
+| Retailer | Sells consumer sugar products |
+| BeverageCompany | Uses sugar in soft drinks and beverages |
+| USDA | Administers sugar tariffs and quotas |
+| EPA | Regulates mill emissions and waste |
+
+## Roles
+
+| Role | Description |
+|------|-------------|
+| MillManager | Oversees cane milling operations |
+| RefineryManager | Oversees sugar refining operations |
+| ProcessEngineer | Optimizes extraction and crystallization |
+| QualityManager | Ensures sugar purity and food safety |
+| MillOperator | Operates crushers and extraction equipment |
+| ClarifierOperator | Controls juice clarification process |
+| PanOperator | Manages vacuum pans for crystallization |
+| RefineryOperator | Controls affination and recrystallization |
+
+## Entities
+
+| Entity | Description |
+|--------|-------------|
+| Sugarcane | Harvested cane stalks for processing |
+| Bagasse | Crushed cane fiber used as fuel |
+| CaneJuice | Sugar solution extracted from cane |
+| Syrup | Clarified and concentrated juice |
+| RawSugar | Partially refined sugar crystals |
+| MeltLiquor | Dissolved raw sugar for refining |
+| WhiteSugar | Refined granulated sugar |
+| BrownSugar | Sugar with molasses for color and flavor |
+| Molasses | Byproduct syrup from sugar production |
+| Batch | Traceable production lot |
+
+## Actions
+
+| Action | Description |
+|--------|-------------|
+| receiveCane | Accept and weigh incoming cane loads |
+| crush | Extract juice by crushing cane through mills |
+| clarify | Remove impurities using lime and heat |
+| evaporate | Concentrate juice by removing water |
+| crystallize | Form raw sugar crystals in vacuum pans |
+| centrifuge | Separate raw sugar from molasses |
+| affinate | Wash raw sugar to remove surface molasses |
+| melt | Dissolve raw sugar in water |
+| decolorize | Remove color using carbon or ion exchange |
+| recrystallize | Form refined white sugar crystals |
+| dry | Remove moisture from sugar |
+| granulate | Produce specialty sugars like powdered |
+| package | Fill containers and label products |
+| ship | Deliver sugar to customers |
+
+## Events
+
+| Event | Description |
+|-------|-------------|
+| caneReceived | Cane load weighed and accepted |
+| juiceExtracted | Juice crushed from cane |
+| juiceClarified | Impurities removed from juice |
+| syrupConcentrated | Juice evaporated to syrup |
+| rawSugarCrystallized | Raw sugar crystals formed |
+| rawSugarCentrifuged | Raw sugar separated from molasses |
+| rawSugarAffinated | Raw sugar washed for refining |
+| liquorDecolorized | Color removed from melt liquor |
+| whiteSugarCrystallized | Refined sugar crystals formed |
+| sugarPackaged | Sugar packaged for shipment |
+| qualityApproved | Sugar met specifications |
+| orderShipped | Sugar dispatched to customer |
+
+## Searches
+
+| Search | Description |
+|--------|-------------|
+| findCaneLots | List cane inventory by grower and field |
+| getRawSugarInventory | Check raw sugar stock and quality |
+| getRefinedInventory | Check refined sugar by grade |
+| getOrders | Retrieve orders by customer or date |
+| getQualityReports | Retrieve purity and color test results |
+| getMillingStats | View extraction and recovery rates |
+| getByproducts | Check bagasse and molasses inventory |
+| getMarketPrices | Retrieve sugar commodity prices |
+
+## Workflow
+
+```mermaid
+graph TD
+    A[receiveCane] --> B[crush]
+    B --> C[clarify]
+    C --> D[evaporate]
+    D --> E[crystallize]
+    E --> F[centrifuge]
+    F --> G{Refine?}
+    G -->|No| H[package Raw]
+    G -->|Yes| I[affinate]
+    I --> J[melt]
+    J --> K[decolorize]
+    K --> L[recrystallize]
+    L --> M[centrifuge]
+    M --> N[dry]
+    N --> O{Specialty?}
+    O -->|Yes| P[granulate]
+    O -->|No| Q[package]
+    P --> Q
+    Q --> R[ship]
+```
+
+## Actor Relationships
+
+```mermaid
+graph LR
+    M[Mill/Refinery]
+
+    M -->|contracts with| CaneGrower
+    M -->|receives via| CaneHauler
+    M -->|buys from| RawSugarTrader
+    M -->|buys from| ChemicalSupplier
+    M -->|buys from| PackagingSupplier
+    M -->|sells to| FoodManufacturer
+    M -->|sells to| Retailer
+    M -->|sells to| BeverageCompany
+    M -->|regulated by| USDA
+    M -->|regulated by| EPA
+```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { manufactureCaneSugar } from '@headlessly/manufacture-cane-sugar'
+
+const mill = manufactureCaneSugar()
+
+// Receive cane during harvest
+const cane = await mill.receiveCane({
+  growerId: 'plantation-louisiana-01',
+  truckWeight: 30,
+  unit: 'tons',
+  variety: 'LCP85-384',
+  burnStatus: 'green'
+})
+
+// Mill and extract juice
+await mill.crush({
+  lotId: cane.lotId,
+  rollPressure: 500,
+  passes: 4
+})
+
+await mill.clarify({
+  lotId: cane.lotId,
+  limeRate: 1.2,
+  temperature: 105
+})
+
+// Produce raw sugar
+await mill.evaporate({
+  lotId: cane.lotId,
+  targetBrix: 65
+})
+
+await mill.crystallize({
+  lotId: cane.lotId,
+  boilingScheme: 'three-massecuite'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-refine raw sugar based on orders
+mill.rawSugarCentrifuged(async ({ lotId, pol, color }) => {
+  const refinedOrders = await mill.getOrders({ product: 'refined', status: 'pending' })
+
+  if (refinedOrders.length > 0) {
+    await mill.affinate({
+      lotId,
+      syrupConcentration: 75
+    })
+  } else {
+    await mill.package({
+      lotId,
+      product: 'raw-sugar',
+      destination: 'refinery'
+    })
+  }
+})
+
+// Produce specialty sugars on demand
+mill.whiteSugarCrystallized(async ({ lotId, crystalSize }) => {
+  const orders = await mill.getOrders({ product: 'powdered', status: 'pending' })
+
+  if (orders.length > 0) {
+    await mill.granulate({
+      lotId,
+      targetSize: 'powdered',
+      anticaking: true
+    })
+  }
+})
+```
