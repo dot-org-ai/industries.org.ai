@@ -8,63 +8,200 @@ subsectorCode: 333
 group: Other General Purpose Machinery Manufacturing
 groupCode: 3339
 action: Manufacture
-object: Elevator Moving
+object: Elevators Escalators
 ---
 
 # Elevator and Moving Stairway Manufacturing
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for elevator and escalator manufacturing operations. Models the complete production lifecycle from vertical transportation design through building installation including passenger elevators, freight elevators, escalators, and moving walkways.
 
 ## Overview
 
-This U.S. industry comprises establishments primarily engaged in manufacturing elevators and moving stairways. Illustrative Examples: Automobile lifts (i.e., garage-type, service station) manufacturing Escalators manufacturing Moving walkways manufacturing Passenger and freight elevators manufacturing Cross-References.
+Elevator and moving stairway manufacturing involves producing vertical and horizontal transportation equipment including traction and hydraulic elevators, escalators, and moving walkways. Operations coordinate with motor suppliers, control system vendors, and building owners requiring reliable vertical transportation. This definition exposes actions for elevator engineering, safety system integration, and building installation with events for automation and searches for performance analytics.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| MotorSupplier | Provides hoisting motors and drives |
+| ControlsVendor | Supplies elevator control systems |
+| SafetyDeviceVendor | Provides governors, buffers, and interlocks |
+| SteelFabricator | Supplies guide rails and cab frames |
+| BuildingOwner | End customer operating elevators |
+| GeneralContractor | Installs elevators during construction |
+| ServiceCompany | Maintains and modernizes elevators |
+| ElevatorRegulator | Oversees safety codes and inspections |
 
 ## Roles
 
 | Role | Description |
 |------|-------------|
-| TODO | TODO |
+| ElevatorEngineer | Designs vertical transportation systems |
+| ControlsEngineer | Develops elevator control logic |
+| SafetyEngineer | Ensures code compliance |
+| InstallationTechnician | Erects elevators in buildings |
+| AdjusterTechnician | Commissions and fine-tunes systems |
+| MaintenanceTechnician | Services installed equipment |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| TractionElevator | Cable and counterweight elevator |
+| HydraulicElevator | Piston-driven elevator |
+| MachineRoomLess | Compact traction elevator |
+| Escalator | Moving stairway |
+| MovingWalkway | Horizontal people mover |
+| Cab | Passenger or freight enclosure |
+| Hoistway | Elevator shaft |
+| Controller | Elevator operation computer |
+| SafetyDevice | Governor, buffer, or interlock |
+| MaintenanceContract | Ongoing service agreement |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| designElevator | Engineer vertical transportation system |
+| selectDrive | Choose motor and control system |
+| fabricateCab | Build passenger or freight enclosure |
+| assembleController | Build elevator control system |
+| integrateSafety | Install governors and interlocks |
+| erectHoistway | Install guide rails and equipment |
+| installCab | Place car in hoistway |
+| wireControls | Connect electrical systems |
+| adjustSystem | Fine-tune speeds and leveling |
+| inspectSafety | Verify code compliance |
+| commissionElevator | Approve for passenger use |
+| performMaintenance | Execute scheduled service |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| designApproved | Elevator engineering released |
+| driveSelected | Motor system specified |
+| cabFabricated | Enclosure built |
+| controllerAssembled | Control system ready |
+| safetyIntegrated | Safety devices installed |
+| hoistwayErected | Guide rails installed |
+| cabInstalled | Car placed in shaft |
+| controlsWired | Electrical connected |
+| systemAdjusted | Performance optimized |
+| inspectionPassed | Code compliance verified |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| getElevatorStatus | Retrieve manufacturing progress |
+| findByBuilding | Query elevators by location |
+| getPerformanceData | Retrieve wait times and trips |
+| trackServiceHistory | Get maintenance records |
+| findInspectionRecords | Query safety documentation |
+| getModernizationCandidates | List elevators for upgrade |
+| findCallbackData | Retrieve service call history |
+| getEnergyUsage | Track power consumption |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[designElevator] --> B[selectDrive]
+    B --> C[fabricateCab]
+    C --> D[assembleController]
+    D --> E[integrateSafety]
+    E --> F[erectHoistway]
+    F --> G[installCab]
+    G --> H[wireControls]
+    H --> I[adjustSystem]
+    I --> J[inspectSafety]
+    J --> K{Passed?}
+    K -->|No| L[Correct]
+    L --> J
+    K -->|Yes| M[commissionElevator]
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    M[Manufacturer]
+
+    M -->|buys from| MotorSupplier
+    M -->|buys from| ControlsVendor
+    M -->|buys from| SafetyDeviceVendor
+    M -->|buys from| SteelFabricator
+    M -->|sells to| BuildingOwner
+    M -->|works with| GeneralContractor
+    M -->|partners with| ServiceCompany
+    M -->|regulated by| ElevatorRegulator
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { manufactureElevatorsEscalators } from '@headlessly/manufacture-elevators-escalators'
+
+const factory = manufactureElevatorsEscalators()
+
+// Design high-rise traction elevator
+const elevator = await factory.designElevator({
+  type: 'machine-room-less',
+  capacity: 4000, // pounds
+  speed: 500, // fpm
+  stops: 40,
+  rise: 500, // feet
+  usage: 'high-rise-office'
+})
+
+// Select drive system
+await factory.selectDrive({
+  elevatorId: elevator.id,
+  motor: 'gearless-pm',
+  drive: 'regenerative-vvvf',
+  control: 'destination-dispatch'
+})
+
+// Commission in building
+await factory.commissionElevator({
+  elevatorId: elevator.id,
+  buildingId: 'downtown-tower-1',
+  bankId: 'high-rise-bank',
+  inspectionAuthority: 'city-elevator-dept',
+  witnessTest: true
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Safety inspection scheduling
+factory.inspectionPassed(async ({ elevatorId, inspectionDate }) => {
+  await scheduleNextInspection({
+    elevatorId,
+    nextDate: addMonths(inspectionDate, 12),
+    type: 'annual-safety'
+  })
+})
+
+// Maintenance callbacks
+factory.performMaintenance(async ({ elevatorId, serviceType, findings }) => {
+  if (findings.length > 0) {
+    await factory.trackServiceHistory({
+      elevatorId,
+      findings,
+      resolution: 'scheduled',
+      priority: findings.some(f => f.safety) ? 'urgent' : 'routine'
+    })
+  }
+})
+```
+
+## Related
+
+- [Conveyor Manufacturing](./333922-ConveyorAndConveyingEquipmentManufacturing.mdx)
+- [Crane and Hoist Manufacturing](./333923-OverheadTravelingCraneHoistAndMonorailSystemManufacturing.mdx)
+- [Industrial Truck Manufacturing](./333924-IndustrialTruckTractorTrailerAndStackerMachineryManufacturing.mdx)

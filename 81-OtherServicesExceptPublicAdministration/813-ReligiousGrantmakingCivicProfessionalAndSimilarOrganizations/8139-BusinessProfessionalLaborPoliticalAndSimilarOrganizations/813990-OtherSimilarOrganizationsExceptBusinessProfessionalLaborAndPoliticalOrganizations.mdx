@@ -13,52 +13,220 @@ object: Members
 
 # Other Similar Organizations (except Business, Professional, Labor, and Political Organizations)
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for membership organization operations. Models homeowners associations, athletic leagues, condominium associations, and other member-interest organizations.
 
 ## Overview
 
-This industry comprises establishments (except religious organizations, social advocacy organizations, civic and social organizations, business associations, professional organizations, labor unions, and political organizations) primarily engaged in promoting the interests of their members. Illustrative Examples: Athletic associations and leagues, regulatory Property owners' associations Condominium and homeowners' associations Tenants' associations (except advocacy) Cooperative owners' associat
+Other similar organizations promote the interests of members in areas not covered by business, professional, labor, or political organizations. This includes homeowners associations, condominium associations, athletic leagues, cooperative associations, and tenant organizations. This definition exposes actions for member governance, events for community management, and searches for assessment and compliance tracking.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| Member | Property owner or participant |
+| Resident | Individual living in community |
+| Vendor | Service provider to organization |
+| PropertyManager | Professional managing operations |
+| Attorney | Legal counsel for organization |
+| Regulator | State HOA or cooperative authority |
+| Contractor | Maintenance service provider |
+| InsuranceProvider | Coverage for common areas |
+
+## Roles
+
+| Role | Description |
+|------|-------------|
+| BoardPresident | Leads governing board |
+| BoardSecretary | Handles correspondence and records |
+| BoardTreasurer | Manages financial affairs |
+| BoardMember | Participates in governance |
+| CommunityManager | Professional managing operations |
+| MaintenanceSupervisor | Oversees physical upkeep |
+| ComplianceOfficer | Enforces rules and covenants |
+| ActivitiesCoordinator | Plans community events |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| Member | Property owner or participant record |
+| Assessment | Regular dues or fee |
+| Violation | Rule or covenant breach |
+| Meeting | Board or member gathering |
+| Reserve | Long-term maintenance fund |
+| CommonArea | Shared property or facility |
+| MaintenanceRequest | Service work order |
+| Covenant | Community rule or restriction |
+| Election | Board member selection |
+| Budget | Annual financial plan |
+| Insurance | Coverage policy |
+| ArchitecturalRequest | Modification approval |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| collectAssessment | Receive regular dues |
+| enforceViolation | Address rule breach |
+| conductMeeting | Hold board or member gathering |
+| maintainProperty | Care for common areas |
+| manageReserve | Oversee long-term fund |
+| electBoard | Select governing members |
+| approveModification | Review architectural request |
+| issueNotice | Send official communication |
+| contractVendor | Engage service provider |
+| planBudget | Develop annual finances |
+| insureCommon | Maintain coverage |
+| organizeActivity | Plan community event |
+| resolveDispute | Handle member conflict |
+| amendCovenant | Update community rules |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| assessmentCollected | Dues received |
+| violationEnforced | Rule breach addressed |
+| meetingConducted | Gathering held |
+| propertyMaintained | Common area cared for |
+| reserveManaged | Fund adjusted |
+| boardElected | Governance selected |
+| modificationApproved | Architectural request granted |
+| noticeIssued | Communication sent |
+| vendorContracted | Service provider engaged |
+| budgetApproved | Finances adopted |
+| commonInsured | Coverage maintained |
+| activityOrganized | Event completed |
+| disputeResolved | Conflict settled |
+| covenantAmended | Rules updated |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| findMembers | List property owners |
+| getAssessments | View dues records |
+| findViolations | List rule breaches |
+| getMeetings | View scheduled gatherings |
+| getReserves | Check long-term funds |
+| findMaintenanceRequests | List service orders |
+| getArchitecturalRequests | View modification submissions |
+| getBudgetStatus | Check financial position |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[electBoard] --> B[planBudget]
+    B --> C[collectAssessment]
+    C --> D{Management Activity}
+    D -->|Maintenance| E[maintainProperty]
+    D -->|Compliance| F[enforceViolation]
+    D -->|Community| G[organizeActivity]
+    E --> H[contractVendor]
+    F --> I[issueNotice]
+    G --> J[conductMeeting]
+    H --> K[manageReserve]
+    I --> L[resolveDispute]
+    J --> M[Report to Members]
+    K --> M
+    L --> M
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    A[Association]
+
+    A -->|serves| Member
+    A -->|governs| Resident
+    A -->|contracts| Vendor
+    A -->|employs| PropertyManager
+    A -->|consults| Attorney
+    A -->|reports to| Regulator
+    A -->|hires| Contractor
+    A -->|insured by| InsuranceProvider
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { representMembers } from '@headlessly/represent-members'
+
+const hoa = representMembers()
+
+// Collect quarterly assessment
+const assessment = await hoa.collectAssessment({
+  memberId: 'unit-123',
+  amount: 450,
+  period: 'Q2-2024',
+  dueDate: '2024-04-01',
+  includeItems: ['commonArea', 'reserve', 'insurance']
+})
+
+// Enforce violation
+await hoa.enforceViolation({
+  memberId: 'unit-456',
+  violationType: 'architecturalNonCompliance',
+  description: 'Unapproved fence installation',
+  covenantReference: 'Article 7, Section 3',
+  cureDeadline: '2024-05-15',
+  escalation: 'firstNotice'
+})
+
+// Plan annual meeting
+await hoa.conductMeeting({
+  type: 'annualMeeting',
+  date: '2024-06-15',
+  location: 'Community Clubhouse',
+  agenda: [
+    'boardElection',
+    'budgetApproval',
+    'reserveStudyReview',
+    'openForum'
+  ],
+  quorumRequired: 0.25
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Follow up on overdue assessments
+hoa.assessmentOverdue(async ({ memberId, amount, daysOverdue }) => {
+  if (daysOverdue === 30) {
+    await hoa.issueNotice({
+      memberId,
+      type: 'lateNotice',
+      amount: amount + calculateLateFee(amount),
+      deadline: addDays(new Date(), 15)
+    })
+  } else if (daysOverdue === 60) {
+    await hoa.escalateCollection({
+      memberId,
+      action: 'lienWarning',
+      amount: amount + calculateLateFee(amount) + calculateInterest(amount, 60)
+    })
+  }
+})
+
+// Schedule maintenance from reserve study
+hoa.reserveComponentDue(async ({ componentId, replacementCost, dueYear }) => {
+  if (dueYear === getCurrentYear()) {
+    await hoa.contractVendor({
+      projectType: componentId,
+      budget: replacementCost,
+      timeline: 'currentFiscalYear',
+      bidRequirements: ['threeQuotes', 'licensed', 'insured']
+    })
+  }
+})
+```
+
+## Related
+
+- [Political Organizations](./813940-PoliticalOrganizations.mdx)
+- [Civic and Social Organizations](../8134-CivicAndSocialOrganizations/813410-CivicAndSocialOrganizations.mdx)

@@ -13,52 +13,215 @@ object: Communities
 
 # Civic and Social Organizations
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for civic and social organization operations. Models fraternal lodges, alumni associations, social clubs, scouting organizations, and community groups promoting civic and social interests.
 
 ## Overview
 
-This industry comprises establishments primarily engaged in promoting the civic and social interests of their members. Establishments in this industry may operate bars and restaurants for their members. Illustrative Examples: Alumni associations Granges Automobile clubs (except travel) Parent-teacher associations Booster clubs Scouting organizations Ethnic associations Social clubs Fraternal lodges Veterans' membership organizations Cross-References.
+Civic and social organizations promote the civic and social interests of their members through fellowship, community service, and shared activities. This includes fraternal organizations, alumni associations, parent-teacher associations, scouting organizations, ethnic associations, and veterans groups. This definition exposes actions for membership management, events for program coordination, and searches for member engagement tracking.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| Member | Individual belonging to organization |
+| ProspectiveMember | Individual considering membership |
+| Volunteer | Member providing unpaid service |
+| CommunityPartner | Local organization for joint activities |
+| Sponsor | Business supporting organization |
+| NationalChapter | Parent or affiliate organization |
+| VenueProvider | Facility hosting events |
+| CharityRecipient | Organization receiving service |
+
+## Roles
+
+| Role | Description |
+|------|-------------|
+| President | Elected leader of organization |
+| VicePresident | Supporting elected officer |
+| Secretary | Handles correspondence and records |
+| Treasurer | Manages financial affairs |
+| MembershipChair | Recruits and retains members |
+| ProgramChair | Coordinates activities and events |
+| ServiceChair | Organizes community service |
+| CommunicationsChair | Handles newsletters and publicity |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| Member | Individual participant record |
+| Meeting | Regular gathering of members |
+| Event | Special activity or program |
+| ServiceProject | Community outreach activity |
+| Committee | Working group for specific purpose |
+| Dues | Membership fee payment |
+| Newsletter | Member communication |
+| Award | Recognition for achievement |
+| Scholarship | Educational grant for members |
+| Chapter | Local unit of organization |
+| Bylaws | Governing rules |
+| Election | Officer selection process |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| recruitMember | Attract new participants |
+| initiateMember | Formally admit to organization |
+| collectDues | Receive membership payments |
+| conductMeeting | Hold regular gathering |
+| planEvent | Organize special activity |
+| coordinateService | Arrange community project |
+| electOfficers | Select leadership |
+| recognizeMember | Honor achievement |
+| awardScholarship | Grant educational funding |
+| publishNewsletter | Distribute communication |
+| chartChapter | Establish new local unit |
+| amendBylaws | Update governing rules |
+| hostSocial | Organize fellowship event |
+| reportNational | Submit to parent organization |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| memberRecruited | New participant attracted |
+| memberInitiated | Formal admission completed |
+| duesCollected | Payment received |
+| meetingConducted | Gathering held |
+| eventPlanned | Activity organized |
+| serviceCoordinated | Project completed |
+| officersElected | Leadership selected |
+| memberRecognized | Achievement honored |
+| scholarshipAwarded | Funding granted |
+| newsletterPublished | Communication distributed |
+| chapterChartered | New unit established |
+| bylawsAmended | Rules updated |
+| socialHosted | Fellowship event held |
+| nationalReported | Report submitted |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| findMembers | List participants |
+| getMeetings | View scheduled gatherings |
+| findEvents | List activities and programs |
+| getServiceProjects | View community outreach |
+| findCommittees | List working groups |
+| getDuesStatus | Check payment records |
+| getScholarships | View educational grants |
+| getChapters | List local units |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[recruitMember] --> B[initiateMember]
+    B --> C[collectDues]
+    C --> D[Membership Active]
+    D --> E[conductMeeting]
+    E --> F{Activity Type}
+    F -->|Service| G[coordinateService]
+    F -->|Social| H[hostSocial]
+    F -->|Business| I[electOfficers]
+    G --> J[recognizeMember]
+    H --> J
+    I --> K[reportNational]
+    J --> L[publishNewsletter]
+    K --> L
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    O[Organization]
+
+    O -->|serves| Member
+    O -->|recruits| ProspectiveMember
+    O -->|engages| Volunteer
+    O -->|partners with| CommunityPartner
+    O -->|supported by| Sponsor
+    O -->|reports to| NationalChapter
+    O -->|uses| VenueProvider
+    O -->|supports| CharityRecipient
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { organizeCommunities } from '@headlessly/organize-communities'
+
+const civicOrg = organizeCommunities()
+
+// Recruit new member
+const prospect = await civicOrg.recruitMember({
+  name: 'Jennifer Adams',
+  sponsoredBy: 'member-123',
+  interests: ['communityService', 'networking'],
+  source: 'memberReferral'
+})
+
+// Initiate member
+await civicOrg.initiateMember({
+  prospectId: prospect.id,
+  ceremonyDate: '2024-05-15',
+  membershipLevel: 'regular',
+  committees: ['serviceCommittee']
+})
+
+// Plan community service project
+await civicOrg.coordinateService({
+  projectName: 'School Supply Drive',
+  beneficiary: 'LocalElementarySchool',
+  date: '2024-08-01',
+  volunteersNeeded: 15,
+  supplies: ['backpacks', 'notebooks', 'pencils'],
+  budgetAmount: 2500
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Welcome new members
+civicOrg.memberInitiated(async ({ memberId, name, ceremonyDate }) => {
+  await civicOrg.publishNewsletter({
+    section: 'newMembers',
+    content: {
+      name,
+      initiationDate: ceremonyDate
+    }
+  })
+
+  await civicOrg.assignMentor({
+    newMemberId: memberId,
+    mentorCriteria: ['experienced', 'sameInterests']
+  })
+})
+
+// Send dues reminders
+civicOrg.duesPeriodApproaching(async ({ period, dueDate }) => {
+  const unpaidMembers = await civicOrg.findMembers({
+    duesStatus: 'unpaid',
+    period
+  })
+
+  for (const member of unpaidMembers) {
+    await civicOrg.sendReminder({
+      memberId: member.id,
+      type: 'duesReminder',
+      dueDate,
+      amount: member.duesAmount
+    })
+  }
+})
+```
+
+## Related
+
+- [Religious Organizations](../8131-ReligiousOrganizations/813110-ReligiousOrganizations.mdx)
+- [Business Associations](../8139-BusinessProfessionalLaborPoliticalAndSimilarOrganizations/813910-BusinessAssociations.mdx)

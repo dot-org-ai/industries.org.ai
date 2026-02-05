@@ -147,3 +147,99 @@ graph LR
     M -->|tests with| LabTestingService
     M -->|ships via| LogisticsProvider
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { manufactureCutSew } from '@headlessly/manufacture-cut-sew'
+
+const manufacturer = manufactureCutSew()
+
+// Design and produce seasonal blouse collection
+await manufacturer.designStyle({
+  styleNumber: 'BL-2024-001',
+  category: 'blouse',
+  season: 'spring-2024',
+  sizes: ['XS', 'S', 'M', 'L', 'XL'],
+  colors: ['ivory', 'blush', 'navy']
+})
+
+const fabric = await manufacturer.sourceFabric({
+  styleNumber: 'BL-2024-001',
+  fabrics: [
+    { type: 'silk-crepe', color: 'ivory', quantity: 800, unit: 'yards' },
+    { type: 'silk-crepe', color: 'blush', quantity: 600, unit: 'yards' },
+    { type: 'silk-crepe', color: 'navy', quantity: 400, unit: 'yards' }
+  ]
+})
+
+await manufacturer.createPattern({
+  styleNumber: 'BL-2024-001',
+  baseSize: 'M',
+  pieces: ['front', 'back', 'sleeve', 'collar', 'cuff']
+})
+
+await manufacturer.grade({
+  styleNumber: 'BL-2024-001',
+  gradeRules: 'womens-woven',
+  sizeRange: ['XS', 'S', 'M', 'L', 'XL']
+})
+
+await manufacturer.createMarker({
+  styleNumber: 'BL-2024-001',
+  fabricWidth: 54,
+  unit: 'inches',
+  targetEfficiency: 88
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-cut after marker completion
+manufacturer.markerCompleted(async ({ styleNumber, fabricBatch }) => {
+  await manufacturer.cut({
+    styleNumber,
+    batchId: fabricBatch,
+    method: 'automated',
+    plies: 50
+  })
+})
+
+// Auto-assign to sewing
+manufacturer.cuttingCompleted(async ({ styleNumber, bundles }) => {
+  await manufacturer.sew({
+    styleNumber,
+    bundles,
+    lineAssignment: 'line-3',
+    methodSheet: 'BL-2024-001-ops'
+  })
+})
+
+// Auto-label and package after inspection
+manufacturer.inspectionPassed(async ({ styleNumber, batchId }) => {
+  await manufacturer.label({
+    batchId,
+    labels: ['brand', 'care', 'size', 'country-origin'],
+    hangTag: 'seasonal-spring'
+  })
+
+  await manufacturer.package({
+    batchId,
+    method: 'individual-poly-bag',
+    cartonPack: 12
+  })
+})
+
+// Create samples for sales
+manufacturer.designApproved(async ({ styleNumber }) => {
+  await manufacturer.sample({
+    styleNumber,
+    quantity: 6,
+    sizes: ['S', 'M'],
+    destination: 'sales-showroom'
+  })
+})
+```

@@ -147,3 +147,101 @@ graph LR
     M -->|sells to| FootwearManufacturer
     M -->|produces for| BrandPartner
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { manufactureLeatherAllied } from '@headlessly/manufacture-leather-allied'
+
+const manufacturer = manufactureLeatherAllied()
+
+// Produce leather handbags
+const materials = await manufacturer.sourceMaterials({
+  leather: { type: 'pebbled-cowhide', color: 'cognac', quantity: 100, unit: 'hides' },
+  lining: { type: 'cotton-twill', color: 'tan', quantity: 200, unit: 'yards' },
+  hardware: { type: 'antique-brass', items: ['zipper', 'clasp', 'd-rings'] }
+})
+
+await manufacturer.designProduct({
+  productType: 'handbag',
+  styleNumber: 'HB-TOTE-001',
+  dimensions: { height: 12, width: 14, depth: 5, unit: 'inches' },
+  features: ['interior-zip-pocket', 'phone-pocket', 'key-leash']
+})
+
+await manufacturer.createPattern({
+  styleNumber: 'HB-TOTE-001',
+  components: ['front-panel', 'back-panel', 'gusset', 'base', 'strap', 'pocket']
+})
+
+await manufacturer.cut({
+  batchId: materials.batchId,
+  pattern: 'HB-TOTE-001',
+  method: 'die-clicker',
+  quantity: 200
+})
+
+await manufacturer.skive({
+  batchId: materials.batchId,
+  edges: ['seam-allowance', 'fold-lines', 'strap-edges'],
+  thickness: 0.5,
+  unit: 'mm'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-stitch after skiving
+manufacturer.cuttingCompleted(async ({ batchId, productType }) => {
+  await manufacturer.skive({
+    batchId,
+    edges: productType === 'wallet' ? ['fold-lines', 'card-slots'] : ['seam-allowance']
+  })
+})
+
+// Auto-assemble hardware after stitching
+manufacturer.stitchingCompleted(async ({ batchId, hardware }) => {
+  await manufacturer.assembleHardware({
+    batchId,
+    components: hardware,
+    method: 'rivet-and-screw'
+  })
+})
+
+// Auto-finish edges after hardware
+manufacturer.hardwareInstalled(async ({ batchId, leatherType }) => {
+  await manufacturer.finishEdges({
+    batchId,
+    method: leatherType === 'vegetable-tan' ? 'burnish' : 'paint',
+    color: 'match-leather'
+  })
+})
+
+// Auto-line and brand after edge finishing
+manufacturer.edgesFinished(async ({ batchId, productType }) => {
+  if (productType !== 'cut-stock') {
+    await manufacturer.line({
+      batchId,
+      method: 'glue-and-stitch'
+    })
+
+    await manufacturer.brand({
+      batchId,
+      method: 'hot-stamp',
+      location: 'interior-label-area'
+    })
+  }
+})
+
+// Auto-package after inspection
+manufacturer.inspectionPassed(async ({ batchId, customer }) => {
+  await manufacturer.package({
+    batchId,
+    packaging: customer.includes('luxury') ? 'dust-bag-in-box' : 'poly-bag',
+    cartonQuantity: 12
+  })
+})
+```

@@ -149,3 +149,97 @@ graph LR
     M -->|sells to| ConstructionSupplier
     M -->|sells to| BeltingManufacturer
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { millRope } from '@headlessly/mill-rope'
+
+const mill = millRope()
+
+// Produce marine-grade twisted nylon rope
+const fiber = await mill.sourceFiber({
+  supplier: 'synthetic-fibers-inc',
+  material: 'nylon-6',
+  denier: 1260,
+  quantity: 10000,
+  unit: 'pounds'
+})
+
+await mill.extrude({
+  batchId: fiber.batchId,
+  filamentCount: 210,
+  temperature: 280,
+  unit: 'celsius'
+})
+
+await mill.twist({
+  batchId: fiber.batchId,
+  twistsPerInch: 6,
+  direction: 'z-twist',
+  strandsPerYarn: 3
+})
+
+await mill.lay({
+  batchId: fiber.batchId,
+  construction: '3-strand',
+  diameter: 0.75,
+  unit: 'inches',
+  layDirection: 's-lay'
+})
+
+await mill.treat({
+  batchId: fiber.batchId,
+  treatment: 'marine-grade',
+  uvResistance: true,
+  rotResistance: true
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-test after laying
+mill.ropeLaid(async ({ batchId, diameter, material }) => {
+  const minStrength = calculateMinStrength(diameter, material)
+
+  await mill.test({
+    batchId,
+    tests: ['tensile-strength', 'elongation', 'abrasion-resistance'],
+    minTensileStrength: minStrength,
+    unit: 'pounds'
+  })
+})
+
+// Auto-spool after passing tests
+mill.testPassed(async ({ batchId, productType }) => {
+  const spoolSize = productType === 'twine' ? 10 : 600
+
+  await mill.spool({
+    batchId,
+    spoolLength: spoolSize,
+    unit: 'feet',
+    windPattern: 'level-wind'
+  })
+})
+
+// Alert on test failure
+mill.testFailed(async ({ batchId, test, result, minSpec }) => {
+  await mill.alertQuality({
+    batchId,
+    issue: `${test}: ${result} below minimum ${minSpec}`,
+    action: 'quarantine-for-downgrade'
+  })
+})
+
+// Reorder fiber when inventory low
+mill.inventoryLow(async ({ material, currentStock, reorderPoint }) => {
+  await mill.sourceFiber({
+    material,
+    quantity: reorderPoint * 2,
+    priority: 'expedite'
+  })
+})
+```

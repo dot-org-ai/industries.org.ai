@@ -151,3 +151,104 @@ graph LR
     M -->|collaborates with| FashionDesigner
     M -->|ships via| LogisticsProvider
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { knitApparelKnitting } from '@headlessly/knit-apparel-knitting'
+
+const mill = knitApparelKnitting()
+
+// Produce crew neck sweaters
+const yarn = await mill.sourceYarn({
+  supplier: 'italian-yarns',
+  material: 'merino-wool',
+  weight: 'worsted',
+  color: 'heather-grey',
+  quantity: 2000,
+  unit: 'pounds'
+})
+
+await mill.developPattern({
+  styleType: 'crew-neck-sweater',
+  gauge: 7,
+  unit: 'stitches-per-inch',
+  sizes: ['S', 'M', 'L', 'XL']
+})
+
+await mill.programMachine({
+  patternId: 'crew-neck-001',
+  machineType: 'flat-knitting',
+  needleGauge: 12,
+  yarnCarriers: 2
+})
+
+await mill.knit({
+  batchId: yarn.batchId,
+  pattern: 'crew-neck-001',
+  panelType: 'fully-fashioned',
+  quantity: 500
+})
+
+await mill.finish({
+  batchId: yarn.batchId,
+  treatments: ['pre-shrunk', 'softener'],
+  dryMethod: 'tumble-low'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-dye after knitting
+mill.fabricKnitted(async ({ batchId, dyeRequired, color }) => {
+  if (dyeRequired) {
+    await mill.dye({
+      batchId,
+      color,
+      method: 'piece-dye',
+      temperature: 180,
+      unit: 'fahrenheit'
+    })
+  }
+})
+
+// Auto-cut after finishing
+mill.finishingCompleted(async ({ batchId, style }) => {
+  await mill.cut({
+    batchId,
+    pattern: style,
+    method: 'die-cut',
+    bundleSize: 12
+  })
+})
+
+// Auto-press and package after inspection
+mill.inspectionPassed(async ({ batchId, customer }) => {
+  await mill.press({
+    batchId,
+    method: 'steam-tunnel',
+    temperature: 300
+  })
+
+  await mill.package({
+    batchId,
+    format: customer.includes('retail') ? 'hang-tag' : 'poly-bag',
+    labeling: 'customer-sku'
+  })
+})
+
+// Handle sample requests
+mill.orderReceived(async ({ orderId, sampleRequired }) => {
+  if (sampleRequired) {
+    await mill.sample({
+      orderId,
+      quantity: 1,
+      sizes: ['M'],
+      rushPriority: true
+    })
+  }
+})
+```

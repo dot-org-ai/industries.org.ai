@@ -144,3 +144,99 @@ graph LR
     C -->|audited by| ComplianceAuditor
     C -->|tests with| LabTestingService
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { manufactureCutSew } from '@headlessly/manufacture-cut-sew'
+
+const contractor = manufactureCutSew()
+
+// Process client work order for dresses
+const materials = await contractor.receiveMaterials({
+  client: 'fashion-brand-x',
+  workOrderId: 'WO-2024-1234',
+  items: [
+    { material: 'silk-charmeuse', color: 'blush', quantity: 500, unit: 'yards' },
+    { material: 'lining-poly', color: 'nude', quantity: 400, unit: 'yards' }
+  ],
+  trims: ['invisible-zippers', 'care-labels', 'hang-tags']
+})
+
+await contractor.reviewTechPack({
+  workOrderId: materials.workOrderId,
+  techPackVersion: '2.1',
+  sizes: ['2', '4', '6', '8', '10', '12'],
+  sewingOperations: 42
+})
+
+await contractor.createMarker({
+  workOrderId: materials.workOrderId,
+  efficiency: 85,
+  unit: 'percent',
+  plies: 40
+})
+
+await contractor.spread({
+  workOrderId: materials.workOrderId,
+  method: 'face-to-face',
+  plies: 40,
+  length: 20,
+  unit: 'yards'
+})
+
+await contractor.cut({
+  workOrderId: materials.workOrderId,
+  method: 'automated-cutter',
+  pieces: 24,
+  perSize: true
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-bundle after cutting
+contractor.cuttingCompleted(async ({ workOrderId, cutTickets }) => {
+  await contractor.bundle({
+    workOrderId,
+    bundleSize: 12,
+    method: 'size-and-shade',
+    ticketSystem: 'barcode'
+  })
+})
+
+// Auto-assign to sewing lines
+contractor.bundlingCompleted(async ({ workOrderId, bundleCount }) => {
+  const capacity = await contractor.findCapacity({ process: 'sewing' })
+
+  await contractor.sew({
+    workOrderId,
+    lineAssignment: capacity.recommendedLine,
+    targetDaily: Math.ceil(bundleCount / 5)
+  })
+})
+
+// Quality escalation
+contractor.inspectionFailed(async ({ workOrderId, defectType, rate }) => {
+  if (rate > 5) {
+    await contractor.alertQuality({
+      workOrderId,
+      issue: `${defectType} defect rate at ${rate}%`,
+      action: 'halt-production-review'
+    })
+  }
+})
+
+// Auto-ship on completion
+contractor.orderCompleted(async ({ workOrderId, client }) => {
+  await contractor.ship({
+    workOrderId,
+    destination: client.warehouse,
+    carrier: 'fedex-freight',
+    packingList: true
+  })
+})
+```

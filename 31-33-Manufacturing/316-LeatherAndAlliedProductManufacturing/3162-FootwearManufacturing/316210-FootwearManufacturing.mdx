@@ -149,3 +149,111 @@ graph LR
     M -->|sells to| Wholesaler
     M -->|tests with| LabTestingService
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { manufactureFootwear } from '@headlessly/manufacture-footwear'
+
+const factory = manufactureFootwear()
+
+// Produce men's dress oxford shoes
+const materials = await factory.sourceMaterials({
+  leather: { type: 'calfskin', color: 'black', quantity: 200, unit: 'hides' },
+  lining: { type: 'pig-leather', quantity: 100, unit: 'hides' },
+  soles: { type: 'leather-outsole', sizes: ['7-13'], quantity: 2000 }
+})
+
+await factory.designStyle({
+  styleNumber: 'MEN-OXF-001',
+  category: 'dress',
+  construction: 'goodyear-welt',
+  lastType: 'oxford-D-width'
+})
+
+await factory.createPattern({
+  styleNumber: 'MEN-OXF-001',
+  components: ['vamp', 'quarter', 'tongue', 'toe-cap', 'counter'],
+  baseSize: 9
+})
+
+await factory.gradeSizes({
+  styleNumber: 'MEN-OXF-001',
+  sizeRange: ['7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '12', '13'],
+  widths: ['D']
+})
+
+await factory.cut({
+  batchId: materials.batchId,
+  pattern: 'MEN-OXF-001',
+  method: 'die-click',
+  quantity: 1000,
+  unit: 'pairs'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-skive after cutting
+factory.cuttingCompleted(async ({ batchId, leatherType }) => {
+  await factory.skive({
+    batchId,
+    edges: ['seam-allowance', 'fold-lines'],
+    thickness: leatherType === 'calfskin' ? 0.6 : 0.8,
+    unit: 'mm'
+  })
+})
+
+// Auto-close after skiving
+factory.closingCompleted(async ({ batchId }) => {
+  await factory.last({
+    batchId,
+    method: 'toe-lasting-first',
+    heatActivate: true,
+    holdTime: 30,
+    unit: 'seconds'
+  })
+})
+
+// Auto-sole attachment after lasting
+factory.lastingCompleted(async ({ batchId, construction }) => {
+  await factory.attachSole({
+    batchId,
+    method: construction,
+    cement: construction === 'cemented' ? 'polyurethane' : null,
+    stitchType: construction === 'goodyear-welt' ? 'lock-stitch' : null
+  })
+})
+
+// Auto-finish and inspect after sole
+factory.soleAttached(async ({ batchId }) => {
+  await factory.finish({
+    batchId,
+    operations: ['edge-trim', 'burnish', 'polish', 'clean']
+  })
+
+  await factory.inspect({
+    batchId,
+    checks: ['fit-on-last', 'sole-bond', 'stitch-quality', 'finish']
+  })
+})
+
+// Auto-package after passing inspection
+factory.inspectionPassed(async ({ batchId, style }) => {
+  await factory.lace({
+    batchId,
+    laceType: 'waxed-cotton',
+    length: 30,
+    unit: 'inches'
+  })
+
+  await factory.package({
+    batchId,
+    box: 'branded-shoebox',
+    inserts: ['tissue', 'shoe-horn', 'care-card']
+  })
+})
+```

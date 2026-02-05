@@ -152,3 +152,96 @@ graph LR
     M -->|sells to| AutomotiveSupplier
     M -->|produces for| EmbroideryClient
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { millTextileProduct } from '@headlessly/mill-textile-product'
+
+const mill = millTextileProduct()
+
+// Produce custom corporate flags
+const materials = await mill.sourceMaterials({
+  fabric: { type: 'nylon-200d', color: 'white', quantity: 500, unit: 'yards' },
+  thread: { type: 'polyester-embroidery', colors: ['navy', 'gold'] }
+})
+
+await mill.createDesign({
+  productType: 'flag',
+  size: { width: 3, height: 5, unit: 'feet' },
+  artwork: 'corporate-logo.ai',
+  printMethod: 'dye-sublimation'
+})
+
+await mill.digitize({
+  designId: 'corporate-logo',
+  stitchDensity: 4.5,
+  unit: 'stitches-per-mm',
+  colorSequence: ['navy', 'gold']
+})
+
+await mill.cut({
+  batchId: materials.batchId,
+  pattern: 'flag-3x5',
+  quantity: 200
+})
+
+await mill.embroider({
+  batchId: materials.batchId,
+  design: 'corporate-logo',
+  placement: 'center',
+  hoopSize: '12x14'
+})
+
+await mill.attachHardware({
+  batchId: materials.batchId,
+  grommets: { type: 'brass', quantity: 4, spacing: 18, unit: 'inches' },
+  headerTape: true
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-digitize after design approval
+mill.designApproved(async ({ designId, productType }) => {
+  if (productType === 'emblem' || productType === 'flag') {
+    await mill.digitize({
+      designId,
+      stitchDensity: productType === 'emblem' ? 5.5 : 4.0,
+      unit: 'stitches-per-mm'
+    })
+  }
+})
+
+// Auto-hem and hardware after decoration
+mill.embroideryCompleted(async ({ batchId, productType }) => {
+  await mill.hem({
+    batchId,
+    method: productType === 'flag' ? 'double-fold' : 'merrow'
+  })
+})
+
+// Auto-package after inspection
+mill.inspectionPassed(async ({ batchId, customer }) => {
+  await mill.package({
+    batchId,
+    method: customer.includes('retail') ? 'poly-bag-header' : 'bulk-box',
+    labeling: 'customer-sku'
+  })
+})
+
+// Handle custom embroidery orders
+mill.orderReceived(async ({ orderId, specs }) => {
+  if (specs.customDesign) {
+    await mill.createDesign({
+      orderId,
+      artwork: specs.artworkFile,
+      placement: specs.placement,
+      quantity: specs.quantity
+    })
+  }
+})
+```

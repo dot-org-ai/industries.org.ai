@@ -148,3 +148,106 @@ graph LR
     T -->|sells to| LeatherGoodsManufacturer
     T -->|reports to| EnvironmentalRegulator
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { tanLeatherHide } from '@headlessly/tan-leather-hide'
+
+const tannery = tanLeatherHide()
+
+// Process cattle hides into chrome-tanned leather
+const hides = await tannery.sourceHides({
+  supplier: 'midwest-packers',
+  type: 'cattle',
+  preservation: 'salted',
+  quantity: 500,
+  unit: 'hides',
+  avgWeight: 65,
+  weightUnit: 'pounds'
+})
+
+await tannery.grade({
+  lotId: hides.lotId,
+  criteria: ['size', 'brand-damage', 'grain-quality'],
+  grades: ['A', 'B', 'C']
+})
+
+await tannery.soak({
+  lotId: hides.lotId,
+  duration: 18,
+  unit: 'hours',
+  temperature: 68,
+  tempUnit: 'fahrenheit'
+})
+
+await tannery.lime({
+  lotId: hides.lotId,
+  limePercent: 3,
+  sodiumSulfide: 2.5,
+  duration: 24,
+  unit: 'hours'
+})
+
+await tannery.tan({
+  lotId: hides.lotId,
+  method: 'chrome',
+  chromePercent: 8,
+  pH: 3.5,
+  duration: 12,
+  unit: 'hours'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-retan after chrome tanning
+tannery.tanningCompleted(async ({ lotId, leatherType }) => {
+  await tannery.retan({
+    lotId,
+    agent: leatherType === 'upholstery' ? 'syntan-soft' : 'vegetable',
+    percent: 6
+  })
+})
+
+// Auto-dye after retanning
+tannery.retanningCompleted(async ({ lotId, customerSpec }) => {
+  await tannery.dye({
+    lotId,
+    color: customerSpec.color,
+    method: 'drum',
+    penetration: customerSpec.type === 'aniline' ? 'through' : 'surface'
+  })
+})
+
+// Auto-measure and grade after finishing
+tannery.finishingCompleted(async ({ lotId }) => {
+  const measurement = await tannery.measure({
+    lotId,
+    method: 'electronic',
+    unit: 'square-feet'
+  })
+
+  await tannery.qualityGrade({
+    lotId,
+    area: measurement.totalArea,
+    grades: ['premium', 'standard', 'utility']
+  })
+})
+
+// Environmental compliance
+tannery.effluentTreated(async ({ batchId, parameters }) => {
+  if (parameters.chromium > 2) {
+    await tannery.alertEnvironmental({
+      batchId,
+      parameter: 'chromium',
+      value: parameters.chromium,
+      limit: 2,
+      action: 'retreat-required'
+    })
+  }
+})
+```

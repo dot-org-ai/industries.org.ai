@@ -147,3 +147,90 @@ graph LR
     M -->|produces for| PrivateLabelClient
     M -->|works with| InteriorDesigner
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { millCurtainLinen } from '@headlessly/mill-curtain-linen'
+
+const mill = millCurtainLinen()
+
+// Produce hotel bed sheet sets
+const fabric = await mill.sourceFabric({
+  supplier: 'premium-textiles',
+  material: 'egyptian-cotton',
+  threadCount: 400,
+  width: 110,
+  unit: 'inches',
+  quantity: 2000,
+  yardUnit: 'yards'
+})
+
+await mill.createPattern({
+  productType: 'fitted-sheet',
+  sizes: ['twin', 'full', 'queen', 'king'],
+  pocketDepth: 15,
+  unit: 'inches'
+})
+
+await mill.cut({
+  batchId: fabric.batchId,
+  pattern: 'fitted-sheet-queen',
+  quantity: 500
+})
+
+await mill.sew({
+  batchId: fabric.batchId,
+  seamType: 'french',
+  elastic: 'all-around'
+})
+
+await mill.hem({
+  batchId: fabric.batchId,
+  hemWidth: 4,
+  unit: 'inches',
+  style: 'double-fold'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-press and fold after sewing
+mill.sewingCompleted(async ({ batchId, productType }) => {
+  await mill.press({
+    batchId,
+    temperature: productType.includes('cotton') ? 400 : 300,
+    unit: 'fahrenheit'
+  })
+
+  await mill.fold({
+    batchId,
+    style: 'retail-presentation'
+  })
+})
+
+// Auto-package after inspection
+mill.qualityApproved(async ({ batchId, destination }) => {
+  const format = destination === 'hospitality' ? 'bulk-poly' : 'retail-zippered'
+
+  await mill.package({
+    batchId,
+    format,
+    insertCard: destination === 'retail'
+  })
+})
+
+// Handle custom orders
+mill.customOrderPlaced(async ({ orderId, dimensions, fabric }) => {
+  await mill.customSize({
+    orderId,
+    width: dimensions.width,
+    length: dimensions.length,
+    unit: 'inches',
+    fabricType: fabric
+  })
+})
+```

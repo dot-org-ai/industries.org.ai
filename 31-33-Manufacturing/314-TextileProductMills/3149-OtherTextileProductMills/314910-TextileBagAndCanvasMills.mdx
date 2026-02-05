@@ -149,3 +149,89 @@ graph LR
     M -->|sells to| AwningInstaller
     M -->|contracts with| MilitaryContractor
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { millTextileBag } from '@headlessly/mill-textile-bag'
+
+const mill = millTextileBag()
+
+// Produce custom boat cover
+const fabric = await mill.sourceFabric({
+  supplier: 'marine-fabrics-inc',
+  material: 'sunbrella-marine',
+  color: 'pacific-blue',
+  quantity: 500,
+  unit: 'yards'
+})
+
+await mill.createPattern({
+  productType: 'boat-cover',
+  boatModel: 'bowrider-22',
+  features: ['console-cutout', 'windshield-wrap', 'motor-cover']
+})
+
+await mill.cut({
+  batchId: fabric.batchId,
+  pattern: 'bowrider-22-cover',
+  method: 'cnc-cutter'
+})
+
+await mill.sew({
+  batchId: fabric.batchId,
+  thread: 'v-92-polyester',
+  seamType: 'double-stitched'
+})
+
+await mill.setHardware({
+  batchId: fabric.batchId,
+  grommets: { type: 'brass', spacing: 12, unit: 'inches' },
+  straps: { type: 'quick-release', quantity: 8 }
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-coat after assembly
+mill.assemblyCompleted(async ({ batchId, productType }) => {
+  if (productType === 'tarpaulin' || productType === 'tent') {
+    await mill.coat({
+      batchId,
+      treatment: 'waterproof-pu',
+      uvResistance: true
+    })
+  }
+})
+
+// Auto-test after coating
+mill.coatingApplied(async ({ batchId }) => {
+  await mill.test({
+    batchId,
+    tests: ['water-column', 'tensile-strength', 'uv-degradation']
+  })
+})
+
+// Handle custom orders
+mill.customOrderSubmitted(async ({ orderId, specs, customer }) => {
+  await mill.customFabricate({
+    orderId,
+    dimensions: specs.dimensions,
+    material: specs.material,
+    features: specs.features,
+    deliveryDate: specs.deliveryDate
+  })
+})
+
+// Alert on test failure
+mill.testFailed(async ({ batchId, test, result, threshold }) => {
+  await mill.alertQuality({
+    batchId,
+    issue: `${test} failed: ${result} vs threshold ${threshold}`,
+    action: 'hold-for-engineering-review'
+  })
+})
+```

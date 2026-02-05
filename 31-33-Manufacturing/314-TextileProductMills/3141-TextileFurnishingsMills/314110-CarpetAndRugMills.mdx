@@ -147,3 +147,84 @@ graph LR
     M -->|supplies samples to| InteriorDesigner
     M -->|certifies with| CertificationBody
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { millCarpetRug } from '@headlessly/mill-carpet-rug'
+
+const mill = millCarpetRug()
+
+// Produce tufted commercial carpet
+const materials = await mill.sourceMaterials({
+  yarn: { type: 'nylon-6', color: 'solution-dyed-blue', quantity: 5000, unit: 'pounds' },
+  backing: { type: 'polypropylene', quantity: 10000, unit: 'yards' }
+})
+
+await mill.prepareYarn({
+  batchId: materials.batchId,
+  process: 'heat-set',
+  twist: 4.5,
+  unit: 'turns-per-inch'
+})
+
+await mill.tuft({
+  batchId: materials.batchId,
+  gauge: '1/10',
+  pileHeight: 0.25,
+  unit: 'inches',
+  pattern: 'level-loop'
+})
+
+await mill.applyBacking({
+  batchId: materials.batchId,
+  backingType: 'action-back',
+  adhesive: 'latex'
+})
+
+await mill.finish({
+  batchId: materials.batchId,
+  treatments: ['stain-resist', 'antimicrobial'],
+  warranty: '10-year'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-inspect after finishing
+mill.finishingCompleted(async ({ batchId }) => {
+  await mill.shear({
+    batchId,
+    method: 'rotary',
+    tolerance: 0.01,
+    unit: 'inches'
+  })
+
+  await mill.inspect({
+    batchId,
+    tests: ['pile-weight', 'tuft-bind', 'color-match']
+  })
+})
+
+// Auto-roll after passing inspection
+mill.inspectionPassed(async ({ batchId, style }) => {
+  await mill.roll({
+    batchId,
+    rollWidth: 12,
+    unit: 'feet',
+    labeling: 'barcode'
+  })
+})
+
+// Alert on quality failure
+mill.inspectionFailed(async ({ batchId, defectType, location }) => {
+  await mill.alertQuality({
+    batchId,
+    issue: `${defectType} detected at ${location}`,
+    action: 'hold-for-review'
+  })
+})
+```

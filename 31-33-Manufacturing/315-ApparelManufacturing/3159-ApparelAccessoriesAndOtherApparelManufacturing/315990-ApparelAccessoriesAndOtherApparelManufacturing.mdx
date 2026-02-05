@@ -148,3 +148,97 @@ graph LR
     M -->|produces for| PrivateLabelClient
     M -->|ships via| LogisticsProvider
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { manufactureApparelAccessories } from '@headlessly/manufacture-apparel-accessories'
+
+const manufacturer = manufactureApparelAccessories()
+
+// Produce leather belts
+const materials = await manufacturer.sourceMaterials({
+  leather: { type: 'full-grain-cowhide', color: 'brown', quantity: 200, unit: 'hides' },
+  hardware: { type: 'brass-buckle', style: 'single-prong', quantity: 1000 }
+})
+
+await manufacturer.designProduct({
+  productType: 'belt',
+  styleNumber: 'BLT-001',
+  width: 1.25,
+  unit: 'inches',
+  sizes: ['32', '34', '36', '38', '40', '42']
+})
+
+await manufacturer.createPattern({
+  styleNumber: 'BLT-001',
+  pieces: ['strap', 'keeper', 'tip']
+})
+
+await manufacturer.cut({
+  batchId: materials.batchId,
+  pattern: 'BLT-001',
+  method: 'die-press',
+  quantity: 1000
+})
+
+await manufacturer.sew({
+  batchId: materials.batchId,
+  operations: ['keeper-attach', 'tip-stitch'],
+  thread: 'heavy-duty-waxed'
+})
+
+await manufacturer.attachHardware({
+  batchId: materials.batchId,
+  buckle: 'brass-single-prong',
+  method: 'chicago-screw'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-finish after hardware attachment
+manufacturer.hardwareAttached(async ({ batchId, productType }) => {
+  await manufacturer.finish({
+    batchId,
+    operations: productType === 'belt'
+      ? ['edge-burnish', 'edge-paint', 'condition']
+      : ['trim-threads', 'steam']
+  })
+})
+
+// Auto-inspect after finishing
+manufacturer.finishingCompleted(async ({ batchId }) => {
+  await manufacturer.inspect({
+    batchId,
+    checks: ['hardware-security', 'stitch-quality', 'edge-finish', 'sizing']
+  })
+})
+
+// Auto-package after inspection
+manufacturer.inspectionPassed(async ({ batchId, customer }) => {
+  await manufacturer.label({
+    batchId,
+    labels: ['brand', 'size', 'care', 'upc']
+  })
+
+  await manufacturer.package({
+    batchId,
+    method: customer.includes('retail') ? 'box-with-tissue' : 'poly-bag',
+    cartonQuantity: 24
+  })
+})
+
+// Handle sample requests
+manufacturer.designApproved(async ({ styleNumber, customer }) => {
+  if (customer.requiresSample) {
+    await manufacturer.sourceMaterials({
+      styleNumber,
+      sampleQuantity: true
+    })
+  }
+})
+```
