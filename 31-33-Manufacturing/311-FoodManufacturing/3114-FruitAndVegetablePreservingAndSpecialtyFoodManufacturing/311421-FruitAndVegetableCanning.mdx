@@ -13,7 +13,7 @@ object: Fruit Vegetable
 
 # Fruit and Vegetable Canning
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for fruit and vegetable canning operations. Models receiving fresh produce, washing, preparation, filling, retort processing, and labeling for shelf-stable canned goods including juices, sauces, and pickled products.
 
 ## Overview
 
@@ -23,48 +23,221 @@ This U.S. industry comprises establishments primarily engaged in manufacturing c
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| FruitGrower | Supplies fresh fruits for canning |
+| VegetableGrower | Provides fresh vegetables for processing |
+| CanSupplier | Provides tin cans and lids |
+| JarSupplier | Supplies glass jars and closures |
+| IngredientSupplier | Provides sugar, vinegar, spices, and additives |
+| GroceryRetailer | Purchases canned goods for consumer sale |
+| FoodserviceDistributor | Buys institutional-size canned products |
+| PrivateLabelBuyer | Contracts canning under store brands |
+| FDAInspector | Ensures canning safety and compliance |
+| Distributor | Warehouses and delivers to retail |
 
 ## Roles
 
 | Role | Description |
 |------|-------------|
-| TODO | TODO |
+| PlantManager | Oversees canning facility operations |
+| QualityManager | Ensures product safety and standards |
+| ProductionSupervisor | Manages canning line activities |
+| ReceivingClerk | Inspects incoming produce |
+| PrepOperator | Runs washing, peeling, and cutting equipment |
+| FillerOperator | Operates can and jar filling lines |
+| RetortOperator | Controls thermal processing equipment |
+| LabTechnician | Tests pH, brix, and microbiology |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| RawProduce | Fresh fruits or vegetables received |
+| Can | Metal container for products |
+| Jar | Glass container for products |
+| Brine | Salt or vinegar solution |
+| Syrup | Sugar solution for fruit packing |
+| Sauce | Prepared tomato or other sauce |
+| Batch | Traceable production lot |
+| RetortRecord | Thermal processing documentation |
+| Label | Product identification and nutrition |
+| PalletLoad | Stacked cases for shipping |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| receiveProduce | Accept and inspect fresh produce |
+| wash | Clean produce thoroughly |
+| sort | Grade by size and quality |
+| peel | Remove skins from fruits and vegetables |
+| cut | Slice, dice, or prepare pieces |
+| blanch | Heat-treat to preserve color and texture |
+| prepareBrine | Mix salt, vinegar, or sugar solutions |
+| fill | Place product and liquid in containers |
+| seal | Apply lids and closures |
+| retort | Apply thermal processing for sterilization |
+| cool | Reduce temperature after retort |
+| label | Apply product labels |
+| case | Pack into shipping cases |
+| ship | Dispatch to customers |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| produceReceived | Fresh produce accepted |
+| produceWashed | Cleaning completed |
+| producePrepared | Cutting and peeling done |
+| brinePrepped | Packing solution ready |
+| containersFilled | Cans or jars filled |
+| containersSealed | Lids applied |
+| retortComplete | Thermal processing finished |
+| productCooled | Temperature reduced |
+| productLabeled | Labels applied |
+| productCased | Packed for shipping |
+| qualityApproved | Product passed testing |
+| qualityFailed | Product did not meet standards |
+| orderShipped | Canned goods dispatched |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| findProduce | List incoming produce by variety |
+| getInventory | Check canned goods stock |
+| getBatches | Retrieve batch records |
+| getRetortRecords | Access thermal processing logs |
+| getOrders | List orders by customer |
+| getQualityReports | Retrieve lab test results |
+| getProductionSchedule | View canning line schedule |
+| traceProduct | Track lot through distribution |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[receiveProduce] --> B[wash]
+    B --> C[sort]
+    C --> D[peel]
+    D --> E[cut]
+    E --> F{Blanch?}
+    F -->|Yes| G[blanch]
+    F -->|No| H[prepareBrine]
+    G --> H
+    H --> I[fill]
+    I --> J[seal]
+    J --> K[retort]
+    K --> L[cool]
+    L --> M[label]
+    M --> N[case]
+    N --> O{QA Check}
+    O -->|Pass| P[ship]
+    O -->|Fail| Q[Quarantine]
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    C[Canner]
+
+    C -->|buys from| FruitGrower
+    C -->|buys from| VegetableGrower
+    C -->|buys from| CanSupplier
+    C -->|buys from| JarSupplier
+    C -->|buys from| IngredientSupplier
+    C -->|sells to| GroceryRetailer
+    C -->|sells to| FoodserviceDistributor
+    C -->|produces for| PrivateLabelBuyer
+    C -->|regulated by| FDAInspector
+    C -->|ships via| Distributor
+```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { preserveFruitVegetable } from '@headlessly/preserve-fruit-vegetable'
+
+const cannery = preserveFruitVegetable()
+
+// Receive fresh tomatoes for sauce
+const batch = await cannery.receiveProduce({
+  supplier: 'valley-farms',
+  product: 'roma-tomatoes',
+  quantity: 40000,
+  unit: 'lbs'
+})
+
+// Process into pasta sauce
+await cannery.wash({ batchId: batch.id })
+await cannery.sort({ batchId: batch.id, gradeSpec: 'sauce-grade' })
+await cannery.peel({ batchId: batch.id, method: 'steam-peel' })
+await cannery.cut({ batchId: batch.id, method: 'crush' })
+
+// Can and retort
+await cannery.fill({
+  batchId: batch.id,
+  containerType: 'can-28oz',
+  fillWeight: 26,
+  headspace: 0.25
+})
+
+await cannery.seal({ batchId: batch.id })
+
+await cannery.retort({
+  batchId: batch.id,
+  temperature: 250,
+  pressure: 15,
+  duration: 45,
+  unit: 'minutes'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-cool after retort
+cannery.retortComplete(async ({ batchId, retortId }) => {
+  await cannery.cool({
+    batchId,
+    method: 'water-spray',
+    targetTemp: 100
+  })
+
+  // Log retort record for compliance
+  await cannery.logRetortRecord({
+    batchId,
+    retortId,
+    compliance: 'FDA-21CFR113'
+  })
+})
+
+// Label and case after cooling
+cannery.productCooled(async ({ batchId }) => {
+  const spec = await cannery.getBatches({ batchId })
+
+  await cannery.label({
+    batchId,
+    labelType: spec.product.label,
+    includeDate: true
+  })
+
+  await cannery.case({
+    batchId,
+    caseSize: 12,
+    palletPattern: 'column-stack'
+  })
+})
+
+// Quality hold on failed tests
+cannery.qualityFailed(async ({ batchId, failure }) => {
+  await cannery.quarantine({ batchId })
+  await notifyQualityTeam({
+    batchId,
+    issue: failure,
+    action: 'evaluate-disposition'
+  })
+})
 ```

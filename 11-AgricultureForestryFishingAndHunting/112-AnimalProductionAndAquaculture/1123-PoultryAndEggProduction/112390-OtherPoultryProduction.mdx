@@ -13,52 +13,207 @@ object: Poultry
 
 # Other Poultry Production
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for specialty poultry production operations. Models raising ducks, geese, game birds, and ratites from breeding through market including species-specific housing and handling requirements.
 
 ## Overview
 
-This industry comprises establishments primarily engaged in raising poultry (except chickens for meat or egg production and turkeys). Illustrative Examples: Duck production Ostrich production Emu production Pheasant production Geese production Quail production Cross-References. Establishments primarily engaged in--
+Other poultry production involves raising specialty birds including ducks, geese, pheasants, quail, emus, and ostriches for meat, eggs, feathers, or breeding stock. These niche operations serve specialty meat markets, game bird reserves, and exotic animal trades. This definition exposes actions for flock management, species-specific handling, and market coordination with events for automation and searches for production analytics.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| BreedingStockSupplier | Provides fertile eggs or breeding pairs |
+| FeedSupplier | Provides species-specific rations and supplements |
+| Veterinarian | Provides avian health services and exotic bird expertise |
+| SpecialtyProcessor | Slaughters and processes specialty poultry |
+| RestaurantBuyer | Purchases premium specialty meat products |
+| GamePreserve | Purchases game birds for hunting operations |
+| FeatherBuyer | Purchases down, feathers, or plumes |
+| Regulator | Oversees exotic animal permits and food safety |
+
+## Roles
+
+| Role | Description |
+|------|-------------|
+| FarmOwner | Owns operation and manages marketing strategy |
+| FlockManager | Oversees daily bird care and breeding programs |
+| Hatchery Technician | Manages incubation for various species |
+| BirdHandler | Specializes in safe handling of large ratites |
+| QualitySpecialist | Monitors product quality and grading |
+| Bookkeeper | Manages finances, permits, and compliance |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| Duck | Waterfowl raised for meat, eggs, or foie gras |
+| Goose | Large waterfowl raised for meat or down |
+| Pheasant | Game bird raised for meat or hunting release |
+| Quail | Small game bird raised for meat or eggs |
+| Emu | Large ratite raised for meat, oil, and leather |
+| Ostrich | Giant ratite raised for meat, feathers, and leather |
+| Flock | Group of birds raised together by species |
+| Pen | Outdoor or indoor enclosure for birds |
+| Incubator | Equipment for hatching species-specific eggs |
+| Permit | Required license for exotic species |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| acquireStock | Purchase breeding pairs or fertile eggs |
+| incubate | Hatch eggs with species-specific programs |
+| brood | Provide intensive care for newly hatched birds |
+| house | Place birds in appropriate pens or enclosures |
+| formulate | Create species-specific feed rations |
+| collectEggs | Gather eggs for consumption or hatching |
+| collectFeathers | Harvest down, feathers, or plumes |
+| processOil | Extract emu oil from fat deposits |
+| vaccinate | Administer avian health protocols |
+| marketBirds | Sell live birds for breeding or release |
+| processMeat | Coordinate slaughter and butchering |
+| maintainPermits | Renew exotic animal licenses and certifications |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| stockAcquired | New breeding stock received |
+| eggsHatched | Incubation cycle completed |
+| birdsHoused | Birds placed in grow-out pens |
+| eggsCollected | Daily egg collection completed |
+| feathersHarvested | Down or feather collection completed |
+| birdsMarketReady | Flock reached target weight or age |
+| birdsShipped | Live birds or processed meat dispatched |
+| permitRenewed | Exotic animal license updated |
+| healthIssueDetected | Disease or injury identified |
+| buyerContracted | Sale agreement finalized |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| getFlockInventory | List birds by species, age, and pen |
+| trackGrowth | Get weight and development metrics |
+| getEggProduction | Retrieve laying rates by species |
+| findBuyers | List specialty meat and live bird buyers |
+| getPermitStatus | Check license expiration and requirements |
+| getHealthRecords | Retrieve vaccination and treatment history |
+| getMarketPrices | Query current specialty poultry pricing |
+| getFeatherInventory | Track harvested feathers and down |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[acquireStock] --> B[incubate]
+    B --> C[brood]
+    C --> D[house]
+    D --> E[formulate]
+    E --> F[Daily Care]
+    F --> G{Product Type?}
+    G -->|Eggs| H[collectEggs]
+    G -->|Feathers| I[collectFeathers]
+    G -->|Meat| J[processMeat]
+    G -->|Live| K[marketBirds]
+    H --> L[Package and Sell]
+    I --> M[Grade and Sell]
+    J --> N[Ship to Buyer]
+    K --> O[Deliver Live]
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    F[Farmer]
+
+    F -->|buys from| BreedingStockSupplier
+    F -->|buys from| FeedSupplier
+    F -->|consults| Veterinarian
+    F -->|sells to| SpecialtyProcessor
+    F -->|sells to| RestaurantBuyer
+    F -->|sells to| GamePreserve
+    F -->|sells to| FeatherBuyer
+    F -->|licensed by| Regulator
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { raisePoultry } from '@headlessly/raise-poultry'
+
+const farm = raisePoultry()
+
+// Acquire breeding stock for pheasant operation
+const stock = await farm.acquireStock({
+  species: 'pheasant',
+  breed: 'ring-necked',
+  quantity: 50,
+  type: 'breedingPairs',
+  source: 'midwest-game-birds'
+})
+
+// Incubate eggs with species-specific program
+await farm.incubate({
+  species: 'pheasant',
+  eggCount: 500,
+  program: 'pheasant-24-day',
+  incubatorId: 'incubator-3'
+})
+
+// Market birds to game preserve
+await farm.marketBirds({
+  species: 'pheasant',
+  quantity: 2000,
+  buyerId: 'rolling-hills-preserve',
+  deliveryDate: new Date('2024-09-15'),
+  purpose: 'hunting-release'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-notify buyers when birds reach market readiness
+farm.birdsMarketReady(async ({ species, quantity, avgWeight, penId }) => {
+  const buyers = await farm.findBuyers({
+    species,
+    minQuantity: quantity,
+    productType: 'live'
+  })
+
+  for (const buyer of buyers) {
+    await notifyBuyer({
+      buyerId: buyer.id,
+      availability: {
+        species,
+        quantity,
+        avgWeight,
+        availableDate: new Date()
+      }
+    })
+  }
+})
+
+// Permit renewal reminder
+farm.permitRenewed(async ({ permitId, expirationDate }) => {
+  const daysUntilExpiry = daysBetween(new Date(), expirationDate)
+
+  if (daysUntilExpiry <= 60) {
+    await scheduleRenewal({
+      permitId,
+      reminderDate: subtractDays(expirationDate, 45)
+    })
+  }
+})
+```
+
+## Related
+
+- [Chicken Egg Production](./112310-ChickenEggProduction.mdx)
+- [Turkey Production](./112330-TurkeyProduction.mdx)
+- [Hunting and Trapping](../../114-FishingHuntingAndTrapping/1142-HuntingAndTrapping/114210-HuntingAndTrapping.mdx)
