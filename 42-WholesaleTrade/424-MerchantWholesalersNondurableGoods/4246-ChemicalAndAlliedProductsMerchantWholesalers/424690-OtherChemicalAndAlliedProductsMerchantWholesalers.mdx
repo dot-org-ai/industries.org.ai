@@ -8,57 +8,192 @@ subsectorCode: 424
 group: Chemical and Allied Products Merchant Wholesalers
 groupCode: 4246
 action: Wholesale
-object: Chemical Allied
+object: Chemicals
 ---
 
 # Other Chemical and Allied Products Merchant Wholesalers
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for industrial chemical wholesale distribution operations. Models the complete supply chain for acids, solvents, dyes, and specialty chemicals.
 
 ## Overview
 
-This industry comprises establishments primarily engaged in the merchant wholesale distribution of chemicals and allied products (except agricultural and medicinal chemicals, paints and varnishes, fireworks, and plastics materials and basic forms and shapes). Illustrative Examples: Acids merchant wholesalers Industrial chemicals merchant wholesalers Automotive chemicals (except lubricating oils and greases) merchant wholesalers Industrial salts merchant wholesalers Dyestuffs merchant wholesalers
+Other chemical merchant wholesalers distribute industrial chemicals including acids, solvents, dyes, surfactants, and specialty compounds to manufacturers, processors, and industrial users. This definition exposes actions for chemical procurement, hazmat compliance, inventory management, and order fulfillment with events for automated safety monitoring and regulatory compliance.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| ChemicalProducer | Manufacturer of industrial chemicals and compounds |
+| Formulator | Produces custom blends and specialty formulations |
+| Manufacturer | Industrial buyer using chemicals in production |
+| Processor | Chemical user in water treatment, metal finishing, etc |
+| Laboratory | Research or QC facility purchasing analytical chemicals |
+| HazmatCarrier | Certified transporter of hazardous materials |
+| EPARegulator | Environmental Protection Agency oversight |
+| WasteHandler | Processes chemical waste and containers |
+
+## Roles
+
+| Role | Description |
+|------|-------------|
+| ProductManager | Manages chemical lines and supplier relationships |
+| ChemicalEngineer | Provides technical support and formulation advice |
+| SalesRepresentative | Manages customer accounts and negotiates contracts |
+| WarehouseManager | Oversees hazmat storage and inventory operations |
+| ComplianceOfficer | Ensures regulatory and safety compliance |
+| LogisticsCoordinator | Arranges hazmat transport and documentation |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| Chemical | Product with CAS number, specs, and hazard class |
+| Inventory | Current stock by chemical, grade, and container |
+| PurchaseOrder | Customer order specifying chemicals and quantities |
+| SafetyDataSheet | SDS document for hazard communication |
+| Certificate | COA documenting purity and specifications |
+| Container | Drum, tote, or bulk tank with tracking |
+| HazmatManifest | Shipping document for regulated materials |
+| PriceList | Current pricing by chemical and volume tier |
+| StorageLocation | Designated area meeting hazard requirements |
+| ComplianceRecord | Documentation for regulatory reporting |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| sourceChemical | Procure chemicals from producers or formulators |
+| receiveShipment | Accept delivery with hazmat verification |
+| inspectChemical | Verify quality and specification compliance |
+| storeChemical | Place in appropriate hazmat storage area |
+| processOrder | Pick, pack, and prepare customer order |
+| priceChemical | Set pricing based on market and volume |
+| arrangeHazmatShipping | Schedule certified hazmat transport |
+| provideTechSupport | Assist with chemical selection and application |
+| issueSDS | Provide safety data sheets to customers |
+| processReturn | Handle off-spec or damaged chemical returns |
+| reportCompliance | Submit regulatory reports to agencies |
+| manageWaste | Handle empty containers and waste chemicals |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| shipmentReceived | Chemical arrived from supplier |
+| chemicalInspected | Quality verification completed |
+| chemicalStored | Product placed in hazmat storage |
+| orderReceived | Customer purchase order submitted |
+| orderShipped | Hazmat delivery departed |
+| orderDelivered | Customer confirmed receipt |
+| inventoryLow | Stock fell below reorder point |
+| priceChanged | Market or supplier pricing updated |
+| sdsUpdated | Safety data sheet revised |
+| complianceAlert | Regulatory requirement triggered |
+| spillIncident | Chemical spill or release occurred |
+| containerReturned | Empty container received for disposal |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| findChemicals | Search catalog by name, CAS number, or application |
+| getInventory | Check stock levels by chemical and location |
+| getOrders | Retrieve orders by customer, status, or date |
+| trackShipment | Get hazmat delivery status |
+| findSuppliers | Search suppliers by chemical or specialty |
+| getSDS | Retrieve safety data sheets |
+| getComplianceRecords | View regulatory filings and reports |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[sourceChemical] --> B[receiveShipment]
+    B --> C[inspectChemical]
+    C --> D{Spec OK?}
+    D -->|Yes| E[storeChemical]
+    D -->|No| F[processReturn]
+    E --> G[processOrder]
+    G --> H[issueSDS]
+    H --> I[arrangeHazmatShipping]
+    I --> J[orderDelivered]
+    J --> K[reportCompliance]
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    W[Wholesaler]
+
+    W -->|buys from| ChemicalProducer
+    W -->|buys from| Formulator
+    W -->|sells to| Manufacturer
+    W -->|sells to| Processor
+    W -->|sells to| Laboratory
+    W -->|ships via| HazmatCarrier
+    W -->|reports to| EPARegulator
+    W -->|disposes via| WasteHandler
+```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { wholesaleChemicals } from '@headlessly/wholesale-chemicals'
+
+const distributor = wholesaleChemicals()
+
+// Source chemical from producer
+const shipment = await distributor.sourceChemical({
+  supplierId: 'basf-corp',
+  chemical: 'sulfuric-acid',
+  grade: 'technical',
+  quantity: 55,
+  unit: 'gal',
+  packaging: 'drum',
+  hazardClass: '8'
+})
+
+// Process customer order
+await distributor.processOrder({
+  customerId: 'midwest-plating',
+  items: [
+    { chemicalId: 'sulfuric-acid-tech', quantity: 10, unit: 'drum' },
+    { chemicalId: 'sodium-hydroxide-50', quantity: 5, unit: 'drum' }
+  ],
+  deliveryDate: '2024-02-15'
+})
+
+// Arrange hazmat shipping
+await distributor.arrangeHazmatShipping({
+  orderId: 'order-789',
+  carrierId: 'certified-hazmat-inc',
+  requirePlacard: true,
+  emergencyContact: '800-555-CHEM'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-reorder when inventory low
+distributor.inventoryLow(async ({ chemicalId, currentStock, reorderPoint }) => {
+  const supplier = await distributor.findSuppliers({ chemical: chemicalId })
+  await distributor.sourceChemical({
+    supplierId: supplier[0].id,
+    chemical: chemicalId,
+    quantity: reorderPoint * 2
+  })
+})
+
+// Auto-alert on compliance deadline
+distributor.complianceAlert(async ({ reportType, dueDate, chemicals }) => {
+  await distributor.reportCompliance({
+    reportType,
+    chemicals,
+    submissionDate: new Date()
+  })
+})
 ```

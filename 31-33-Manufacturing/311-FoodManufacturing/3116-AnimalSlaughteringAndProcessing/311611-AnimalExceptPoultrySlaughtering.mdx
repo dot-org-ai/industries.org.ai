@@ -13,7 +13,7 @@ object: Animal Slaughtering
 
 # Animal (except Poultry) Slaughtering
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for animal slaughtering operations. Models livestock receiving, humane handling, slaughter, inspection, fabrication, and cold chain distribution for beef, pork, and lamb processing.
 
 ## Overview
 
@@ -23,48 +23,213 @@ This U.S. industry comprises establishments primarily engaged in slaughtering an
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| CattleRancher | Supplies beef cattle for slaughter |
+| HogFarmer | Provides pigs for processing |
+| SheepRancher | Supplies lambs and sheep |
+| Feedlot | Finishes cattle before slaughter |
+| LivestockAuction | Facilitates animal purchasing |
+| USDAInspector | Conducts ante and post-mortem inspection |
+| MeatPacker | Purchases carcasses for further processing |
+| RetailGrocer | Buys boxed beef for retail sale |
+| FoodserviceDistributor | Supplies restaurants and institutions |
+| HideProcessor | Purchases hides for leather production |
 
 ## Roles
 
 | Role | Description |
 |------|-------------|
-| TODO | TODO |
+| PlantManager | Oversees slaughter facility operations |
+| QualityManager | Ensures USDA compliance and food safety |
+| LivestockReceiver | Handles incoming animal inspection |
+| KillFloorSupervisor | Manages slaughter line operations |
+| FabricationSupervisor | Oversees carcass breakdown |
+| USDALiaisonOfficer | Coordinates with federal inspectors |
+| ColdChainManager | Manages refrigerated storage and shipping |
+| SanitationManager | Ensures plant hygiene and sanitation |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| Livestock | Live animal received for slaughter |
+| Carcass | Dressed animal body after slaughter |
+| PrimalCut | Large section of carcass |
+| SubprimalCut | Further divided primal section |
+| BoxedBeef | Vacuum-packed cuts for distribution |
+| Offal | Edible organ meats |
+| Hide | Animal skin for leather processing |
+| InspectionMark | USDA approval stamp |
+| GradeStamp | Quality grade designation |
+| ColdStorage | Refrigerated holding facility |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| receiveLivestock | Accept and inspect incoming animals |
+| rest | Hold animals in pens before processing |
+| stun | Render animal unconscious humanely |
+| slaughter | Perform humane slaughter |
+| bleed | Drain blood from carcass |
+| skin | Remove hide from carcass |
+| eviscerate | Remove internal organs |
+| split | Divide carcass into halves |
+| inspect | Conduct USDA post-mortem inspection |
+| chill | Rapidly cool carcasses |
+| fabricate | Break carcass into primal cuts |
+| grade | Assign USDA quality grade |
+| package | Vacuum pack cuts |
+| ship | Dispatch refrigerated loads |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| livestockReceived | Animals accepted and tagged |
+| animalStunned | Humane stunning completed |
+| animalSlaughtered | Slaughter process completed |
+| carcassEviscerated | Organs removed |
+| carcassInspected | USDA inspection passed |
+| carcassFailed | Carcass condemned by inspector |
+| carcassChilled | Target temperature reached |
+| carcassFabricated | Primal cuts separated |
+| carcassGraded | Quality grade assigned |
+| meatPackaged | Vacuum sealing completed |
+| orderShipped | Product dispatched |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| findLivestock | List animals in holding pens |
+| getCarcassInventory | Check carcass and cut inventory |
+| getInspectionRecords | View USDA inspection results |
+| getGradeDistribution | Analyze quality grade breakdown |
+| getOrders | Retrieve orders by customer |
+| getYieldData | View yield by lot and supplier |
+| getByproducts | Track offal and hide inventory |
+| getColdChainStatus | Monitor temperature records |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[receiveLivestock] --> B[rest]
+    B --> C[stun]
+    C --> D[slaughter]
+    D --> E[bleed]
+    E --> F[skin]
+    F --> G[eviscerate]
+    G --> H[split]
+    H --> I[inspect]
+    I --> J{Passed?}
+    J -->|Yes| K[chill]
+    J -->|No| L[Condemn]
+    K --> M[fabricate]
+    M --> N[grade]
+    N --> O[package]
+    O --> P[ship]
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    P[Processor]
+
+    P -->|buys from| CattleRancher
+    P -->|buys from| HogFarmer
+    P -->|buys from| SheepRancher
+    P -->|buys from| Feedlot
+    P -->|buys from| LivestockAuction
+    P -->|inspected by| USDAInspector
+    P -->|sells to| MeatPacker
+    P -->|sells to| RetailGrocer
+    P -->|sells to| FoodserviceDistributor
+    P -->|sells to| HideProcessor
+```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { processAnimalSlaughtering } from '@headlessly/process-animal-slaughtering'
+
+const plant = processAnimalSlaughtering()
+
+// Receive cattle lot
+const lot = await plant.receiveLivestock({
+  supplier: 'high-plains-feedlot',
+  species: 'beef-cattle',
+  headCount: 120,
+  avgWeight: 1350,
+  unit: 'lbs'
+})
+
+// Process through slaughter
+await plant.rest({
+  lotId: lot.id,
+  duration: 4,
+  unit: 'hours'
+})
+
+await plant.stun({
+  animalId: lot.animals[0].id,
+  method: 'captive-bolt'
+})
+
+await plant.slaughter({ animalId: lot.animals[0].id })
+await plant.eviscerate({ carcassId: lot.animals[0].carcassId })
+
+// Await inspection
+const inspection = await plant.inspect({
+  carcassId: lot.animals[0].carcassId,
+  inspector: 'usda-dr-smith'
+})
+
+if (inspection.passed) {
+  await plant.chill({
+    carcassId: lot.animals[0].carcassId,
+    targetTemp: 34,
+    unit: 'fahrenheit'
+  })
+}
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-fabricate after chilling
+plant.carcassChilled(async ({ carcassId, species }) => {
+  const cutSpec = getCutSpecification(species)
+
+  await plant.fabricate({
+    carcassId,
+    specification: cutSpec,
+    destination: 'boxed-beef'
+  })
+})
+
+// Auto-grade after fabrication
+plant.carcassFabricated(async ({ carcassId }) => {
+  await plant.grade({
+    carcassId,
+    standard: 'USDA-beef'
+  })
+})
+
+// Alert on inspection failure
+plant.carcassFailed(async ({ carcassId, reason, lotId }) => {
+  await alertQuality({
+    carcassId,
+    reason,
+    action: 'condemn-and-dispose'
+  })
+
+  await updateSupplierRecord({
+    lotId,
+    issue: reason
+  })
+})
 ```
