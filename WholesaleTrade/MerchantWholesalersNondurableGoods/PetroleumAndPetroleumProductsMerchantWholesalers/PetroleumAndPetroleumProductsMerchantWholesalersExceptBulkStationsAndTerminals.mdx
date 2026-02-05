@@ -86,11 +86,11 @@ Petroleum merchant wholesalers purchase fuel from terminals and distribute gasol
 | ticketIssued | Delivery documentation generated |
 | invoiceSent | Customer billing transmitted |
 | paymentReceived | Customer payment processed |
-| tankLow | Customer tank below reorder level |
+| tankDepleted | Tank level fell below threshold |
 | serviceRequired | Equipment maintenance needed |
 | priceChanged | Rack or customer pricing updated |
-| truckMaintenance | Vehicle service due |
-| creditAlert | Customer account past due |
+| truckMaintenanceBecameDue | Vehicle service due |
+| creditRiskDetected | Customer credit risk threshold breached |
 
 ## Searches
 
@@ -184,7 +184,7 @@ const route = await jobber.optimizeRoute({
 
 ```typescript
 // Auto-schedule on low tank
-jobber.tankLow(async ({ customerId, product, currentLevel, capacity }) => {
+jobber.tankDepleted(async ({ customerId, product, currentLevel, capacity }) => {
   const fillVolume = capacity * 0.85 - currentLevel
   await jobber.scheduleDelivery({
     customerId,
@@ -194,7 +194,7 @@ jobber.tankLow(async ({ customerId, product, currentLevel, capacity }) => {
 })
 
 // Auto-send payment reminder
-jobber.creditAlert(async ({ customerId, invoiceId, daysPastDue, amount }) => {
+jobber.creditRiskDetected(async ({ customerId, invoiceId, daysPastDue, amount }) => {
   if (daysPastDue >= 30) {
     await sendPaymentReminder({
       customerId,

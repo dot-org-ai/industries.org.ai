@@ -81,15 +81,15 @@ Broiler production involves raising chickens specifically for meat through inten
 |-------|-------------|
 | housePrepped | Facility ready for chick placement |
 | chicksPlaced | Day-old chicks delivered and distributed |
-| broodingComplete | Birds transitioned from heat lamps |
+| broodingCompleted | Birds transitioned from heat lamps |
 | feedDelivered | New feed load received at farm |
 | targetWeightReached | Flock at market weight |
 | pickupScheduled | Catching date confirmed with processor |
 | birdsCaught | Flock loaded for transport |
 | flockSettled | Payment processed for completed flock |
-| mortalityAlert | Death rate exceeds threshold |
-| condemnationAlert | Processing rejects exceed threshold |
-| houseVacant | Flock removed and downtime begins |
+| mortalityThresholdExceeded | Flock mortality rate exceeded acceptable threshold |
+| condemnationThresholdExceeded | Condemnation rate exceeded acceptable threshold |
+| houseBecameVacant | Flock removed and downtime begins |
 
 ## Searches
 
@@ -199,7 +199,7 @@ farm.targetWeightReached(async ({ houseId, avgWeight, birdCount }) => {
 })
 
 // Alert on mortality spike
-farm.mortalityAlert(async ({ houseId, dailyRate, cause }) => {
+farm.mortalityThresholdExceeded(async ({ houseId, dailyRate, cause }) => {
   if (dailyRate > 0.5) {
     await notifyVeterinarian({
       urgency: 'emergency',

@@ -92,7 +92,7 @@ General rental centers provide a broad range of consumer and commercial equipmen
 | equipmentServiced | Maintenance completed |
 | trainingCompleted | Customer received equipment instruction |
 | paymentProcessed | Rental charges collected |
-| lowStockAlert | Category below minimum inventory |
+| lowStockDetected | Rental inventory dropped below minimum threshold |
 
 ## Searches
 
@@ -144,6 +144,7 @@ graph LR
     R -->|repairs via| MaintenanceVendor
     R -->|offers coverage via| InsuranceProvider
     R -->|delivers via| DeliveryService
+    R -->|partners with| TrainingPartner
 ```
 
 ## Usage
@@ -154,6 +155,12 @@ graph LR
 import { rentGeneralGoods } from '@headlessly/rent-general-goods'
 
 const center = rentGeneralGoods()
+
+// Search by category and date
+const availableEquipment = await center.findAvailableEquipment({ category: 'power-tools', date: '2024-05-01' })
+
+// List upcoming equipment holds
+const reservations = await center.getReservations({ date: '2024-05-01' })
 
 // Search for concrete equipment
 const equipment = await center.searchEquipment({
@@ -206,7 +213,7 @@ center.equipmentReturned(async ({ equipmentId, totalHours }) => {
 })
 
 // Auto-alert when category inventory low
-center.lowStockAlert(async ({ category, currentCount, minimumCount }) => {
+center.lowStockDetected(async ({ category, currentCount, minimumCount }) => {
   await notifyPurchasing({
     category,
     shortage: minimumCount - currentCount,

@@ -87,7 +87,7 @@ Wine and distilled beverage merchant wholesalers distribute wines, spirits, liqu
 | orderDelivered | Products delivered to account |
 | invoiceSent | Billing transmitted to customer |
 | paymentReceived | Account payment processed |
-| inventoryLow | Stock fell below reorder point |
+| inventoryDepleted | Stock fell below reorder level |
 | vintageExhausted | Last of vintage sold out |
 | promotionStarted | Supplier promotion activated |
 | tastingScheduled | Sampling event confirmed |
@@ -197,7 +197,7 @@ distributor.allocationReleased(async ({ productId, totalCases, releaseDate }) =>
 })
 
 // Auto-reorder on low inventory
-distributor.inventoryLow(async ({ productId, currentStock }) => {
+distributor.inventoryDepleted(async ({ productId, currentStock }) => {
   const product = await getProductDetails(productId)
   if (!product.isLimited) {
     await distributor.purchaseProduct({

@@ -102,7 +102,7 @@ Home health care agencies provide skilled nursing, therapy, and personal care se
 | episodeRecertified | Care plan renewed for 60 days |
 | dischargeInitiated | Transition planning has begun |
 | patientDischarged | Care has been completed |
-| episodeEnding | Current 60-day care episode is approaching its end date |
+| episodeEnded | Current 60-day care episode is approaching its end date |
 | goalsMet | Patient has achieved care plan goals |
 | claimSubmitted | Billing has been sent |
 
@@ -156,6 +156,7 @@ graph LR
     H -->|orders from| DMEsupplier
     H -->|orders from| Pharmacy
     H -->|orders from| Laboratory
+    H -->|inspected by| HealthRegulatorSurveyor
 ```
 
 ## Usage
@@ -235,7 +236,7 @@ await agency.conductVisit({
 
 ```typescript
 // Schedule recertification before episode ends
-agency.episodeEnding(async ({ patientId, episodeEndDate, daysRemaining }) => {
+agency.episodeEnded(async ({ patientId, episodeEndDate, daysRemaining }) => {
   if (daysRemaining <= 5) {
     await agency.recertifyEpisode({
       patientId,

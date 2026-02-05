@@ -99,8 +99,8 @@ Child care services provide care, supervision, and early learning opportunities 
 | childCheckedOut | Departure recorded |
 | incidentOccurred | Event documented |
 | tuitionBilled | Payment requested |
-| pickupTimeApproaching | Scheduled end-of-day pickup time is nearing for a child |
-| enrollmentAnniversary | Child has reached a periodic enrollment milestone |
+| pickupTimeNeared | Scheduled end-of-day pickup time is nearing for a child |
+| enrollmentAnniversaryReached | Child has reached a periodic enrollment milestone |
 | licenseRenewed | Regulatory approval updated |
 
 ## Searches
@@ -200,7 +200,7 @@ await center.documentDay({
 
 ```typescript
 // Notify parents at pickup time
-center.pickupTimeApproaching(async ({ childId, scheduledPickup }) => {
+center.pickupTimeNeared(async ({ childId, scheduledPickup }) => {
   const attendance = await center.getAttendance({ childId, date: today() })
 
   if (!attendance.checkedOut) {
@@ -213,7 +213,7 @@ center.pickupTimeApproaching(async ({ childId, scheduledPickup }) => {
 })
 
 // Schedule developmental assessment at milestones
-center.enrollmentAnniversary(async ({ childId, enrollmentId, monthsEnrolled }) => {
+center.enrollmentAnniversaryReached(async ({ childId, enrollmentId, monthsEnrolled }) => {
   if (monthsEnrolled % 6 === 0) {
     await center.assessDevelopment({
       childId,

@@ -94,7 +94,7 @@ This U.S. industry comprises establishments primarily engaged in (1) manufacturi
 | testFailed | Product did not meet specifications |
 | orderReceived | Customer purchase order entered |
 | orderShipped | Products dispatched to customer |
-| inventoryLow | Stock below reorder threshold |
+| inventoryDepleted | Stock fell below threshold |
 
 ## Searches
 
@@ -148,6 +148,7 @@ graph LR
     M -->|sells to| IndustrialDistributor
     M -->|sells to| ConstructionSupplier
     M -->|sells to| BeltingManufacturer
+    M -->|buys from| RecreationalRetailer
 ```
 
 ## Usage
@@ -241,7 +242,7 @@ mill.testFailed(async ({ batchId, test, result, minSpec }) => {
 })
 
 // Reorder fiber when inventory low
-mill.inventoryLow(async ({ material, currentStock, reorderPoint }) => {
+mill.inventoryDepleted(async ({ material, currentStock, reorderPoint }) => {
   await mill.sourceFiber({
     material,
     quantity: reorderPoint * 2,

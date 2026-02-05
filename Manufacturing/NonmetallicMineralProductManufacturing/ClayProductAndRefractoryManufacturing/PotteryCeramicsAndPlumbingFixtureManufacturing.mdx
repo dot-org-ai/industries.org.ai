@@ -92,8 +92,8 @@ Pottery, ceramics, and plumbing fixture manufacturing involves shaping, molding,
 | inspectionFailed | Product rejected due to defects |
 | orderReceived | New customer order entered into system |
 | orderShipped | Products delivered to customer |
-| inventoryLow | Stock levels below reorder threshold |
-| kilnMaintenance | Scheduled or emergency kiln service required |
+| inventoryDepleted | Stock fell below threshold |
+| kilnMaintenancePerformed | Scheduled or emergency kiln service required |
 
 ## Searches
 
@@ -196,7 +196,7 @@ plant.inspectionFailed(async ({ batchId, defectType, quantity }) => {
 })
 
 // Auto-reorder materials when inventory low
-plant.inventoryLow(async ({ materialId, currentStock, reorderPoint }) => {
+plant.inventoryDepleted(async ({ materialId, currentStock, reorderPoint }) => {
   const supplier = await plant.findSuppliers({ materialId, preferred: true })
   await plant.createPurchaseOrder({
     supplierId: supplier[0].id,

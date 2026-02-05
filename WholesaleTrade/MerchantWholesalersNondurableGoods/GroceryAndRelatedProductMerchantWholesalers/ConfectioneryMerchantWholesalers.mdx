@@ -85,13 +85,13 @@ Confectionery wholesalers distribute candy, chocolate, snack foods, nuts, popcor
 | inventoryReceived | Manufacturer shipment arrived |
 | orderDelivered | Products delivered |
 | routeCompleted | Deliveries finished |
-| displaySetup | Merchandising fixture placed |
+| displaySetUp | Merchandising fixture placed |
 | promotionStarted | Manufacturer deal began |
-| holidayApproaching | Seasonal peak coming |
+| holidayNeared | Seasonal peak coming |
 | planogramUpdated | Shelf configuration changed |
 | newProductLaunched | Item added to line |
-| stockLow | Inventory below threshold |
-| expirationApproaching | Products near freshness date |
+| stockDepleted | Inventory fell below reorder level |
+| expirationNeared | Products near freshness date |
 | returnProcessed | Return completed |
 
 ## Searches
@@ -179,7 +179,7 @@ await distributor.setupDisplay({
 
 ```typescript
 // Prepare for holiday peaks
-distributor.holidayApproaching(async ({ holiday, weeksOut }) => {
+distributor.holidayNeared(async ({ holiday, weeksOut }) => {
   if (weeksOut === 8) {
     const forecast = await getForecast(holiday)
 
@@ -191,7 +191,7 @@ distributor.holidayApproaching(async ({ holiday, weeksOut }) => {
 })
 
 // Rotate stock before expiration
-distributor.expirationApproaching(async ({ productId, lotNumber, daysRemaining }) => {
+distributor.expirationNeared(async ({ productId, lotNumber, daysRemaining }) => {
   if (daysRemaining < 45) {
     await distributor.runPromotion({
       productId,

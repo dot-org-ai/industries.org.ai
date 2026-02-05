@@ -95,7 +95,7 @@ Rehabilitation therapy offices provide physical therapy, occupational therapy, s
 | progressAssessed | Advancement has been evaluated |
 | goalAchieved | Functional objective has been met |
 | authorizationReceived | Insurer has approved visits |
-| authorizationExpiring | Approval is nearing expiration |
+| authorizationExpirationNeared | Approval is nearing expiration |
 | hearingTestCompleted | Audiological evaluation has been performed |
 | equipmentOrdered | Assistive device has been requested |
 | equipmentDelivered | Device has been provided to patient |
@@ -152,6 +152,7 @@ graph LR
     R -->|bills| WorkersCompCarrier
     R -->|orders from| MedicalEquipmentSupplier
     R -->|licensed by| StateBoard
+    R -->|buys from| HearingAidManufacturer
 ```
 
 ## Usage
@@ -216,7 +217,7 @@ await practice.requestAuthorization({
 
 ```typescript
 // Alert for expiring authorizations
-practice.authorizationExpiring(async ({ patientId, visitsRemaining }) => {
+practice.authorizationExpirationNeared(async ({ patientId, visitsRemaining }) => {
   if (visitsRemaining <= 3) {
     const progress = await practice.getGoalProgress({ patientId })
 

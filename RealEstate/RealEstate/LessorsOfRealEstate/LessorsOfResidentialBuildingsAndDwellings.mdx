@@ -87,12 +87,12 @@ Residential lessors own and lease apartment buildings, single-family homes, town
 | applicantApproved | Tenant passed screening and was approved |
 | leaseExecuted | Lease agreement has been signed by all parties |
 | tenantMovedIn | Tenant has taken possession of unit |
-| rentDue | Monthly rent payment is due |
+| rentBecameDue | Monthly rent payment is due |
 | paymentReceived | Rent payment has been processed |
-| paymentLate | Rent payment is past due date |
+| paymentBecameLate | Rent payment is past due date |
 | workOrderCreated | Maintenance request has been logged |
 | workOrderCompleted | Repair or maintenance work finished |
-| leaseExpiring | Lease term ending within notice period |
+| leaseExpirationNeared | Lease term ending within notice period |
 | leaseRenewed | Tenant agreed to new lease term |
 | noticeGiven | Tenant or landlord provided termination notice |
 | tenantMovedOut | Tenant has vacated the unit |
@@ -127,7 +127,7 @@ graph TD
     K --> L{Paid?}
     L -->|Yes| J
     L -->|No| M[fileEviction]
-    J --> N{Lease Expiring?}
+    J --> N{Lease Expiration Neared?}
     N -->|Yes| O[renewLease]
     N -->|No| H
     O --> H
@@ -147,6 +147,7 @@ graph LR
     L -->|participates in| HousingAuthority
     L -->|pays fees to| HomeownersAssociation
     L -->|reports to| TaxAssessor
+    L -->|buys from| UtilityProvider
 ```
 
 ## Usage
@@ -157,6 +158,12 @@ graph LR
 import { leaseApartments } from '@headlessly/lease-apartments'
 
 const lessor = leaseApartments()
+
+// List available units by property, size, or price
+const vacantUnits = await lessor.findVacantUnits({ bedrooms: 2, maxRent: 2500 })
+
+// Retrieve payment history for a tenant
+const tenantLedger = await lessor.getTenantLedger({ tenantId: 'T-45231' })
 
 // List a vacant unit
 const listing = await lessor.listUnit({
@@ -189,7 +196,7 @@ await lessor.executeLease({
 
 ```typescript
 // Auto-send late notice when payment is overdue
-lessor.paymentLate(async ({ tenantId, amountDue, daysLate }) => {
+lessor.paymentBecameLate(async ({ tenantId, amountDue, daysLate }) => {
   if (daysLate >= 5) {
     await lessor.issueNotice({
       tenantId,
@@ -201,7 +208,7 @@ lessor.paymentLate(async ({ tenantId, amountDue, daysLate }) => {
 })
 
 // Auto-trigger renewal workflow before lease expires
-lessor.leaseExpiring(async ({ leaseId, tenantId, currentRent }) => {
+lessor.leaseExpirationNeared(async ({ leaseId, tenantId, currentRent }) => {
   const marketRate = await getMarketRate(leaseId)
   const newRent = Math.min(currentRent * 1.03, marketRate)
 

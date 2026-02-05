@@ -7,7 +7,7 @@ subsector: Professional, Scientific, and Technical Services
 subsectorCode: 541
 group: Accounting, Tax Preparation, Bookkeeping, and Payroll Services
 groupCode: 5412
-action: Process
+action: Administer
 object: Payroll
 ---
 
@@ -90,7 +90,7 @@ Payroll services collect employee hours and compensation data, calculate wages a
 | garnishmentProcessed | Court-ordered deduction remitted |
 | newHireAdded | Employee added to payroll |
 | terminationProcessed | Final pay calculated and issued |
-| deadlineApproaching | Tax deposit or filing deadline nearing |
+| deadlineNeared | Tax deposit or filing deadline nearing |
 
 ## Searches
 
@@ -142,9 +142,9 @@ graph LR
 ### Calling Actions
 
 ```typescript
-import { processPayroll } from '@headlessly/process-payroll'
+import { administerPayroll } from '@headlessly/administer-payroll'
 
-const payroll = processPayroll()
+const payroll = administerPayroll()
 
 // Find payrolls with pending issues
 const pendingPayrolls = await payroll.findPayrolls({ status: 'pending-review', clientId: 'client-123' })
@@ -193,7 +193,7 @@ payroll.payrollProcessed(async ({ payrollId, clientId, taxes }) => {
 })
 
 // Alert when deposit deadline approaching
-payroll.deadlineApproaching(async ({ clientId, deadline, type, amount }) => {
+payroll.deadlineNeared(async ({ clientId, deadline, type, amount }) => {
   await payroll.notifyClient({
     clientId,
     message: `${type} deposit of $${amount} due ${deadline}`,

@@ -7,7 +7,7 @@ subsector: Real Estate
 subsectorCode: 531
 group: Activities Related to Real Estate
 groupCode: 5313
-action: Manage
+action: Oversee
 object: Commercial Properties
 ---
 
@@ -84,7 +84,7 @@ Nonresidential property managers oversee office buildings, retail centers, indus
 | managementAssumed | Property transitioned to management |
 | tenantBilled | Monthly invoice generated |
 | paymentReceived | Tenant payment processed |
-| paymentDelinquent | Tenant payment past due |
+| paymentBecameDelinquent | Tenant payment past due |
 | camReconciled | Annual CAM true-up completed |
 | workOrderCreated | Maintenance request logged |
 | workOrderCompleted | Repair or service finished |
@@ -93,7 +93,7 @@ Nonresidential property managers oversee office buildings, retail centers, indus
 | capitalApproved | Capital project authorized |
 | emergencyOccurred | Building incident reported |
 | leaseRenewed | Tenant renewed lease |
-| certificateExpiring | Insurance or compliance document expiring |
+| certificateExpirationNeared | Insurance or compliance document neared expiration |
 
 ## Searches
 
@@ -122,7 +122,7 @@ graph TD
     I --> J[prepareOwnerReport]
     J --> K{Capital Needed?}
     K -->|Yes| L[planCapital]
-    K -->|No| M{Lease Expiring?}
+    K -->|No| M{Lease Expiration Neared?}
     L --> M
     M -->|Yes| N[renewLease]
     M -->|No| C
@@ -143,6 +143,7 @@ graph LR
     PM -->|contracts with| LandscapeContractor
     PM -->|services via| ElevatorCompany
     PM -->|maintains with| FireSafetyVendor
+    PM -->|buys from| UtilityCompany
 ```
 
 ## Usage
@@ -150,9 +151,9 @@ graph LR
 ### Calling Actions
 
 ```typescript
-import { manageCommercialProperties } from '@headlessly/manage-commercial-properties'
+import { overseeCommercialProperties } from '@headlessly/oversee-commercial-properties'
 
-const manager = manageCommercialProperties()
+const manager = overseeCommercialProperties()
 
 // List all tenants and lease details
 const getTenantRosterResult = await manager.getTenantRoster({ status: 'active' })
@@ -193,7 +194,7 @@ const reconciliation = await manager.reconcileCAM({
 
 ```typescript
 // Auto-track certificate expirations
-manager.certificateExpiring(async ({ tenantId, certificateType, expirationDate }) => {
+manager.certificateExpirationNeared(async ({ tenantId, certificateType, expirationDate }) => {
   const daysUntilExpiry = differenceInDays(expirationDate, new Date())
 
   if (daysUntilExpiry <= 30) {

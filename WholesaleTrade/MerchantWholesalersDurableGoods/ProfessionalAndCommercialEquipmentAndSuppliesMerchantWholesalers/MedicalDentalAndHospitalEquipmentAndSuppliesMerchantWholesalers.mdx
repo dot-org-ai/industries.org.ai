@@ -30,7 +30,7 @@ Medical equipment wholesalers distribute diagnostic equipment, surgical instrume
 | PhysicianPractice | Medical group or clinic |
 | DentalPractice | Dental office or group |
 | GPO | Group purchasing organization |
-| FDA | Regulatory oversight agency |
+| DrugRegulator | Regulatory oversight agency |
 
 ## Roles
 
@@ -54,7 +54,7 @@ Medical equipment wholesalers distribute diagnostic equipment, surgical instrume
 | Contract | GPO or provider purchase agreement |
 | Lot | Batch with expiration and tracking |
 | UDI | Unique device identifier |
-| Recall | FDA recall notification |
+| Recall | Regulatory recall notification |
 | ServiceRecord | Equipment maintenance history |
 | Certification | Equipment calibration or certification |
 | Quote | Price quotation for equipment |
@@ -72,7 +72,7 @@ Medical equipment wholesalers distribute diagnostic equipment, surgical instrume
 | processOrder | Fulfill healthcare provider order |
 | shipOrder | Dispatch with required documentation |
 | trackLot | Monitor lot expiration and location |
-| processRecall | Handle FDA recall notification |
+| processRecall | Handle regulatory recall notification |
 | calibrateEquipment | Perform required calibrations |
 | certifyEquipment | Complete certification requirements |
 | handleReturn | Process returns with compliance |
@@ -87,13 +87,13 @@ Medical equipment wholesalers distribute diagnostic equipment, surgical instrume
 | orderShipped | Products dispatched |
 | orderDelivered | Customer received products |
 | contractEnrolled | Customer added to agreement |
-| recallIssued | FDA announced product recall |
+| recallIssued | Regulator announced product recall |
 | recallCompleted | Recall actions finished |
-| lotExpiring | Lot approaching expiration |
-| calibrationDue | Equipment needs calibration |
-| certificationExpiring | Certification needs renewal |
-| stockLow | Inventory below threshold |
-| complianceAlert | Regulatory requirement flagged |
+| lotExpirationNeared | Lot approaching expiration |
+| calibrationBecameDue | Equipment needs calibration |
+| certificationExpirationNeared | Certification needs renewal |
+| stockDepleted | Inventory fell below reorder level |
+| complianceViolationDetected | Compliance violation or expiration detected |
 
 ## Searches
 
@@ -137,7 +137,7 @@ graph LR
     W -->|sells to| PhysicianPractice
     W -->|sells to| DentalPractice
     W -->|contracts through| GPO
-    W -->|reports to| FDA
+    W -->|reports to| DrugRegulator
 ```
 
 ## Usage
@@ -177,7 +177,7 @@ await wholesaler.trackLot({
 ### Event-Driven Automation
 
 ```typescript
-// Handle FDA recalls
+// Handle drugregulator recalls
 wholesaler.recallIssued(async ({ productId, lotNumbers, severity }) => {
   const affectedOrders = await wholesaler.getOrders({
     productId,
@@ -194,7 +194,7 @@ wholesaler.recallIssued(async ({ productId, lotNumbers, severity }) => {
 })
 
 // Alert on expiring lots
-wholesaler.lotExpiring(async ({ lotNumber, daysRemaining }) => {
+wholesaler.lotExpirationNeared(async ({ lotNumber, daysRemaining }) => {
   if (daysRemaining <= 30) {
     await wholesaler.createPromotion({
       lotNumber,

@@ -83,10 +83,10 @@ Video rental establishments provide movies and games on physical media including
 |-------|-------------|
 | rentalCreated | Media checked out to customer |
 | rentalReturned | Media returned to location |
-| rentalOverdue | Media not returned by due date |
+| rentalBecameOverdue | Media not returned by due date |
 | lateFeeAssessed | Overdue charge added to account |
 | reservationCreated | Title held for customer |
-| reservationReady | Reserved title available for pickup |
+| reservationFulfilled | Reserved title available for pickup |
 | newTitleAdded | New movie or game added to catalog |
 | mediaRetired | Copy removed from inventory |
 | mediaDamaged | Copy reported as damaged |
@@ -141,6 +141,8 @@ graph LR
     V -->|operates via| KioskOperator
     V -->|processes via| CreditCardProcessor
     V -->|hosts at| RetailPartner
+    V -->|regulated by| ContentRatingBoard
+    V -->|contracts| RecyclingService
 ```
 
 ## Usage
@@ -151,6 +153,12 @@ graph LR
 import { rentVideos } from '@headlessly/rent-videos'
 
 const rental = rentVideos()
+
+// Search catalog by various criteria
+const titles = await rental.findTitles({ genre: 'action', rating: 'PG-13' })
+
+// List recently added titles
+const newReleases = await rental.getNewReleases({ week: 'current' })
 
 // Search for a movie
 const results = await rental.searchCatalog({
@@ -180,7 +188,7 @@ await rental.returnMedia({
 
 ```typescript
 // Auto-notify when reserved title available
-rental.reservationReady(async ({ customerId, titleId, locationId }) => {
+rental.reservationFulfilled(async ({ customerId, titleId, locationId }) => {
   await notifyCustomer({
     customerId,
     subject: 'Your Reserved Title is Ready',
@@ -190,7 +198,7 @@ rental.reservationReady(async ({ customerId, titleId, locationId }) => {
 })
 
 // Auto-charge late fees when overdue
-rental.rentalOverdue(async ({ rentalId, customerId, daysLate }) => {
+rental.rentalBecameOverdue(async ({ rentalId, customerId, daysLate }) => {
   const fee = await rental.calculateLateFee({
     rentalId,
     daysOverdue: daysLate

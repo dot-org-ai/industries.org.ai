@@ -91,7 +91,7 @@ Marinas operate docking and storage facilities for pleasure craft along with fue
 | suppliesSold | Ship store purchase completed |
 | boatRented | Vessel chartered to guest |
 | guestCheckedIn | Arrival processed |
-| weatherAlert | Conditions notification issued |
+| weatherWarningIssued | Weather warning issued for marina area |
 
 ## Searches
 
@@ -137,6 +137,7 @@ graph LR
     M -->|regulated by| CoastGuard
     M -->|reports to| HarborMaster
     M -->|partners with| CharterOperator
+    M -->|buys from| BoatDealer
 ```
 
 ## Usage
@@ -192,7 +193,7 @@ await marina.createServiceTicket({
 
 ```typescript
 // Auto-notify when weather alerts issued
-marina.weatherAlert(async ({ severity, forecast, duration }) => {
+marina.weatherWarningIssued(async ({ severity, forecast, duration }) => {
   const vessels = await marina.getVessels({ status: 'docked' })
 
   if (severity === 'storm-warning') {

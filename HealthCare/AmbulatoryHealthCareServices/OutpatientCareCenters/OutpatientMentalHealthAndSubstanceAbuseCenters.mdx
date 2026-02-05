@@ -95,12 +95,12 @@ Outpatient mental health and substance abuse centers provide diagnostic and trea
 | medicationPrescribed | Psychiatric or MAT drug has been ordered |
 | medicationAdministered | Observed dose has been dispensed |
 | drugScreenCompleted | Substance test has been performed |
-| drugScreenPositive | Substance detected in screening |
+| drugScreenTestedPositive | Substance detected in screening |
 | authorizationReceived | Insurer has approved services |
 | authorizationDenied | Insurer has denied services |
 | courtReportSubmitted | Compliance report has been filed |
 | patientDischarged | Treatment has been completed or transferred |
-| authorizationExpiring | Insurer approval for services is approaching expiration |
+| authorizationExpirationNeared | Insurer approval for services is approaching expiration |
 | relapseIdentified | Patient has returned to substance use |
 
 ## Searches
@@ -157,6 +157,7 @@ graph LR
     C -->|transfers to| Hospital
     C -->|orders tests from| Laboratory
     C -->|reports to| Court
+    C -->|licensed by| StateAgency
 ```
 
 ## Usage
@@ -226,7 +227,7 @@ await center.prescribeMedication({
 
 ```typescript
 // Alert for positive drug screen
-center.drugScreenPositive(async ({ patientId, substance }) => {
+center.drugScreenTestedPositive(async ({ patientId, substance }) => {
   await center.documentProgress({
     patientId,
     event: 'positive-screen',
@@ -242,7 +243,7 @@ center.drugScreenPositive(async ({ patientId, substance }) => {
 })
 
 // Request continued authorization
-center.authorizationExpiring(async ({ patientId, daysRemaining }) => {
+center.authorizationExpirationNeared(async ({ patientId, daysRemaining }) => {
   if (daysRemaining <= 5) {
     const progress = await center.getProgressNotes({ patientId })
 

@@ -85,10 +85,10 @@ Other farm product merchant wholesalers distribute raw agricultural commodities 
 | commoditySold | Sale transaction executed |
 | commodityShipped | Outbound shipment departed |
 | paymentSettled | Transaction payment completed |
-| priceAlert | Market price moved beyond threshold |
-| inventoryLow | Stock fell below target level |
+| priceThresholdBreached | Market price crossed monitored threshold |
+| inventoryDepleted | Stock fell below reorder level |
 | receiptTransferred | Warehouse receipt assigned to buyer |
-| gradeDispute | Quality classification challenged |
+| gradeDisputeRaised | Quality classification challenged |
 | exportCleared | International shipment cleared customs |
 | sampleApproved | Buyer accepted product sample |
 
@@ -196,7 +196,7 @@ merchant.commodityReceived(async ({ lotId, commodity, quantity }) => {
 })
 
 // Auto-alert on price opportunity
-merchant.priceAlert(async ({ commodity, grade, price, direction }) => {
+merchant.priceThresholdBreached(async ({ commodity, grade, price, direction }) => {
   if (direction === 'up') {
     const inventory = await merchant.getInventory({ commodity, grade })
     await notifySales({

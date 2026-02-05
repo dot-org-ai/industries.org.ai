@@ -89,7 +89,7 @@ Commercial transportation equipment lessors provide aircraft, railcars, ships, b
 | maintenanceScheduled | Service event planned |
 | overhaulCompleted | Major maintenance finished |
 | inspectionCompleted | Asset condition assessed |
-| leaseExpiring | Lease approaching maturity |
+| leaseExpirationNeared | Lease approaching maturity |
 | redeliveryInitiated | Asset return process started |
 | assetRemarked | Equipment placed with new lessee |
 | assetSold | Equipment disposed |
@@ -119,7 +119,7 @@ graph TD
     F --> G[monitorMaintenance]
     G --> H{Overhaul Due?}
     H -->|Yes| I[approveOverhaul]
-    H -->|No| J{Lease Expiring?}
+    H -->|No| J{Lease Expiration Neared?}
     I --> J
     J -->|Yes| K[processRedelivery]
     J -->|No| E
@@ -144,6 +144,7 @@ graph LR
     L -->|services via| MaintenanceProvider
     L -->|finances with| FinancingBank
     L -->|insures through| InsuranceUnderwriter
+    L -->|regulated by| RegulatoryAuthority
 ```
 
 ## Usage
@@ -199,7 +200,7 @@ await lessor.collectReserve({
 
 ```typescript
 // Auto-notify when lease expiring
-lessor.leaseExpiring(async ({ leaseId, assetId, lesseeId, expirationDate }) => {
+lessor.leaseExpirationNeared(async ({ leaseId, assetId, lesseeId, expirationDate }) => {
   const monthsRemaining = differenceInMonths(expirationDate, new Date())
 
   if (monthsRemaining === 24) {

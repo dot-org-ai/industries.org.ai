@@ -17,13 +17,13 @@ object: Highway
 
 ## Overview
 
-Highway and bridge construction involves building highways, streets, roads, airport runways, bridges, and overpasses. Projects require earthwork, paving, bridge construction, and traffic management across public right-of-way. This definition exposes actions for bidding, earthwork, paving, bridge erection, and traffic control while managing DOT specifications and public safety requirements.
+Highway and bridge construction involves building highways, streets, roads, airport runways, bridges, and overpasses. Projects require earthwork, paving, bridge construction, and traffic management across public right-of-way. This definition exposes actions for bidding, earthwork, paving, bridge erection, and traffic control while managing transportation department specifications and public safety requirements.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| DOT | State or federal transportation department as owner |
+| TransportRegulator | State or federal transportation department as owner |
 | Municipality | City or county agency for local road projects |
 | DesignEngineer | Provides roadway and bridge design documents |
 | MaterialSupplier | Provides asphalt, concrete, and aggregates |
@@ -84,15 +84,15 @@ Highway and bridge construction involves building highways, streets, roads, airp
 |-------|-------------|
 | bidAwarded | Contract awarded to contractor |
 | siteMobilized | Field operations setup complete |
-| trafficControlActive | Lane closures and detours in place |
-| earthworkComplete | Grading finished to subgrade |
+| trafficControlActivated | Lane closures and detours in place |
+| earthworkCompleted | Grading finished to subgrade |
 | drainageInstalled | Storm drainage systems complete |
-| bridgeSubstructureComplete | Foundations and piers finished |
-| bridgeSuperstructureComplete | Deck and barriers finished |
-| baseCourseComplete | Base materials installed |
-| pavementComplete | Final surface course placed |
+| bridgeSubstructureCompleted | Foundations and piers finished |
+| bridgeSuperstructureCompleted | Deck and barriers finished |
+| baseCourseCompleted | Base materials installed |
+| pavementCompleted | Final surface course placed |
 | guardrailInstalled | Safety barriers in place |
-| stripingComplete | Markings and signs installed |
+| stripingCompleted | Markings and signs installed |
 | finalInspectionPassed | Owner accepted completed work |
 | finalAcceptanceIssued | Warranty period began |
 
@@ -135,7 +135,7 @@ graph TD
 graph LR
     C[Contractor]
 
-    C -->|bids to| DOT
+    C -->|bids to| TransportRegulator
     C -->|builds for| Municipality
     C -->|coordinates with| DesignEngineer
     C -->|procures from| MaterialSupplier
@@ -156,12 +156,12 @@ import { buildHighway } from '@headlessly/build-highway'
 const contractor = buildHighway()
 
 // Review active projects and pay estimates
-const projects = await contractor.findProjects({ status: 'in-progress', owner: 'state-DOT' })
-const payEstimate = await contractor.getPayEstimate({ projectId: 'DOT-2024-0456' })
+const projects = await contractor.findProjects({ status: 'in-progress', owner: 'state-dot' })
+const payEstimate = await contractor.getPayEstimate({ projectId: 'HWY-2024-0456' })
 
 // Submit bid proposal
 const bid = await contractor.submitBid({
-  projectId: 'DOT-2024-0456',
+  projectId: 'HWY-2024-0456',
   projectName: 'I-95 Widening MP 45-52',
   bidAmount: 42500000,
   bidBond: 4250000,
@@ -192,7 +192,7 @@ await contractor.paveSurface({
 
 ```typescript
 // Auto-schedule paving when base complete
-contractor.baseCourseComplete(async ({ projectId, station }) => {
+contractor.baseCourseCompleted(async ({ projectId, station }) => {
   await contractor.paveSurface({
     projectId,
     station,
@@ -201,11 +201,11 @@ contractor.baseCourseComplete(async ({ projectId, station }) => {
 })
 
 // Auto-request final inspection when striping complete
-contractor.stripingComplete(async ({ projectId }) => {
+contractor.stripingCompleted(async ({ projectId }) => {
   await contractor.conductFinalInspection({
     projectId,
     requestedDate: addDays(new Date(), 7),
-    inspectorType: 'DOT-resident-engineer'
+    inspectorType: 'resident-engineer'
   })
 })
 ```

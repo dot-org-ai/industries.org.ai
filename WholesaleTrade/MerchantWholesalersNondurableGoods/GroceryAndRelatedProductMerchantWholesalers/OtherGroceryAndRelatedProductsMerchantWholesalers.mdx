@@ -85,8 +85,8 @@ Other grocery merchant wholesalers distribute specialty food products including 
 | orderPicked | Products selected and staged for delivery |
 | orderShipped | Delivery departed for customer |
 | orderDelivered | Customer confirmed receipt |
-| inventoryLow | Stock fell below reorder point |
-| inventoryExpiring | Products approaching best-by date |
+| inventoryDepleted | Stock fell below reorder level |
+| inventoryExpirationNeared | Products approaching best-by date |
 | priceUpdated | Wholesale pricing changed |
 | promotionStarted | New promotional deal activated |
 | promotionEnded | Promotional deal expired |
@@ -186,7 +186,7 @@ await wholesaler.runPromotion({
 
 ```typescript
 // Auto-reorder when inventory low
-wholesaler.inventoryLow(async ({ productId, currentStock, reorderPoint }) => {
+wholesaler.inventoryDepleted(async ({ productId, currentStock, reorderPoint }) => {
   const vendor = await wholesaler.findVendors({ product: productId })
   await wholesaler.sourceProduct({
     vendorId: vendor[0].id,
@@ -195,7 +195,7 @@ wholesaler.inventoryLow(async ({ productId, currentStock, reorderPoint }) => {
 })
 
 // Auto-discount expiring inventory
-wholesaler.inventoryExpiring(async ({ productId, daysRemaining }) => {
+wholesaler.inventoryExpirationNeared(async ({ productId, daysRemaining }) => {
   if (daysRemaining <= 30) {
     await wholesaler.priceProduct({
       productId,

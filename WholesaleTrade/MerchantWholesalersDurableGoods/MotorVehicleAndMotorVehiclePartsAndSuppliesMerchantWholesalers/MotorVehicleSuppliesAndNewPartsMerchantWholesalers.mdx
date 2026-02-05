@@ -89,8 +89,8 @@ Motor vehicle supplies and new parts wholesalers distribute OEM and aftermarket 
 | orderDelivered | Customer received shipment |
 | returnRequested | Customer initiated return |
 | returnProcessed | Return completed and credited |
-| stockLow | Inventory below reorder point |
-| stockOut | Part unavailable in warehouse |
+| stockDepleted | Inventory fell below reorder level |
+| stockedOut | Part unavailable in warehouse |
 | priceChanged | Supplier updated pricing |
 | newPartAdded | New SKU added to catalog |
 | warrantyApproved | Manufacturer approved claim |
@@ -181,7 +181,7 @@ await wholesaler.shipOrder({
 
 ```typescript
 // Auto-reorder when stock is low
-wholesaler.stockLow(async ({ partNumber, currentQty, reorderPoint }) => {
+wholesaler.stockDepleted(async ({ partNumber, currentQty, reorderPoint }) => {
   const forecast = await wholesaler.forecastDemand({ partNumber })
 
   await wholesaler.placeOrder({

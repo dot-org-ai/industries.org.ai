@@ -86,10 +86,10 @@ Other accounting services provide bookkeeping, billing, and general accounting s
 | paymentReceived | Customer payment applied to account |
 | monthClosed | Month-end closing completed |
 | financialsPrepared | Financial statements generated |
-| receivableOverdue | Customer payment past due date |
-| cashFlowAlert | Cash position below threshold |
-| deadlineApproaching | Reporting or payment deadline nearing |
-| reconciliationVariance | Difference found between book and bank |
+| receivableBecameOverdue | Customer payment past due date |
+| cashFlowThresholdBreached | Cash flow fell below acceptable threshold |
+| deadlineNeared | Reporting or payment deadline nearing |
+| reconciliationVarianceDetected | Difference found between book and bank |
 
 ## Searches
 
@@ -186,7 +186,7 @@ const financials = await books.prepareFinancials({
 
 ```typescript
 // Alert on overdue receivables
-books.receivableOverdue(async ({ clientId, customerId, invoiceId, amount, daysOverdue }) => {
+books.receivableBecameOverdue(async ({ clientId, customerId, invoiceId, amount, daysOverdue }) => {
   if (daysOverdue >= 30) {
     await books.sendCollectionReminder({
       clientId,
@@ -198,7 +198,7 @@ books.receivableOverdue(async ({ clientId, customerId, invoiceId, amount, daysOv
 })
 
 // Auto-alert on cash flow issues
-books.cashFlowAlert(async ({ clientId, currentBalance, projectedShortfall }) => {
+books.cashFlowThresholdBreached(async ({ clientId, currentBalance, projectedShortfall }) => {
   await books.notifyClient({
     clientId,
     message: `Cash balance $${currentBalance}. Projected shortfall: $${projectedShortfall}`,

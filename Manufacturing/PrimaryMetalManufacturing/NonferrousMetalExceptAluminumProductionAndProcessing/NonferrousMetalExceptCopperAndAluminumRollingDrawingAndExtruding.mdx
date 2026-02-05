@@ -153,6 +153,7 @@ graph LR
     M -->|buys dies from| DieManufacturer
     M -->|heat treats with| HeatTreater
     M -->|tests with| TestingLaboratory
+    M -->|ships via| FreightCarrier
 ```
 
 ## Usage
@@ -163,6 +164,12 @@ graph LR
 import { refineNonferrousMetalShapes } from '@headlessly/refine-nonferrous-metal-shapes'
 
 const mill = refineNonferrousMetalShapes()
+
+// List available ingots by alloy and size
+const ingotStock = await mill.findIngotStock({ metal: 'titanium', alloy: 'Ti-6Al-4V' })
+
+// Retrieve open orders by specification
+const orders = await mill.getOrders({ product: 'sheet', status: 'open' })
 
 // Receive titanium ingot
 const ingot = await mill.receiveIngot({

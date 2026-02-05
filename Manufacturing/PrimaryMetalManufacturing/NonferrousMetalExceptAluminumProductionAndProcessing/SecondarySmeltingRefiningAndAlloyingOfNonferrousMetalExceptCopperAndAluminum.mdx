@@ -146,6 +146,7 @@ graph LR
     R -->|sells to| PlatingCompany
     R -->|reports to| EnvironmentalAgency
     R -->|ships via| HazmatCarrier
+    R -->|contracts| LaboratoryService
 ```
 
 ## Usage
@@ -156,6 +157,12 @@ graph LR
 import { refineSecondarySmelting } from '@headlessly/refine-secondary-smelting'
 
 const recycler = refineSecondarySmelting()
+
+// List available scrap by type
+const scrapInventory = await recycler.findScrapInventory({ metal: 'zinc', grade: 'old-die-cast' })
+
+// Retrieve pending orders by alloy
+const orderQueue = await recycler.getOrderQueue({ alloy: 'zamak-3', status: 'pending' })
 
 // Receive zinc scrap
 const scrap = await recycler.receiveScrap({

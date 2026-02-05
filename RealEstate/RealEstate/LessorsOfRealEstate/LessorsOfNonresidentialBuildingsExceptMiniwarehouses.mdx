@@ -92,7 +92,7 @@ Commercial lessors own and lease office buildings, retail centers, industrial fa
 | paymentReceived | Rent payment processed |
 | camReconciled | Annual CAM reconciliation completed |
 | escalationApplied | Rent increase applied per schedule |
-| leaseExpiring | Lease term ending within notice period |
+| leaseExpirationNeared | Lease term ending within notice period |
 | renewalExercised | Tenant exercised renewal option |
 | leaseTerminated | Tenancy has ended |
 
@@ -125,7 +125,7 @@ graph TD
     J --> K{Payment Received?}
     K -->|Yes| L[processEscalation]
     K -->|No| M[collectArrears]
-    L --> N{Lease Expiring?}
+    L --> N{Lease Expiration Neared?}
     N -->|Yes| O[renewLease]
     N -->|No| J
     O --> J
@@ -145,6 +145,7 @@ graph LR
     L -->|employs| JanitorialService
     L -->|secures with| SecurityCompany
     L -->|consults| TaxConsultant
+    L -->|consults| EnvironmentalConsultant
 ```
 
 ## Usage
@@ -213,7 +214,7 @@ lessor.camReconciled(async ({ propertyId, year, tenants }) => {
 })
 
 // Auto-notify of upcoming lease expirations
-lessor.leaseExpiring(async ({ leaseId, tenantId, expirationDate }) => {
+lessor.leaseExpirationNeared(async ({ leaseId, tenantId, expirationDate }) => {
   const monthsRemaining = differenceInMonths(expirationDate, new Date())
 
   if (monthsRemaining === 12) {

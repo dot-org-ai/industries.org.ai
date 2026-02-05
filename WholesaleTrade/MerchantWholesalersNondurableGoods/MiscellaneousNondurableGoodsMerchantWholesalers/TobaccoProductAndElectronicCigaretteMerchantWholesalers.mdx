@@ -87,10 +87,10 @@ Tobacco product merchant wholesalers distribute cigarettes, cigars, smokeless to
 | orderDelivered | Products delivered to retailer |
 | invoiceSent | Billing transmitted to customer |
 | paymentReceived | Customer payment processed |
-| inventoryLow | Stock fell below reorder point |
-| taxFilingDue | Excise tax deadline approaching |
+| inventoryDepleted | Stock fell below reorder level |
+| taxFilingBecameDue | Excise tax deadline approaching |
 | taxFiled | Excise report submitted |
-| licenseExpiring | Retail customer license nearing expiration |
+| licenseExpirationNeared | Retail customer license nearing expiration |
 
 ## Searches
 
@@ -186,7 +186,7 @@ await distributor.processOrder({
 
 ```typescript
 // Auto-file excise tax on deadline
-distributor.taxFilingDue(async ({ state, period, dueDate }) => {
+distributor.taxFilingBecameDue(async ({ state, period, dueDate }) => {
   const sales = await distributor.getSalesHistory({
     state,
     period,
@@ -202,7 +202,7 @@ distributor.taxFilingDue(async ({ state, period, dueDate }) => {
 })
 
 // Auto-alert on expiring licenses
-distributor.licenseExpiring(async ({ accountId, licenseId, daysRemaining }) => {
+distributor.licenseExpirationNeared(async ({ accountId, licenseId, daysRemaining }) => {
   if (daysRemaining <= 30) {
     await notifyAccount({
       accountId,

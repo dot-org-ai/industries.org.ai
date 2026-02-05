@@ -7,8 +7,8 @@ subsector: Waste Management and Remediation Services
 subsectorCode: 562
 group: Waste Treatment and Disposal
 groupCode: 5622
-action: Operate
-object: Landfill
+action: Landfill
+object: Solid Waste
 ---
 
 # Solid Waste Landfill
@@ -99,7 +99,7 @@ Solid waste landfills receive and dispose of nonhazardous solid waste through en
 | complianceFiled | Regulatory report submitted |
 | cellConstructed | New disposal area ready |
 | cellClosed | Filled area capped |
-| dailyCutoff | End-of-day operations period has been reached for cover and reporting |
+| dailyCutoffReached | End-of-day operations period has been reached for cover and reporting |
 | permitRenewed | Operating authorization updated |
 
 ## Searches
@@ -157,9 +157,9 @@ graph LR
 ### Calling Actions
 
 ```typescript
-import { operateLandfill } from '@headlessly/operate-landfill'
+import { landfillSolidWaste } from '@headlessly/landfill-solid-waste'
 
-const landfill = operateLandfill()
+const landfill = landfillSolidWaste()
 
 // Check today's tickets and remaining cell capacity
 const todayTickets = await landfill.findTickets({ date: '2024-04-01' })
@@ -194,7 +194,7 @@ await landfill.directToCell({
 
 ```typescript
 // Auto-apply cover at end of day
-landfill.dailyCutoff(async ({ date, activeCell }) => {
+landfill.dailyCutoffReached(async ({ date, activeCell }) => {
   await landfill.applyDailyCover({
     cellId: activeCell,
     coverType: 'alternativeDailyCover',

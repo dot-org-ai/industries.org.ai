@@ -95,7 +95,7 @@ Biomass electric power generation converts organic materials such as wood waste,
 | ashRemoved | Combustion residue transported from facility |
 | RECsIssued | Renewable energy certificates generated |
 | maintenanceCompleted | Scheduled maintenance work finished |
-| fuelInventoryLow | Feedstock stockpile below minimum threshold |
+| fuelInventoryDepleted | Fuel inventory fell below threshold |
 | boilerTripped | Combustion system shut down due to fault |
 
 ## Searches
@@ -145,6 +145,7 @@ graph LR
     P -->|reports to| EnvironmentalAgency
     P -->|sells to| RECBuyer
     P -->|contracts| AshProcessor
+    P -->|sources from| ForestryService
 ```
 
 ## Usage
@@ -192,7 +193,7 @@ await plant.dispatchPower({
 
 ```typescript
 // Auto-respond to fuel inventory levels
-plant.fuelInventoryLow(async ({ currentTons, minimumTons }) => {
+plant.fuelInventoryDepleted(async ({ currentTons, minimumTons }) => {
   const needed = minimumTons * 1.5 - currentTons
 
   await plant.procureFeedstock({

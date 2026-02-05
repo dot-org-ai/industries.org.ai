@@ -87,10 +87,10 @@ Meat and meat product merchant wholesalers distribute fresh, chilled, and proces
 | orderPicked | Products selected and staged for delivery |
 | orderShipped | Delivery departed for customer |
 | orderDelivered | Customer confirmed receipt |
-| inventoryLow | Stock fell below reorder threshold |
-| lotExpiring | Product approaching shelf life limit |
+| inventoryDepleted | Stock fell below reorder level |
+| lotExpirationNeared | Product approaching shelf life limit |
 | priceUpdated | Wholesale pricing changed |
-| qualityAlert | Product failed inspection or grade verification |
+| qualityIssueDetected | Quality issue detected in product inspection |
 | recallIssued | USDA or supplier issued product recall |
 
 ## Searches
@@ -188,7 +188,7 @@ await wholesaler.processOrder({
 
 ```typescript
 // Auto-discount expiring inventory
-wholesaler.lotExpiring(async ({ lotId, daysRemaining, product }) => {
+wholesaler.lotExpirationNeared(async ({ lotId, daysRemaining, product }) => {
   if (daysRemaining <= 3) {
     await wholesaler.priceProduct({
       productId: product.id,

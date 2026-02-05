@@ -86,7 +86,7 @@ Title and settlement offices research property ownership records, prepare title 
 | defectIdentified | Title issue requiring resolution discovered |
 | defectCleared | Title issue successfully resolved |
 | escrowOpened | Earnest money received and deposited |
-| documentsReady | Closing package prepared for signing |
+| documentsPrepared | Closing package prepared for signing |
 | closingScheduled | Appointment set for document execution |
 | closingCompleted | All documents signed and funds collected |
 | documentsRecorded | Deed and mortgage filed with county |
@@ -138,6 +138,7 @@ graph LR
     T -->|records with| CountyRecorder
     T -->|underwritten by| TitleInsurer
     T -->|orders from| Surveyor
+    T -->|appraised by| Appraiser
 ```
 
 ## Usage
@@ -148,6 +149,12 @@ graph LR
 import { clearPropertyTitles } from '@headlessly/clear-property-titles'
 
 const title = clearPropertyTitles()
+
+// List files by status, property address, or party name
+const transactions = await title.findTransactions({ status: 'in-progress', county: 'Travis' })
+
+// Retrieve ownership history for property
+const chainOfTitle = await title.getChainOfTitle({ parcelNumber: '12345-678-90' })
 
 // Order title search for new purchase
 const order = await title.orderTitle({

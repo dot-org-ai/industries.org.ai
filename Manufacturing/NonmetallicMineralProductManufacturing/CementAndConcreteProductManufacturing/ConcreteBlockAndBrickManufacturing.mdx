@@ -85,15 +85,15 @@ Concrete block and brick manufacturing involves batching cement, aggregates, and
 |-------|-------------|
 | batchCompleted | Mix prepared and delivered to block machine |
 | blocksFormed | Blocks molded and transferred to curing |
-| curingComplete | Blocks reached target strength |
+| curingCompleted | Blocks reached target strength |
 | strengthApproved | Samples pass compressive strength test |
 | strengthFailed | Samples below specification strength |
 | blocksGraded | Products sorted by quality level |
 | orderReceived | Customer order entered into system |
 | orderShipped | Blocks delivered to customer |
-| machineDown | Block machine requires maintenance |
-| moldChange | Mold swap completed for different product |
-| inventoryLow | Stock below reorder threshold |
+| machineWentDown | Block machine requires maintenance |
+| moldChanged | Mold swap completed for different product |
+| inventoryDepleted | Stock fell below threshold |
 
 ## Searches
 
@@ -205,7 +205,7 @@ plant.strengthFailed(async ({ runId, actualStrength, targetStrength }) => {
 })
 
 // Auto-reorder materials when inventory low
-plant.inventoryLow(async ({ materialId, currentLevel, reorderPoint }) => {
+plant.inventoryDepleted(async ({ materialId, currentLevel, reorderPoint }) => {
   await plant.createPurchaseOrder({
     materialId,
     quantity: reorderPoint * 2,

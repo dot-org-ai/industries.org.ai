@@ -87,7 +87,7 @@ Lumber wholesalers distribute dimensional lumber, plywood, engineered wood produ
 | orderShipped | Materials dispatched for delivery |
 | orderDelivered | Customer received materials |
 | priceChanged | Market pricing shifted |
-| stockLow | Inventory below reorder point |
+| stockDepleted | Inventory fell below reorder level |
 | contractExecuted | Commodity hedge completed |
 | quoteExpired | Price quotation no longer valid |
 | certificationRenewed | Chain of custody updated |
@@ -192,7 +192,7 @@ wholesaler.marketAlerted(async ({ product, priceChange }) => {
 })
 
 // Auto-reorder on low stock
-wholesaler.stockLow(async ({ product, currentQty, reorderPoint }) => {
+wholesaler.stockDepleted(async ({ product, currentQty, reorderPoint }) => {
   const forecast = await wholesaler.forecastDemand({ product })
 
   await wholesaler.placeOrder({

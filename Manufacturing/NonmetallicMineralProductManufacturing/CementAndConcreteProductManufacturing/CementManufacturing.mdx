@@ -93,8 +93,8 @@ Cement manufacturing involves mining or purchasing limestone and clay, crushing 
 | qualityRejected | Cement fails tests and requires adjustment |
 | cementStored | Product transferred to storage silo |
 | orderShipped | Cement delivered to customer |
-| kilnIssue | Temperature or feed anomaly detected |
-| emissionsAlert | Environmental threshold exceeded |
+| kilnIssueDetected | Temperature or feed anomaly detected |
+| emissionsLimitExceeded | Emissions level exceeded permitted threshold |
 | maintenanceScheduled | Equipment service planned |
 
 ## Searches
@@ -194,7 +194,7 @@ await plant.grindCement({
 
 ```typescript
 // Auto-adjust kiln on temperature deviation
-plant.kilnIssue(async ({ kilnId, parameter, reading, target }) => {
+plant.kilnIssueDetected(async ({ kilnId, parameter, reading, target }) => {
   await plant.adjustKiln({
     kilnId,
     parameter,
@@ -204,7 +204,7 @@ plant.kilnIssue(async ({ kilnId, parameter, reading, target }) => {
 })
 
 // Auto-alert on emissions threshold
-plant.emissionsAlert(async ({ source, pollutant, reading, limit }) => {
+plant.emissionsLimitExceeded(async ({ source, pollutant, reading, limit }) => {
   await plant.reduceKilnFeed({
     source,
     reduction: 0.1,

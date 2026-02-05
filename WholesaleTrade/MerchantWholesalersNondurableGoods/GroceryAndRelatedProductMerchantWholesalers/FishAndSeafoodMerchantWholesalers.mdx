@@ -87,10 +87,10 @@ Fish and seafood merchant wholesalers distribute fresh, frozen, and processed se
 | orderPicked | Products selected and staged for delivery |
 | orderShipped | Delivery departed for customer |
 | orderDelivered | Customer confirmed receipt |
-| inventoryLow | Stock fell below reorder threshold |
-| lotExpiring | Product approaching freshness deadline |
+| inventoryDepleted | Stock fell below reorder level |
+| lotExpirationNeared | Product approaching freshness deadline |
 | priceUpdated | Wholesale pricing changed |
-| qualityAlert | Product failed quality inspection |
+| qualityIssueDetected | Quality issue detected in product inspection |
 | returnProcessed | Customer return handled |
 
 ## Searches
@@ -185,7 +185,7 @@ await wholesaler.processOrder({
 
 ```typescript
 // Auto-alert on expiring inventory
-wholesaler.lotExpiring(async ({ lotId, daysRemaining, product }) => {
+wholesaler.lotExpirationNeared(async ({ lotId, daysRemaining, product }) => {
   if (daysRemaining <= 2) {
     await wholesaler.priceProduct({
       productId: product.id,
@@ -196,7 +196,7 @@ wholesaler.lotExpiring(async ({ lotId, daysRemaining, product }) => {
 })
 
 // Auto-reorder when inventory low
-wholesaler.inventoryLow(async ({ productId, currentStock, reorderPoint }) => {
+wholesaler.inventoryDepleted(async ({ productId, currentStock, reorderPoint }) => {
   const suppliers = await wholesaler.findSuppliers({ species: productId })
   await wholesaler.sourceCatch({
     supplierId: suppliers[0].id,

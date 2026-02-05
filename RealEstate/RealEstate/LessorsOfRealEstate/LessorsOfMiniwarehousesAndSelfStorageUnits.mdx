@@ -85,7 +85,7 @@ Self-storage lessors provide secure, rentable storage spaces including climate-c
 | moveInCompleted | Customer has rented and accessed unit |
 | paymentProcessed | Monthly rent payment successful |
 | paymentFailed | Payment attempt declined or failed |
-| accountDelinquent | Account past due beyond grace period |
+| accountBecameDelinquent | Account past due beyond grace period |
 | accessRevoked | Customer gate access disabled |
 | unitOverlocked | Facility lock placed on unit door |
 | lienNoticeSent | Legal notice mailed to customer |
@@ -142,6 +142,7 @@ graph LR
     L -->|auctions through| AuctionCompany
     L -->|processes via| PaymentProcessor
     L -->|controls access via| AccessControlVendor
+    L -->|buys from| LockSupplier
 ```
 
 ## Usage
@@ -152,6 +153,12 @@ graph LR
 import { leaseStorage } from '@headlessly/lease-storage'
 
 const facility = leaseStorage()
+
+// List vacant units by size, type, and features
+const availableUnits = await facility.findAvailableUnits({ size: '10x10', climate: true })
+
+// Calculate occupancy rates by unit type
+const occupancyReport = await facility.getOccupancyReport({ facility: 'main-campus' })
 
 // Check available units
 const units = await facility.checkAvailability({
@@ -183,7 +190,7 @@ await facility.enrollInsurance({
 
 ```typescript
 // Auto-overlock when account is delinquent
-facility.accountDelinquent(async ({ customerId, unitId, daysLate }) => {
+facility.accountBecameDelinquent(async ({ customerId, unitId, daysLate }) => {
   if (daysLate >= 30) {
     await facility.overlockUnit({
       unitId,

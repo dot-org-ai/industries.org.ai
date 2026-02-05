@@ -82,13 +82,13 @@ Fresh fruit and vegetable merchant wholesalers distribute produce from domestic 
 | produceReceived | Produce lot arrived from supplier |
 | shipmentInspected | Quality grading completed on incoming product |
 | productStored | Produce placed in cold storage |
-| ripeningComplete | Fruit reached optimal ripeness |
+| ripeningCompleted | Fruit reached optimal ripeness |
 | orderReceived | Customer purchase order submitted |
 | orderPicked | Products selected and staged for delivery |
 | orderShipped | Delivery departed for customer |
 | orderDelivered | Customer confirmed receipt |
-| inventoryLow | Stock fell below reorder threshold |
-| lotExpiring | Product approaching freshness limit |
+| inventoryDepleted | Stock fell below reorder level |
+| lotExpirationNeared | Product approaching freshness limit |
 | priceUpdated | Wholesale pricing changed |
 | seasonStarted | New growing season began for a commodity |
 
@@ -186,7 +186,7 @@ await wholesaler.processOrder({
 
 ```typescript
 // Auto-discount expiring produce
-wholesaler.lotExpiring(async ({ lotId, daysRemaining, product }) => {
+wholesaler.lotExpirationNeared(async ({ lotId, daysRemaining, product }) => {
   if (daysRemaining <= 2) {
     await wholesaler.priceProduct({
       productId: product.id,
@@ -197,7 +197,7 @@ wholesaler.lotExpiring(async ({ lotId, daysRemaining, product }) => {
 })
 
 // Auto-reorder when inventory low
-wholesaler.inventoryLow(async ({ productId, currentStock }) => {
+wholesaler.inventoryDepleted(async ({ productId, currentStock }) => {
   const calendar = await wholesaler.getSeasonalCalendar({ commodity: productId })
   if (calendar.inSeason) {
     const suppliers = await wholesaler.findSuppliers({ commodity: productId })

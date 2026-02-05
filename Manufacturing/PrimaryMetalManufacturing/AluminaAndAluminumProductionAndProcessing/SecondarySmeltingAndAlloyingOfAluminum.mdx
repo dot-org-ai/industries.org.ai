@@ -153,6 +153,7 @@ graph LR
     R -->|sells to| ExtrusionMill
     R -->|reports to| EnvironmentalAgency
     R -->|tests with| LaboratoryService
+    R -->|buys from| EquipmentVendor
 ```
 
 ## Usage
@@ -163,6 +164,12 @@ graph LR
 import { smeltRecycledAluminum } from '@headlessly/smelt-recycled-aluminum'
 
 const recycler = smeltRecycledAluminum()
+
+// List available scrap by type and grade
+const scrapInventory = await recycler.findScrapInventory({ grade: 'twitch', minLbs: 20000 })
+
+// Retrieve pending orders by alloy
+const orderQueue = await recycler.getOrderQueue({ alloy: 'A356', status: 'pending' })
 
 // Receive aluminum scrap
 const scrap = await recycler.receiveScrap({

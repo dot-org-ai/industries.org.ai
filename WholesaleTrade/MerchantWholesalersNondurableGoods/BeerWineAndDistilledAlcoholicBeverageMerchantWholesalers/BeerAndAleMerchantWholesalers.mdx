@@ -86,8 +86,8 @@ Beer and ale merchant wholesalers distribute domestic and imported beers, craft 
 | orderDelivered | Products delivered to account |
 | invoiceSent | Billing transmitted to customer |
 | paymentReceived | Account payment processed |
-| inventoryLow | Stock fell below reorder point |
-| productExpiring | Beer approaching freshness date |
+| inventoryDepleted | Stock fell below reorder level |
+| productExpirationNeared | Beer approaching freshness date |
 | promotionStarted | Supplier promotion activated |
 | promotionEnded | Promotional program expired |
 | tapPlaced | Draft handle installed at account |
@@ -186,7 +186,7 @@ await distributor.placeTap({
 
 ```typescript
 // Auto-alert on expiring product
-distributor.productExpiring(async ({ productId, lotId, daysRemaining }) => {
+distributor.productExpirationNeared(async ({ productId, lotId, daysRemaining }) => {
   if (daysRemaining <= 30) {
     await distributor.runPromotion({
       productId,
@@ -197,7 +197,7 @@ distributor.productExpiring(async ({ productId, lotId, daysRemaining }) => {
 })
 
 // Auto-reorder on low inventory
-distributor.inventoryLow(async ({ productId, currentStock, reorderPoint }) => {
+distributor.inventoryDepleted(async ({ productId, currentStock, reorderPoint }) => {
   const supplier = await getPreferredSupplier(productId)
   await distributor.purchaseProduct({
     supplierId: supplier.id,

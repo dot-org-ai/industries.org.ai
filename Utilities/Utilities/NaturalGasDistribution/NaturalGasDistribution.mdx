@@ -95,8 +95,8 @@ Natural gas distribution delivers gas from interstate pipelines to residential, 
 | leakRepaired | Gas leak fixed and area made safe |
 | emergencyDispatched | Crew sent to respond to gas emergency |
 | mainReplaced | Section of distribution pipeline renewed |
-| coldWeatherAlert | Increased demand expected due to weather |
-| supplyConstraint | Gas availability limited at city gate |
+| coldWeatherWarningIssued | Cold weather warning issued affecting distribution |
+| supplyBecameConstrained | Gas availability limited at city gate |
 
 ## Searches
 
@@ -147,6 +147,7 @@ graph LR
     U -->|regulated by| StateRegulator
     U -->|reports to| PHMSA
     U -->|contracts| ContractorCrew
+    U -->|buys from| MeterManufacturer
 ```
 
 ## Usage
@@ -211,7 +212,7 @@ utility.leakDetected(async ({ location, severity, source }) => {
 })
 
 // Manage cold weather demand
-utility.coldWeatherAlert(async ({ forecast, duration, severity }) => {
+utility.coldWeatherWarningIssued(async ({ forecast, duration, severity }) => {
   if (severity === 'extreme') {
     // Check supply adequacy
     const supply = await utility.getSupplyStatus()

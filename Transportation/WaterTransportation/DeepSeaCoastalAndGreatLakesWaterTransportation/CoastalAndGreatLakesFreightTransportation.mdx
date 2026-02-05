@@ -78,7 +78,7 @@ Coastal and Great Lakes freight transportation involves operating vessels betwee
 | invoiceShipper | Bill for transportation services |
 | arrangeTug | Schedule assist boats |
 | hirePilot | Engage harbor pilot |
-| reportArrival | Notify port of vessel ETA |
+| arrivalReported | Notify port of vessel ETA |
 
 ## Events
 
@@ -98,7 +98,7 @@ Coastal and Great Lakes freight transportation involves operating vessels betwee
 | shipperInvoiced | Bill sent for services |
 | tugArranged | Assist boats scheduled |
 | pilotHired | Harbor pilot engaged |
-| reportArrival | Port notified of vessel estimated time of arrival |
+| arrivalReported | Port notified of vessel estimated time of arrival |
 
 ## Searches
 
@@ -128,7 +128,7 @@ graph TD
     I -->|Yes| J[transitLock]
     I -->|No| K[Continue]
     J --> K
-    K --> L[reportArrival]
+    K --> L[arrivalReported]
     L --> M[hirePilot]
     M --> N[discharge]
     N --> O[deliverCargo]
@@ -201,7 +201,7 @@ carrier.vesselArrived(async ({ voyageId, port }) => {
 })
 
 // Auto-arrange tugs for vessel movements
-carrier.reportArrival(async ({ vesselId, port, eta }) => {
+carrier.arrivalReported(async ({ vesselId, port, eta }) => {
   const vessel = await carrier.getVesselSchedule({ vesselId })
 
   if (vessel.requiresTugAssist) {

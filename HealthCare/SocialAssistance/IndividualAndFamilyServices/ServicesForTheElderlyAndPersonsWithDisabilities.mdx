@@ -7,7 +7,7 @@ subsector: Social Assistance
 subsectorCode: 624
 group: Individual and Family Services
 groupCode: 6241
-action: Support
+action: Assist
 object: Seniors
 ---
 
@@ -98,7 +98,7 @@ Services for the elderly and persons with disabilities provide nonresidential su
 | authorizationObtained | Funding approved |
 | carePlanUpdated | Services modified |
 | billingSubmitted | Claim sent |
-| wellbeingConcern | A concern about client health or safety has been identified |
+| wellbeingConcernRaised | A concern about client health or safety has been identified |
 | serviceScheduled | A service visit or program session has been scheduled |
 | clientDischarged | Services ended |
 
@@ -162,9 +162,9 @@ graph LR
 ### Calling Actions
 
 ```typescript
-import { supportSeniors } from '@headlessly/support-seniors'
+import { assistSeniors } from '@headlessly/assist-seniors'
 
-const agency = supportSeniors()
+const agency = assistSeniors()
 
 // Review current caseload by service type
 const clients = await agency.findClients({ status: 'active', service: 'homeCare' })
@@ -211,10 +211,10 @@ agency.serviceScheduled(async ({ clientId, serviceType, scheduledDate }) => {
 })
 
 // Alert caregiver on changes
-agency.wellbeingConcern(async ({ clientId, concernType, severity }) => {
+agency.wellbeingConcernRaised(async ({ clientId, concernType, severity }) => {
   await agency.supportCaregiver({
     clientId,
-    alertType: 'wellbeingConcern',
+    alertType: 'wellbeingConcernRaised',
     concernType,
     severity
   })

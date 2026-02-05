@@ -94,7 +94,7 @@ This U.S. industry comprises establishments primarily engaged in (1) flat rollin
 | annealed | Heat treatment completed |
 | coilSlit | Coil cut to ordered width |
 | sheetSheared | Sheets cut to size |
-| leveledCoil | Coil flattened for sheet |
+| coilLeveled | Coil flattened for sheet |
 | inspected | Quality verification completed |
 | coated | Surface treatment applied |
 | packaged | Product prepared for shipping |
@@ -152,6 +152,7 @@ graph LR
     M -->|sells to| ConstructionSupplier
     M -->|buys coatings from| CoatingSupplier
     M -->|tests with| LaboratoryService
+    M -->|buys from| EquipmentVendor
 ```
 
 ## Usage
@@ -162,6 +163,12 @@ graph LR
 import { rollAluminumSheetPlateFoil } from '@headlessly/roll-aluminum-sheet-plate-foil'
 
 const mill = rollAluminumSheetPlateFoil()
+
+// List available ingot by alloy and size
+const ingotStock = await mill.findIngotStock({ alloy: '3003', minWeight: 10000 })
+
+// Check coil stock by gauge and alloy
+const coilInventory = await mill.getCoilInventory({ gauge: 0.040, width: 48 })
 
 // Receive aluminum ingot
 const ingot = await mill.receiveIngot({

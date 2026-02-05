@@ -87,13 +87,13 @@ Packaged frozen food wholesalers distribute frozen entrees, vegetables, fruits, 
 | temperatureVerified | Cold chain confirmed |
 | orderDelivered | Products delivered |
 | routeCompleted | Deliveries finished |
-| temperatureExcursion | Cold chain breach detected |
-| expirationApproaching | Products near expiry |
+| temperatureExcursionDetected | Cold chain breach detected |
+| expirationNeared | Products near expiry |
 | planogramUpdated | Freezer configuration changed |
 | promotionStarted | Manufacturer deal began |
-| stockLow | Inventory below threshold |
+| stockDepleted | Inventory fell below reorder level |
 | returnProcessed | Return completed |
-| seasonalPeak | High demand period starting |
+| seasonalPeakReached | High demand period started |
 
 ## Searches
 
@@ -182,7 +182,7 @@ await distributor.deliverColdChain({
 
 ```typescript
 // Alert on temperature excursion
-distributor.temperatureExcursion(async ({ loadId, temperature, threshold }) => {
+distributor.temperatureExcursionDetected(async ({ loadId, temperature, threshold }) => {
   await createAlert({
     severity: 'high',
     type: 'cold-chain-breach',
@@ -193,7 +193,7 @@ distributor.temperatureExcursion(async ({ loadId, temperature, threshold }) => {
 })
 
 // Promote items near expiration
-distributor.expirationApproaching(async ({ productId, lotNumber, daysRemaining }) => {
+distributor.expirationNeared(async ({ productId, lotNumber, daysRemaining }) => {
   if (daysRemaining < 30) {
     await distributor.runPromotion({
       productId,

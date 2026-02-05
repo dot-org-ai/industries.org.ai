@@ -89,9 +89,9 @@ Petroleum bulk stations and terminals operate tank farms and loading facilities 
 | ticketIssued | Load documentation generated |
 | inventoryReconciled | Book/physical comparison completed |
 | paymentReceived | Customer payment processed |
-| inventoryLow | Tank level fell below threshold |
-| inventoryVariance | Gain or loss detected |
-| complianceAlert | Environmental deadline approaching |
+| inventoryDepleted | Stock fell below reorder level |
+| inventoryVarianceDetected | Gain or loss detected |
+| complianceViolationDetected | Compliance violation or expiration detected |
 
 ## Searches
 
@@ -185,14 +185,14 @@ const ticket = await terminal.loadTruck({
 
 ```typescript
 // Auto-alert on low inventory
-terminal.inventoryLow(async ({ tankId, product, currentLevel, threshold }) => {
+terminal.inventoryDepleted(async ({ tankId, product, currentLevel, threshold }) => {
   await notifySupplyTeam({
     message: `${product} in ${tankId} at ${currentLevel} gal - below ${threshold}`
   })
 })
 
 // Auto-investigate inventory variance
-terminal.inventoryVariance(async ({ tankId, bookVolume, physicalVolume }) => {
+terminal.inventoryVarianceDetected(async ({ tankId, bookVolume, physicalVolume }) => {
   const variance = bookVolume - physicalVolume
   if (Math.abs(variance) > 500) {
     await createInvestigation({

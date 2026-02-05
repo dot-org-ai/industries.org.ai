@@ -84,15 +84,15 @@ Commercial and institutional construction encompasses office buildings, retail c
 | gmpEstablished | Guaranteed maximum price agreed with owner |
 | tradesBoughtOut | All subcontracts executed |
 | siteMobilized | Jobsite setup complete |
-| foundationsComplete | Foundation work finished |
-| structureComplete | Building frame topped out |
+| foundationsCompleted | Foundation work finished |
+| structureCompleted | Building frame topped out |
 | envelopeClosed | Building weather-tight |
-| roughInComplete | MEP rough-in inspections passed |
-| interiorsComplete | Finish work completed |
+| roughInCompleted | MEP rough-in inspections passed |
+| interiorsCompleted | Finish work completed |
 | submittalApproved | Product data accepted |
 | rfiResolved | Information request answered |
 | payAppApproved | Payment application processed |
-| punchlistComplete | All deficiencies corrected |
+| punchlistCompleted | All deficiencies corrected |
 | projectClosedOut | Final documentation delivered |
 
 ## Searches
@@ -139,6 +139,7 @@ graph LR
     GC -->|schedules with| BuildingInspector
     GC -->|coordinates with| Tenant
     GC -->|reports to| Lender
+    GC -->|hires| ConstructionManager
 ```
 
 ## Usage
@@ -185,7 +186,7 @@ await builder.submitPayApp({
 
 ```typescript
 // Auto-notify when structure complete
-builder.structureComplete(async ({ projectId }) => {
+builder.structureCompleted(async ({ projectId }) => {
   const project = await builder.findProjects({ id: projectId })
 
   await notifyStakeholders({
@@ -196,7 +197,7 @@ builder.structureComplete(async ({ projectId }) => {
 })
 
 // Auto-generate punchlist report
-builder.punchlistComplete(async ({ projectId }) => {
+builder.punchlistCompleted(async ({ projectId }) => {
   await builder.closeOutProject({
     projectId,
     deliverables: ['as-builts', 'warranties', 'O&M-manuals'],

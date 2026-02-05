@@ -98,8 +98,8 @@ Residential mental health and substance abuse facilities provide 24-hour supervi
 | authorizationApproved | Continued stay approved |
 | authorizationDenied | Coverage denied |
 | dischargeCompleted | Resident transitioned out |
-| authorizationExpiring | Insurance approval for continued stay is approaching expiration |
-| dischargeApproaching | Resident target discharge date is nearing |
+| authorizationExpirationNeared | Insurance approval for continued stay is approaching expiration |
+| dischargeNeared | Resident target discharge date is nearing |
 | billingSubmitted | Claim sent to payer |
 
 ## Searches
@@ -131,7 +131,7 @@ graph TD
     J --> K[administerMedication]
     K --> L[conductDrugScreen]
     L --> M[documentProgress]
-    M --> N{Authorization Expiring?}
+    M --> N{Authorization Expiration Neared?}
     N -->|Yes| O[reviewAuthorization]
     N -->|No| P{Ready for Discharge?}
     O --> P
@@ -200,7 +200,7 @@ const resident = await facility.admitResident({
 
 ```typescript
 // Alert on authorization expiring
-facility.authorizationExpiring(async ({ residentId, authorizationId, daysRemaining }) => {
+facility.authorizationExpirationNeared(async ({ residentId, authorizationId, daysRemaining }) => {
   if (daysRemaining <= 3) {
     await facility.reviewAuthorization({
       residentId,
@@ -212,7 +212,7 @@ facility.authorizationExpiring(async ({ residentId, authorizationId, daysRemaini
 })
 
 // Coordinate discharge planning
-facility.dischargeApproaching(async ({ residentId, targetDate }) => {
+facility.dischargeNeared(async ({ residentId, targetDate }) => {
   await facility.planDischarge({
     residentId,
     targetDate,

@@ -86,7 +86,7 @@ Limited-service restaurants provide food services where patrons order and pay be
 | ticketSent | Order displayed in kitchen |
 | itemPrepared | Menu item ready for assembly |
 | orderBagged | Items packaged for fulfillment |
-| orderReady | Complete order available for pickup |
+| orderPrepared | Complete order available for pickup |
 | orderPickedUp | Customer collected their order |
 | orderDelivered | Delivery completed to customer |
 | rewardApplied | Loyalty benefit redeemed |
@@ -94,7 +94,7 @@ Limited-service restaurants provide food services where patrons order and pay be
 | orderVoided | Transaction cancelled and refunded |
 | promotionStarted | Limited-time offer activated |
 | promotionEnded | Promotional period concluded |
-| inventoryAlert | Stock level below threshold |
+| inventoryThresholdReached | Inventory level crossed reorder threshold |
 | speedTargetMissed | Order exceeded timing standard |
 
 ## Searches
@@ -144,6 +144,7 @@ graph LR
     R -->|inspected by| HealthInspector
     R -->|integrates| LoyaltyPlatform
     R -->|markets via| MarketingAgency
+    R -->|buys from| KitchenEquipmentVendor
 ```
 
 ## Usage
@@ -201,7 +202,7 @@ await restaurant.trackSpeedOfService({
 
 ```typescript
 // Auto-reorder on low inventory
-restaurant.inventoryAlert(async ({ item, currentLevel, parLevel }) => {
+restaurant.inventoryThresholdReached(async ({ item, currentLevel, parLevel }) => {
   if (currentLevel <= parLevel * 0.2) {
     await restaurant.reorderStock({
       items: [{ sku: item.sku, quantity: parLevel - currentLevel }],

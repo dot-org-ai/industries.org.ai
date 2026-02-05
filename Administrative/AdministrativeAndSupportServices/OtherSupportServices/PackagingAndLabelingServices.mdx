@@ -93,7 +93,7 @@ Packaging and labeling services provide contract packaging of client-owned produ
 | qualityRejected | Inspection failed, rework required |
 | orderPalletized | Products ready for shipment |
 | shipmentDispatched | Carrier picked up order |
-| inventoryLow | Material stock below threshold |
+| inventoryDepleted | Stock fell below threshold |
 | invoiceSent | Bill sent to client |
 | paymentReceived | Client payment processed |
 | specificationChanged | Client updated requirements |
@@ -198,7 +198,7 @@ await packaging.setupLine({
 
 ```typescript
 // Auto-reorder materials when low
-packaging.inventoryLow(async ({ materialSku, currentStock, reorderPoint }) => {
+packaging.inventoryDepleted(async ({ materialSku, currentStock, reorderPoint }) => {
   const supplier = await packaging.getPreferredSupplier({ sku: materialSku })
   await createPurchaseOrder({
     supplierId: supplier.id,

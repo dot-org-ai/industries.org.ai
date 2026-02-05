@@ -91,7 +91,7 @@ Truck and RV rental companies provide moving trucks, cargo vans, utility trailer
 | paymentProcessed | Rental charges collected |
 | mileageExceeded | Rental exceeded included miles |
 | vehicleServiced | Maintenance completed |
-| lowInventoryAlert | Location below target fleet level |
+| lowInventoryDetected | Fleet inventory dropped below minimum threshold |
 | vehicleRepositioned | Fleet moved between locations |
 
 ## Searches
@@ -142,6 +142,7 @@ graph LR
     R -->|distributes through| DealerNetwork
     R -->|fuels via| FuelCardProvider
     R -->|complies with| DOTAuthority
+    R -->|buys from| TelematicsVendor
 ```
 
 ## Usage
@@ -152,6 +153,12 @@ graph LR
 import { rentTrucks } from '@headlessly/rent-trucks'
 
 const rental = rentTrucks()
+
+// Search trucks and trailers by size and location
+const availableVehicles = await rental.findAvailableVehicles({ type: 'box-truck', location: 'downtown', date: '2024-04-01' })
+
+// List bookings by date or location
+const reservations = await rental.getReservations({ location: 'downtown', week: 'current' })
 
 // Create a one-way moving truck reservation
 const reservation = await rental.createReservation({
@@ -186,7 +193,7 @@ await rental.processOneWay({
 
 ```typescript
 // Auto-reposition when inventory low
-rental.lowInventoryAlert(async ({ locationId, vehicleType, currentCount }) => {
+rental.lowInventoryDetected(async ({ locationId, vehicleType, currentCount }) => {
   const nearbyLocations = await findSurplusLocations(vehicleType, locationId)
 
   if (nearbyLocations.length > 0) {

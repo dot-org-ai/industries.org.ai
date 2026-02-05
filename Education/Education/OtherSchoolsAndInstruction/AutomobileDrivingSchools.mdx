@@ -17,7 +17,7 @@ object: Drivers
 
 ## Overview
 
-Automobile driving schools provide classroom and behind-the-wheel instruction for new drivers seeking learner's permits and driver's licenses, as well as defensive driving courses for experienced drivers. This definition exposes actions for student enrollment, classroom instruction, driving lessons, and DMV test preparation, along with events for workflow automation and searches for program data.
+Automobile driving schools provide classroom and behind-the-wheel instruction for new drivers seeking learner's permits and driver's licenses, as well as defensive driving courses for experienced drivers. This definition exposes actions for student enrollment, classroom instruction, driving lessons, and road test preparation, along with events for workflow automation and searches for program data.
 
 ## Actors
 
@@ -25,7 +25,7 @@ Automobile driving schools provide classroom and behind-the-wheel instruction fo
 |-------|-------------|
 | StudentDriver | Individual seeking driver education |
 | Parent | Guardian enrolling minor and providing supervised practice |
-| DMV | Department of Motor Vehicles issuing permits and licenses |
+| LicensingAuthority | Department of Motor Vehicles issuing permits and licenses |
 | InsuranceCompany | Carrier offering discounts for driver education completion |
 | CourtSystem | Authority mandating defensive driving courses |
 | HighSchool | Institution partnering for teen driver education |
@@ -53,8 +53,8 @@ Automobile driving schools provide classroom and behind-the-wheel instruction fo
 | Course | Structured driver education program |
 | Lesson | Scheduled behind-the-wheel training session |
 | Enrollment | Record of student registration |
-| Permit | Learner authorization from DMV |
-| License | Full driving authorization from DMV |
+| Permit | Learner authorization from licensing authority |
+| License | Full driving authorization from licensing authority |
 | Vehicle | Training car equipped with dual controls |
 | Certificate | Completion document for insurance or court |
 | Assessment | Evaluation of driving skills |
@@ -74,11 +74,11 @@ Automobile driving schools provide classroom and behind-the-wheel instruction fo
 | logPracticeHours | Record supervised driving time |
 | assessSkills | Evaluate driver competency |
 | simulateTest | Conduct practice driving examination |
-| prepareRoadTest | Ready student for DMV practical exam |
+| prepareRoadTest | Ready student for practical driving exam |
 | issueCertificate | Award completion document |
 | processInsuranceForm | Complete paperwork for insurance discounts |
 | maintainVehicle | Service and inspect training cars |
-| scheduleRoadTest | Book DMV appointment for student |
+| scheduleRoadTest | Book road test appointment for student |
 | teachDefensiveDriving | Conduct course for experienced drivers |
 | processCourt | Handle court-mandated enrollment |
 
@@ -94,11 +94,11 @@ Automobile driving schools provide classroom and behind-the-wheel instruction fo
 | practiceHoursLogged | Supervised time recorded |
 | skillsAssessed | Driver competency evaluated |
 | testSimulated | Practice exam completed |
-| roadTestPrepared | DMV readiness confirmed |
+| roadTestPrepared | Road test readiness confirmed |
 | certificateIssued | Completion document awarded |
 | insuranceFormProcessed | Discount paperwork completed |
 | vehicleMaintained | Training car serviced |
-| roadTestScheduled | DMV appointment booked |
+| roadTestScheduled | Road test appointment booked |
 | defensiveDrivingTaught | Experienced driver course completed |
 | courtProcessed | Mandated enrollment handled |
 
@@ -144,12 +144,13 @@ graph LR
 
     S -->|trains| StudentDriver
     S -->|communicates with| Parent
-    S -->|prepares for| DMV
+    S -->|prepares for| LicensingAuthority
     S -->|provides forms to| InsuranceCompany
     S -->|accepts referrals from| CourtSystem
     S -->|partners with| HighSchool
     S -->|purchases from| VehicleSupplier
     S -->|insured by| FleetInsurer
+    S -->|serves| EmployerClient
 ```
 
 ## Usage
@@ -235,7 +236,7 @@ school.skillsAssessed(async ({ studentId, assessmentId }) => {
         template: 'road-test-ready',
         data: {
           practiceHours: practiceHours.total,
-          nextSteps: 'Schedule DMV appointment'
+          nextSteps: 'Schedule road test appointment'
         }
       })
     }

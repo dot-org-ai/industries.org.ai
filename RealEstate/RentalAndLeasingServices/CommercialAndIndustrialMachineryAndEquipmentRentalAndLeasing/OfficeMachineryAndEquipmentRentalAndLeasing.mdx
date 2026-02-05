@@ -86,11 +86,11 @@ Office equipment lessors provide computers, copiers, printers, office furniture,
 | equipmentDeployed | Devices installed at customer |
 | meterRead | Usage counters captured |
 | suppliesShipped | Consumables dispatched |
-| supplyLow | Toner or ink running low |
+| supplyDepleted | Supply stock fell below threshold |
 | serviceRequested | Repair call logged |
 | serviceCompleted | Repair finished |
 | invoiceGenerated | Monthly bill created |
-| leaseExpiring | Lease approaching maturity |
+| leaseExpirationNeared | Lease approaching maturity |
 | refreshProposed | Upgrade recommendation sent |
 | equipmentReturned | Devices picked up |
 
@@ -123,7 +123,7 @@ graph TD
     J -->|Yes| K[dispatchService]
     J -->|No| L[invoiceUsage]
     K --> L
-    L --> M{Lease Expiring?}
+    L --> M{Lease Expiration Neared?}
     M -->|Yes| N[proposeRefresh]
     M -->|No| F
     N --> O{Renew?}
@@ -145,6 +145,7 @@ graph LR
     L -->|finances via| FinanceCompany
     L -->|integrates| SoftwareVendor
     L -->|recycles via| RecyclingPartner
+    L -->|uses| TradeInProgram
 ```
 
 ## Usage
@@ -197,7 +198,7 @@ const lease = await lessor.executeLease({
 
 ```typescript
 // Auto-ship supplies when low
-lessor.supplyLow(async ({ equipmentId, supplyType, remainingPercent }) => {
+lessor.supplyDepleted(async ({ equipmentId, supplyType, remainingPercent }) => {
   if (remainingPercent <= 15) {
     await lessor.fulfillSupplies({
       equipmentId,
@@ -209,7 +210,7 @@ lessor.supplyLow(async ({ equipmentId, supplyType, remainingPercent }) => {
 })
 
 // Auto-propose refresh before lease expires
-lessor.leaseExpiring(async ({ leaseId, customerId, expirationDate }) => {
+lessor.leaseExpirationNeared(async ({ leaseId, customerId, expirationDate }) => {
   const monthsRemaining = differenceInMonths(expirationDate, new Date())
 
   if (monthsRemaining === 6) {

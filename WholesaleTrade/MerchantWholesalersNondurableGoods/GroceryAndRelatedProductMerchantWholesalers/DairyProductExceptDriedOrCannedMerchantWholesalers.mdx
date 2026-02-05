@@ -87,11 +87,11 @@ Dairy product wholesalers distribute fluid milk, cheese, butter, yogurt, cream, 
 | temperatureVerified | Cold chain confirmed |
 | orderDelivered | Products delivered |
 | routeCompleted | Deliveries finished |
-| dateCodeExpiring | Products approaching freshness date |
-| temperatureExcursion | Cold chain breach detected |
+| dateCodeExpirationNeared | Products approaching freshness date |
+| temperatureExcursionDetected | Cold chain breach detected |
 | creditIssued | Spoilage credit processed |
 | promotionStarted | Manufacturer deal began |
-| stockLow | Inventory below threshold |
+| stockDepleted | Inventory fell below reorder level |
 | schoolOrderReceived | School program order placed |
 | returnProcessed | Return completed |
 
@@ -186,7 +186,7 @@ await distributor.processSchoolOrder({
 
 ```typescript
 // Promote items near date code
-distributor.dateCodeExpiring(async ({ productId, dateCode, daysRemaining }) => {
+distributor.dateCodeExpirationNeared(async ({ productId, dateCode, daysRemaining }) => {
   if (daysRemaining < 5) {
     await distributor.runPromotion({
       productId,
@@ -198,7 +198,7 @@ distributor.dateCodeExpiring(async ({ productId, dateCode, daysRemaining }) => {
 })
 
 // Alert on cold chain issues
-distributor.temperatureExcursion(async ({ loadId, temperature, duration }) => {
+distributor.temperatureExcursionDetected(async ({ loadId, temperature, duration }) => {
   if (duration > 30) {
     await createAlert({
       severity: 'critical',

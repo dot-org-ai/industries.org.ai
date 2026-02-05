@@ -98,7 +98,7 @@ Inland water passenger transportation involves operating ferries, riverboats, an
 | foodServed | Dining service completed |
 | vesselTracked | Position recorded |
 | countsReported | Statistics submitted |
-| weatherAlert | Adverse weather conditions detected for waterway |
+| weatherWarningIssued | Weather warning issued affecting operations |
 
 ## Searches
 
@@ -162,6 +162,12 @@ import { shipRiverPassengers } from '@headlessly/ship-river-passengers'
 
 const ferryService = shipRiverPassengers()
 
+// List scheduled crossings
+const departures = await ferryService.findDepartures({ route: 'hudson-river', date: '2024-06-15' })
+
+// View capacity for departure
+const availability = await ferryService.checkAvailability({ departureId: 'DEP-1430', passengers: 4 })
+
 // Search for ferry departures
 const departures = await ferryService.searchSchedule({
   origin: 'downtown-landing',
@@ -214,7 +220,7 @@ ferryService.passengersDisembarked(async ({ vesselId, passengerCount, routeId })
 })
 
 // Auto-adjust schedule for weather
-ferryService.weatherAlert(async ({ severity, waterway }) => {
+ferryService.weatherWarningIssued(async ({ severity, waterway }) => {
   if (severity === 'high') {
     await ferryService.cancelDepartures({
       waterway,

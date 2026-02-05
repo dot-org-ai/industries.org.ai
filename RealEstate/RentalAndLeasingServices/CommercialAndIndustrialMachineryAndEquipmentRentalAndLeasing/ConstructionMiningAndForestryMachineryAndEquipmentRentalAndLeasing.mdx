@@ -84,15 +84,15 @@ Heavy equipment rental companies provide excavators, bulldozers, cranes, drillin
 | rentalCreated | Equipment booked for job |
 | transportScheduled | Hauling arranged |
 | equipmentDelivered | Machine arrived at job site |
-| telematicsAlert | Equipment issue detected |
-| pmDue | Preventive maintenance required |
+| telematicsAnomalyDetected | Telematics system detected equipment anomaly |
+| pmBecameDue | Preventive maintenance required |
 | serviceDispatched | Technician sent to site |
 | serviceCompleted | Repair finished |
 | rentalExtended | Additional time added |
 | equipmentReturned | Machine back at yard |
 | damageAssessed | Condition report completed |
 | paymentProcessed | Charges collected |
-| lowUtilizationAlert | Equipment underused |
+| lowUtilizationDetected | Equipment utilization dropped below threshold |
 
 ## Searches
 
@@ -143,6 +143,7 @@ graph LR
     R -->|hauls via| TransportCompany
     R -->|tracks with| TelematicsProvider
     R -->|insures through| InsuranceCarrier
+    R -->|regulated by| OSHAInspector
 ```
 
 ## Usage
@@ -153,6 +154,12 @@ graph LR
 import { leaseMachinery } from '@headlessly/lease-machinery'
 
 const rental = leaseMachinery()
+
+// Search by type, size, and location
+const availableEquipment = await rental.findAvailableEquipment({ type: 'excavator', tonnage: 20, location: 'Dallas' })
+
+// List equipment currently on rent
+const activeRentals = await rental.getActiveRentals({ customer: 'turner-construction' })
 
 // Search for excavators
 const available = await rental.searchFleet({
@@ -188,7 +195,7 @@ await rental.scheduleTransport({
 
 ```typescript
 // Auto-dispatch service on telematics alert
-rental.telematicsAlert(async ({ equipmentId, alertType, severity }) => {
+rental.telematicsAnomalyDetected(async ({ equipmentId, alertType, severity }) => {
   if (severity === 'critical') {
     await rental.dispatchService({
       equipmentId,
@@ -200,7 +207,7 @@ rental.telematicsAlert(async ({ equipmentId, alertType, severity }) => {
 })
 
 // Auto-transfer underutilized equipment
-rental.lowUtilizationAlert(async ({ equipmentId, currentBranch, utilization }) => {
+rental.lowUtilizationDetected(async ({ equipmentId, currentBranch, utilization }) => {
   const demandAnalysis = await analyzeDemand(equipmentId)
 
   if (demandAnalysis.higherDemandBranch) {

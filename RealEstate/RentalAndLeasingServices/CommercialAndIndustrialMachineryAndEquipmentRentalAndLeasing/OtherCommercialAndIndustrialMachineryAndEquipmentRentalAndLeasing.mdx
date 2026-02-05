@@ -90,7 +90,7 @@ Specialized equipment lessors provide manufacturing machinery, medical equipment
 | maintenanceScheduled | Service appointment set |
 | maintenanceCompleted | Service finished |
 | upgradeCompleted | Enhancement installed |
-| leaseExpiring | Lease approaching maturity |
+| leaseExpirationNeared | Lease approaching maturity |
 | returnInitiated | Lease-end process started |
 | equipmentInspected | Return condition assessed |
 | equipmentRemarked | Asset placed with new lessee |
@@ -122,7 +122,7 @@ graph TD
     H -->|No| J{Upgrade?}
     I --> J
     J -->|Yes| K[processUpgrade]
-    J -->|No| L{Lease Expiring?}
+    J -->|No| L{Lease Expiration Neared?}
     K --> L
     L -->|Yes| M[initiateReturn]
     L -->|No| F
@@ -144,6 +144,7 @@ graph LR
     L -->|services via| MaintenanceProvider
     L -->|funds with| FinancingPartner
     L -->|values via| AppraisalFirm
+    L -->|insured by| InsuranceCarrier
 ```
 
 ## Usage
@@ -207,7 +208,7 @@ lessor.equipmentDelivered(async ({ equipmentId, equipmentType }) => {
 })
 
 // Auto-remarket when lease expires
-lessor.leaseExpiring(async ({ leaseId, equipmentId, lesseeId }) => {
+lessor.leaseExpirationNeared(async ({ leaseId, equipmentId, lesseeId }) => {
   // Offer renewal first
   const renewed = await offerRenewal(leaseId, lesseeId)
 

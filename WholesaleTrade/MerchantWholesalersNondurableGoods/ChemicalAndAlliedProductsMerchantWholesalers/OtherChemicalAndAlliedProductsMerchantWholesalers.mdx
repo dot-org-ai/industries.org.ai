@@ -85,11 +85,11 @@ Other chemical merchant wholesalers distribute industrial chemicals including ac
 | orderReceived | Customer purchase order submitted |
 | orderShipped | Hazmat delivery departed |
 | orderDelivered | Customer confirmed receipt |
-| inventoryLow | Stock fell below reorder point |
+| inventoryDepleted | Stock fell below reorder level |
 | priceChanged | Market or supplier pricing updated |
 | sdsUpdated | Safety data sheet revised |
-| complianceAlert | Regulatory requirement triggered |
-| spillIncident | Chemical spill or release occurred |
+| complianceViolationDetected | Compliance violation or expiration detected |
+| spillIncidentOccurred | Chemical spill or release occurred |
 | containerReturned | Empty container received for disposal |
 
 ## Searches
@@ -185,7 +185,7 @@ await distributor.arrangeHazmatShipping({
 
 ```typescript
 // Auto-reorder when inventory low
-distributor.inventoryLow(async ({ chemicalId, currentStock, reorderPoint }) => {
+distributor.inventoryDepleted(async ({ chemicalId, currentStock, reorderPoint }) => {
   const supplier = await distributor.findSuppliers({ chemical: chemicalId })
   await distributor.sourceChemical({
     supplierId: supplier[0].id,
@@ -195,7 +195,7 @@ distributor.inventoryLow(async ({ chemicalId, currentStock, reorderPoint }) => {
 })
 
 // Auto-alert on compliance deadline
-distributor.complianceAlert(async ({ reportType, dueDate, chemicals }) => {
+distributor.complianceViolationDetected(async ({ reportType, dueDate, chemicals }) => {
   await distributor.reportCompliance({
     reportType,
     chemicals,

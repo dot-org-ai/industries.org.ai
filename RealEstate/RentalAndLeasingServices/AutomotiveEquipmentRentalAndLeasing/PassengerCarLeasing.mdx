@@ -85,10 +85,10 @@ Passenger car leasing companies provide long-term vehicle leases to consumers an
 | creditApproved | Applicant approved for lease |
 | creditDeclined | Applicant not approved |
 | leaseOriginated | New lease funded and booked |
-| paymentDue | Monthly payment due date |
+| paymentBecameDue | Monthly payment due date |
 | paymentReceived | Lease payment processed |
-| paymentLate | Payment past due date |
-| leaseMaturing | Lease approaching end of term |
+| paymentBecameLate | Payment past due date |
+| leaseMatured | Lease approaching end of term |
 | inspectionScheduled | Lease-end inspection arranged |
 | inspectionCompleted | Vehicle inspection finished |
 | wearAssessed | Excess wear charges determined |
@@ -144,6 +144,7 @@ graph LR
     L -->|inspects via| InspectionService
     L -->|sells through| AuctionHouse
     L -->|registers via| TitleAgency
+    L -->|contracts| CollectionsAgency
 ```
 
 ## Usage
@@ -191,7 +192,7 @@ const buyout = await leasing.quoteBuyout({
 
 ```typescript
 // Auto-send maturity notice
-leasing.leaseMaturing(async ({ leaseId, lesseeId, maturityDate }) => {
+leasing.leaseMatured(async ({ leaseId, lesseeId, maturityDate }) => {
   const daysToMaturity = differenceInDays(maturityDate, new Date())
 
   if (daysToMaturity === 90) {

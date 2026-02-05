@@ -85,10 +85,10 @@ Plastics materials merchant wholesalers distribute resins, compounds, films, she
 | orderReceived | Customer purchase order submitted |
 | orderShipped | Delivery departed for customer |
 | orderDelivered | Customer confirmed receipt |
-| inventoryLow | Stock fell below reorder point |
+| inventoryDepleted | Stock fell below reorder level |
 | priceChanged | Supplier or market pricing updated |
 | specificationUpdated | Material technical data revised |
-| qualityIssue | Material failed inspection or customer complaint |
+| qualityIssueDetected | Material failed inspection or customer complaint |
 | lotRecalled | Supplier issued material recall |
 | demandForecast | Projected needs calculated |
 
@@ -183,7 +183,7 @@ await distributor.issueCertificate({
 
 ```typescript
 // Auto-reorder when inventory low
-distributor.inventoryLow(async ({ materialId, currentStock, reorderPoint }) => {
+distributor.inventoryDepleted(async ({ materialId, currentStock, reorderPoint }) => {
   const supplier = await distributor.findSuppliers({ material: materialId })
   await distributor.sourceMaterial({
     supplierId: supplier[0].id,

@@ -89,7 +89,7 @@ Nuclear electric power generation uses controlled nuclear fission to produce hea
 | generatorSynchronized | Generator connected to grid at matching frequency |
 | powerDispatched | Electricity delivered to transmission system |
 | radiationAlarmTriggered | Radiation level exceeded monitoring threshold |
-| scram | Automatic emergency shutdown of reactor |
+| scramTriggered | Automatic emergency shutdown of reactor |
 | refuelingCompleted | New fuel loaded and outage work finished |
 | spentFuelTransferred | Used fuel moved to storage pool |
 | securityBreachDetected | Unauthorized access attempt identified |
@@ -127,7 +127,7 @@ graph TD
     I --> J[monitorRadiation]
     J --> K{Safe Levels?}
     K -->|Yes| L[Continue Operation]
-    K -->|No| M[scram]
+    K -->|No| M[scramTriggered]
     L --> N[reportToNRC]
 ```
 
@@ -145,6 +145,7 @@ graph LR
     P -->|contracts| SecurityContractor
     P -->|insures with| InsurancePool
     P -->|coordinates with| EmergencyServices
+    P -->|regulated by| INPO
 ```
 
 ## Usage
@@ -184,7 +185,7 @@ await plant.dispatchPower({
 // Auto-respond to radiation alarm
 plant.radiationAlarmTriggered(async ({ location, level, threshold }) => {
   if (level > threshold * 2) {
-    await plant.scram({
+    await plant.insertControlRods({
       reason: 'radiationExceedance',
       location
     })
