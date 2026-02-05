@@ -13,58 +13,197 @@ object: Ground Treated
 
 # Ground or Treated Mineral and Earth Manufacturing
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for ground or treated mineral and earth manufacturing operations. Models the complete production lifecycle from raw mineral processing through finished specialty mineral products.
 
 ## Overview
 
-This U.S. industry comprises establishments primarily engaged in calcining, dead burning, or otherwise processing beyond beneficiation, clays, ceramic and refractory minerals, barite, and miscellaneous nonmetallic minerals. Cross-References.
+Ground or treated mineral manufacturing involves calcining, dead burning, or processing clays, ceramic minerals, barite, and other nonmetallic minerals beyond basic beneficiation. Products include calcined clays, processed diatomaceous earth, treated kaolin, and specialty mineral fillers for industrial applications. This definition exposes actions for each phase of production, events for workflow automation, and searches for data retrieval.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| MineralMine | Supplies raw clay, kaolin, barite, and specialty minerals |
+| ChemicalSupplier | Provides treatment chemicals and processing aids |
+| EquipmentManufacturer | Sells mills, calciners, and classification equipment |
+| PaperManufacturer | Purchases kaolin and fillers for paper coating |
+| PaintManufacturer | Uses mineral extenders and pigments |
+| PlasticsCompounder | Purchases mineral fillers for plastic formulations |
+| CeramicsManufacturer | Uses processed clays for ceramic bodies |
+| DrilllingCompany | Purchases barite for drilling mud weighting |
+| Regulator | Oversees mining permits and environmental compliance |
+| TestingLab | Provides mineral analysis and certification |
 
 ## Roles
 
 | Role | Description |
 |------|-------------|
-| TODO | TODO |
+| PlantManager | Directs mineral processing operations |
+| ProcessEngineer | Optimizes grinding, calcining, and treatment processes |
+| QualityManager | Ensures products meet particle size and purity specifications |
+| MillOperator | Operates grinding and pulverizing equipment |
+| CalcinerOperator | Controls calcining temperature and retention time |
+| ClassifierOperator | Runs air classification and screening equipment |
+| TreatmentOperator | Manages chemical treatment and surface modification |
+| PackagingOperator | Bags and bulk loads finished products |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| RawMineral | Unprocessed clay, barite, or specialty mineral |
+| CalcinedMinite | Mineral heated to remove water or modify properties |
+| GroundMineral | Material reduced to specified particle size |
+| TreatedMineral | Surface-modified or chemically treated product |
+| Mill | Equipment for particle size reduction |
+| Calciner | High-temperature processing furnace |
+| Classifier | Equipment separating particles by size |
+| Silo | Storage vessel for bulk products |
+| QualitySpec | Particle size, brightness, and purity standards |
+| ProductionBatch | Manufacturing lot with specific properties |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| crushMineral | Primary size reduction of raw material |
+| dryMineral | Remove moisture before processing |
+| calcineMineral | Heat mineral to modify properties |
+| grindMineral | Reduce to target particle size |
+| classifyProduct | Separate particles by size distribution |
+| treatSurface | Apply chemical modification or coating |
+| bleachMineral | Improve brightness through chemical treatment |
+| blendGrades | Combine products to meet specifications |
+| testQuality | Analyze particle size, brightness, and purity |
+| bagProduct | Package in bags for shipment |
+| loadBulk | Fill trucks or railcars for bulk delivery |
+| storeProduct | Transfer to silos or covered storage |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| mineralCrushed | Raw material reduced to processing size |
+| mineralDried | Moisture removed from feedstock |
+| calciningComplete | Heat treatment finished |
+| mineralGround | Particle size reduction completed |
+| productClassified | Material separated by size |
+| surfaceTreated | Chemical modification applied |
+| qualityApproved | Product meets specifications |
+| qualityRejected | Product fails specification tests |
+| productStored | Material transferred to storage |
+| orderShipped | Product delivered to customer |
+| processAdjusted | Operating parameters modified |
+| equipmentMaintenance | Mill or calciner service required |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| findProducts | List minerals by type, grade, and application |
+| getInventory | Query stock levels by product and location |
+| findOrders | Retrieve orders by customer, product, or delivery date |
+| getProductionSchedule | View processing schedules by mineral type |
+| checkQualityData | Access particle size, brightness, and purity tests |
+| getMaterialInventory | Query raw mineral and chemical stock |
+| getProcessMetrics | Analyze mill and calciner efficiency |
+| getEnergyData | Monitor fuel and power consumption |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[crushMineral] --> B[dryMineral]
+    B --> C{Calcine Required?}
+    C -->|Yes| D[calcineMineral]
+    C -->|No| E[grindMineral]
+    D --> E
+    E --> F[classifyProduct]
+    F --> G{Treatment Required?}
+    G -->|Yes| H[treatSurface]
+    G -->|No| I[testQuality]
+    H --> I
+    I --> J{Pass?}
+    J -->|Yes| K[blendGrades]
+    J -->|No| L[Reprocess]
+    K --> M{Bulk or Bag?}
+    M -->|Bulk| N[loadBulk]
+    M -->|Bag| O[bagProduct]
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    M[Manufacturer]
+
+    M -->|buys from| MineralMine
+    M -->|buys from| ChemicalSupplier
+    M -->|buys from| EquipmentManufacturer
+    M -->|sells to| PaperManufacturer
+    M -->|sells to| PaintManufacturer
+    M -->|sells to| PlasticsCompounder
+    M -->|sells to| CeramicsManufacturer
+    M -->|sells to| DrilllingCompany
+    M -->|reports to| Regulator
+    M -->|certifies with| TestingLab
+```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { manufactureGroundTreated } from '@headlessly/manufacture-ground-treated'
+
+const plant = manufactureGroundTreated()
+
+// Calcine kaolin for paper coating grade
+const calcined = await plant.calcineMineral({
+  source: 'georgia-kaolin',
+  temperature: 1050,
+  residenceTime: 60,
+  targetBrightness: 92
+})
+
+// Grind to ultrafine particle size
+const ground = await plant.grindMineral({
+  feedId: calcined.id,
+  millType: 'jet-mill',
+  targetD50: 0.8,
+  maxD98: 5
+})
+
+// Apply surface treatment for plastic applications
+await plant.treatSurface({
+  productId: ground.id,
+  treatment: 'silane-coupling',
+  loadingPercent: 1.5,
+  application: 'plastic-filler'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-adjust mill on quality deviation
+plant.qualityRejected(async ({ batchId, parameter, reading, target }) => {
+  await plant.adjustProcess({
+    parameter,
+    currentValue: reading,
+    targetValue: target,
+    notifyOperator: true
+  })
+})
+
+// Auto-schedule maintenance on efficiency drop
+plant.processAdjusted(async ({ equipmentId, efficiency, threshold }) => {
+  if (efficiency < threshold) {
+    await plant.scheduleMaintenance({
+      equipmentId,
+      priority: 'standard',
+      issue: 'efficiency-degradation'
+    })
+  }
+})
 ```

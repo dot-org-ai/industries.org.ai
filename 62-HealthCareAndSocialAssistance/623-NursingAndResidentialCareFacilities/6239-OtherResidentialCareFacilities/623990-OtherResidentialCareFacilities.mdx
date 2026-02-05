@@ -7,58 +7,219 @@ subsector: Nursing and Residential Care Facilities
 subsectorCode: 623
 group: Other Residential Care Facilities
 groupCode: 6239
-action: Care
-object: Residents
+action: Operate
+object: Group Home
 ---
 
 # Other Residential Care Facilities
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for specialized residential care operations. Models group homes and residential programs for diverse populations including youth, the hearing impaired, and others requiring supervised living.
 
 ## Overview
 
-This industry comprises establishments primarily engaged in providing residential care (except residential intellectual and developmental disability facilities, residential mental health and substance abuse facilities, continuing care retirement communities, and assisted living facilities for the elderly). These establishments also provide supervision and personal care services. Illustrative Examples: Boot or disciplinary camps (except correctional) for delinquent youth Group homes for the heari
+Other residential care facilities provide supervised residential settings for populations not served by IDD, mental health, or elderly care facilities. This includes group homes for youth, deaf individuals, and others needing structured living environments. This definition exposes actions for resident care, events for program monitoring, and searches for census and compliance management.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| Resident | Individual living in the facility |
+| Family | Resident's support network |
+| PlacingAgency | Government or private entity referring residents |
+| CaseManager | Coordinates services and monitors progress |
+| Therapist | Provides counseling or specialized services |
+| School | Educational institution resident attends |
+| StateRegulator | Licenses and inspects facility |
+| CommunityPartner | Local organizations providing support |
+
+## Roles
+
+| Role | Description |
+|------|-------------|
+| ExecutiveDirector | Oversees facility operations |
+| ProgramDirector | Manages resident programs |
+| HouseParent | Provides daily supervision and care |
+| ResidentialCounselor | Supports residents and implements plans |
+| SocialWorker | Coordinates services and family contact |
+| NightSupervisor | Provides overnight monitoring |
+| MaintenanceStaff | Maintains facility and grounds |
+| AdministrativeCoordinator | Handles billing and documentation |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| Resident | Individual living in facility |
+| ServicePlan | Documented care goals and services |
+| Room | Resident living space |
+| Placement | Arrangement with referring agency |
+| Assessment | Evaluation of resident needs |
+| ProgressReport | Documentation of resident advancement |
+| IncidentReport | Documentation of significant events |
+| Shift | Staff work period |
+| Activity | Scheduled program or outing |
+| Invoice | Bill for services |
+| ComplianceDocument | Regulatory filing |
+| FamilyVisit | Scheduled contact with family |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| admitResident | Process new resident intake |
+| conductAssessment | Evaluate resident needs |
+| developServicePlan | Create care approach |
+| assignRoom | Place resident in living space |
+| superviseDaily | Provide structure and oversight |
+| facilitateEducation | Support school attendance |
+| conductTherapy | Provide or coordinate counseling |
+| documentProgress | Record resident advancement |
+| coordinateFamily | Arrange visits and communication |
+| manageBehavior | Implement behavior strategies |
+| fileIncident | Report significant events |
+| conductReview | Update service plan |
+| prepareTransition | Plan for discharge or aging out |
+| billPlacingAgency | Invoice for services |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| residentAdmitted | New individual began residence |
+| assessmentCompleted | Evaluation finished |
+| servicePlanDeveloped | Care plan created |
+| roomAssigned | Living space allocated |
+| progressDocumented | Advancement recorded |
+| incidentOccurred | Significant event happened |
+| familyVisitCompleted | Contact occurred |
+| therapyCompleted | Counseling session finished |
+| reviewConducted | Service plan updated |
+| transitionPlanned | Discharge preparation started |
+| residentTransitioned | Individual left facility |
+| billingSubmitted | Invoice sent |
+| inspectionPassed | Regulatory review completed |
+| staffShiftChanged | Personnel rotation occurred |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| findResidents | List residents by status or placement |
+| getCensus | View current occupancy |
+| getServicePlans | Retrieve care documentation |
+| findIncidents | List incidents by type or date |
+| getStaffSchedule | View shift assignments |
+| findPlacements | List active arrangements |
+| getProgressReports | Retrieve advancement documentation |
+| getComplianceStatus | Check regulatory requirements |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[admitResident] --> B[conductAssessment]
+    B --> C[developServicePlan]
+    C --> D[assignRoom]
+    D --> E[Daily Operations]
+    E --> F[superviseDaily]
+    F --> G[facilitateEducation]
+    G --> H[conductTherapy]
+    H --> I[documentProgress]
+    I --> J{Review Due?}
+    J -->|Yes| K[conductReview]
+    J -->|No| L[Continue Care]
+    K --> M{Ready for Transition?}
+    M -->|Yes| N[prepareTransition]
+    M -->|No| C
+    L --> E
+    N --> O[billPlacingAgency]
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    F[Facility]
+
+    F -->|serves| Resident
+    F -->|involves| Family
+    F -->|receives from| PlacingAgency
+    F -->|reports to| CaseManager
+    F -->|contracts| Therapist
+    F -->|coordinates with| School
+    F -->|regulated by| StateRegulator
+    F -->|partners with| CommunityPartner
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { operateGroupHome } from '@headlessly/operate-group-home'
+
+const facility = operateGroupHome()
+
+// Admit new resident
+const resident = await facility.admitResident({
+  name: 'Alex Johnson',
+  dateOfBirth: '2008-03-15',
+  placingAgencyId: 'dcs-region-5',
+  reason: 'fosterCareTransition',
+  specialNeeds: ['hearingImpaired']
+})
+
+// Conduct intake assessment
+const assessment = await facility.conductAssessment({
+  residentId: resident.id,
+  assessmentType: 'intake',
+  domains: ['behavioral', 'educational', 'social'],
+  assessor: 'sw-001'
+})
+
+// Develop service plan
+await facility.developServicePlan({
+  residentId: resident.id,
+  assessmentId: assessment.id,
+  goals: [
+    { area: 'education', objective: 'maintainGradeLevel', targetDate: '2024-12-01' },
+    { area: 'lifeskills', objective: 'independentMealPrep', targetDate: '2024-10-01' }
+  ]
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Notify on incident
+facility.incidentOccurred(async ({ residentId, incidentType, severity }) => {
+  await facility.fileIncident({
+    residentId,
+    type: incidentType,
+    severity,
+    reportedDate: new Date()
+  })
+
+  if (severity === 'major') {
+    await notifyPlacingAgency({
+      residentId,
+      reportType: 'criticalIncident'
+    })
+  }
+})
+
+// Trigger transition planning
+facility.agingOutApproaching(async ({ residentId, turnsEighteen }) => {
+  await facility.prepareTransition({
+    residentId,
+    transitionType: 'agingOut',
+    targetDate: turnsEighteen,
+    services: ['housingAssistance', 'employmentSupport', 'independentLiving']
+  })
+})
+```
+
+## Related
+
+- [Residential Mental Health and Substance Abuse Facilities](../6232-ResidentialIntellectualAndDevelopmentalDisabilityMentalHealthAndSubstanceAbuseFacilities/623220-ResidentialMentalHealthAndSubstanceAbuseFacilities.mdx)
+- [Child and Youth Services](../../624-SocialAssistance/6241-IndividualAndFamilyServices/624110-ChildAndYouthServices.mdx)
