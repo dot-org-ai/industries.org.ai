@@ -13,58 +13,231 @@ object: Flavoring Syrup
 
 # Flavoring Syrup and Concentrate Manufacturing
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for flavoring syrup and concentrate manufacturing. Models production of soft drink syrups, fountain concentrates, and flavoring bases through blending, dissolving, and packaging operations.
 
 ## Overview
 
-This industry comprises establishments primarily engaged in manufacturing flavoring syrup drink concentrates and related products for soda fountain use or for the manufacture of soft drinks. Cross-References. Establishments primarily engaged in--
+This industry comprises establishments primarily engaged in manufacturing flavoring syrup drink concentrates and related products for soda fountain use or for the manufacture of soft drinks. This definition exposes actions for ingredient blending, syrup cooking, quality testing, and bulk packaging.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| SugarSupplier | Provides sugar and sweeteners |
+| FlavorHouse | Supplies flavor compounds and extracts |
+| AcidSupplier | Provides citric and phosphoric acids |
+| ColorSupplier | Supplies natural and artificial colors |
+| PackagingSupplier | Provides drums, bags-in-box, and tanks |
+| SoftDrinkBottler | Purchases concentrates for bottling |
+| FountainOperator | Uses syrups in dispensing equipment |
+| FoodserviceDistributor | Supplies restaurants and venues |
+| PrivateLabelBuyer | Contracts branded concentrate production |
 
 ## Roles
 
 | Role | Description |
 |------|-------------|
-| TODO | TODO |
+| PlantManager | Oversees daily manufacturing operations |
+| FlavorChemist | Develops and maintains flavor formulations |
+| BlendingOperator | Combines ingredients to specification |
+| CookingOperator | Heats and dissolves sugar syrups |
+| QualityTechnician | Tests Brix, pH, and flavor profile |
+| PackagingOperator | Operates filling and sealing equipment |
+| WarehouseManager | Manages bulk storage and shipping |
+| RegulatoryManager | Ensures ingredient compliance |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| Sugar | Sweetener base for syrups |
+| FlavorCompound | Concentrated flavor essence |
+| Acid | pH modifier and preservative |
+| Colorant | Visual appearance ingredient |
+| SimpleSyrup | Dissolved sugar base |
+| Concentrate | Finished flavoring product |
+| BrixLevel | Sugar concentration measurement |
+| Formula | Proprietary recipe specification |
+| Batch | Traceable production lot |
+| BagInBox | Packaging format for fountain use |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| receiveIngredients | Accept raw materials |
+| dissolve | Create simple syrup from sugar |
+| heat | Cook syrup to dissolve solids |
+| cool | Reduce temperature after cooking |
+| addFlavor | Incorporate flavor compounds |
+| addAcid | Adjust pH to specification |
+| addColor | Incorporate colorants |
+| blend | Mix all components thoroughly |
+| filter | Remove particulates |
+| testBrix | Measure sugar concentration |
+| testPH | Verify acidity level |
+| tastePanelEvaluate | Sensory quality assessment |
+| fill | Package into containers |
+| seal | Close packages for shipment |
+| ship | Dispatch to customers |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| ingredientsReceived | Raw materials accepted |
+| syrupDissolved | Sugar solution created |
+| syrupCooked | Heating completed |
+| syrupCooled | Temperature stabilized |
+| flavorAdded | Flavoring incorporated |
+| acidAdded | pH adjusted |
+| colorAdded | Colorant incorporated |
+| batchBlended | Mixing completed |
+| batchFiltered | Filtration completed |
+| qualityApproved | Batch passed testing |
+| qualityFailed | Batch out of specification |
+| productFilled | Packaging completed |
+| orderShipped | Products dispatched |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| getIngredients | Check raw material inventory |
+| getBatches | List active batches |
+| getFormulas | View concentrate recipes |
+| getBrixHistory | Review sugar level data |
+| getPHHistory | Review acidity data |
+| getInventory | Check finished goods stock |
+| getOrders | Retrieve orders by customer |
+| getProductionSchedule | View blending schedule |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[receiveIngredients] --> B[dissolve]
+    B --> C[heat]
+    C --> D[cool]
+    D --> E[addFlavor]
+    E --> F[addAcid]
+    F --> G[addColor]
+    G --> H[blend]
+    H --> I[filter]
+    I --> J[testBrix]
+    J --> K[testPH]
+    K --> L[tastePanelEvaluate]
+    L --> M{Quality OK?}
+    M -->|Yes| N[fill]
+    M -->|No| O[Adjust]
+    O --> H
+    N --> P[seal]
+    P --> Q[ship]
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    M[Manufacturer]
+
+    M -->|buys from| SugarSupplier
+    M -->|buys from| FlavorHouse
+    M -->|buys from| AcidSupplier
+    M -->|buys from| ColorSupplier
+    M -->|buys from| PackagingSupplier
+    M -->|sells to| SoftDrinkBottler
+    M -->|sells to| FountainOperator
+    M -->|sells to| FoodserviceDistributor
+    M -->|sells to| PrivateLabelBuyer
+```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { manufactureFlavoringSyrup } from '@headlessly/manufacture-flavoring-syrup'
+
+const plant = manufactureFlavoringSyrup()
+
+// Produce cola concentrate
+const batch = await plant.dissolve({
+  formula: 'cola-classic',
+  sugar: 5000,
+  water: 3000,
+  unit: 'pounds'
+})
+
+await plant.heat({
+  batchId: batch.batchId,
+  temperature: 180,
+  duration: 30,
+  unit: 'minutes'
+})
+
+await plant.cool({
+  batchId: batch.batchId,
+  targetTemp: 70,
+  unit: 'fahrenheit'
+})
+
+await plant.addFlavor({
+  batchId: batch.batchId,
+  flavorCode: 'COLA-7X',
+  quantity: 50,
+  unit: 'pounds'
+})
+
+await plant.addAcid({
+  batchId: batch.batchId,
+  acidType: 'phosphoric',
+  targetPH: 2.5
+})
+
+await plant.blend({
+  batchId: batch.batchId,
+  duration: 15,
+  unit: 'minutes'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-test after blending
+plant.batchBlended(async ({ batchId }) => {
+  await plant.filter({ batchId, meshSize: 100 })
+
+  const brix = await plant.testBrix({ batchId })
+  const ph = await plant.testPH({ batchId })
+
+  if (brix.value >= 65 && ph.value <= 2.6) {
+    await plant.tastePanelEvaluate({
+      batchId,
+      panelists: 5
+    })
+  }
+})
+
+// Auto-fill after quality approval
+plant.qualityApproved(async ({ batchId, customer }) => {
+  const format = customer === 'bottler' ? 'bulk-tank' : 'bag-in-box'
+
+  await plant.fill({
+    batchId,
+    format,
+    volume: format === 'bulk-tank' ? 5000 : 5,
+    unit: 'gallons'
+  })
+})
+
+// Alert on quality failure
+plant.qualityFailed(async ({ batchId, parameter, value, spec }) => {
+  await plant.alertQuality({
+    batchId,
+    issue: `${parameter} at ${value}, spec is ${spec}`,
+    action: 'blend-adjustment-required'
+  })
+})
 ```

@@ -8,63 +8,209 @@ subsectorCode: 488
 group: Support Activities for Road Transportation
 groupCode: 4884
 action: Support
-object: Support Activities
+object: Road Services
 ---
 
 # Other Support Activities for Road Transportation
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for miscellaneous road transportation support services. Models the complete service lifecycle for toll operations, weigh stations, pilot car services, bridge and tunnel operations, and independent driving services.
 
 ## Overview
 
-This industry comprises establishments primarily engaged in providing services (except motor vehicle towing) to road network users. Illustrative Examples: Bridge, tunnel, and highway operations Pilot car services (i.e., wide load warning services) Truck or weighing station operations Driving services, independent (e.g., automobile, truck delivery) Cross-References. Establishments primarily engaged in--
+Other support activities for road transportation comprises services to road network users including bridge, tunnel, and highway toll operations, truck weigh stations, pilot car escort services for oversized loads, and independent driving services. This definition exposes actions for managing toll collection, weight verification, escort coordination, and road service operations.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| MotorVehicle | Vehicle using road infrastructure |
+| TruckingCompany | Commercial carrier using highways |
+| OversizedLoad | Wide or heavy shipment needing escort |
+| StateTransport | DOT highway authority |
+| TollAuthority | Manages toll road operations |
+| LawEnforcement | Enforces weight and traffic laws |
+| PermitAgency | Issues oversize load permits |
+| Dealership | Uses driveaway services |
+| Automaker | Ships vehicles via driveaway |
 
 ## Roles
 
 | Role | Description |
 |------|-------------|
-| TODO | TODO |
+| TollCollector | Processes toll payments |
+| WeighMaster | Operates truck scales |
+| PilotCarDriver | Escorts oversized loads |
+| BridgeOperator | Manages drawbridge operations |
+| TunnelController | Monitors tunnel traffic |
+| DriveawayOperator | Delivers vehicles independently |
+| Dispatcher | Coordinates escort services |
+| ComplianceOfficer | Enforces weight regulations |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| TollPlaza | Toll collection point |
+| WeighStation | Truck scale facility |
+| PilotCar | Escort vehicle for oversized loads |
+| Bridge | Toll bridge or drawbridge |
+| Tunnel | Toll tunnel facility |
+| Transponder | Electronic toll device |
+| WeightTicket | Certified scale reading |
+| Permit | Oversize or overweight authorization |
+| EscortRoute | Planned path for oversized load |
+| DriveawayVehicle | Car being delivered independently |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| collectToll | Process toll payment |
+| issueTranponder | Provide electronic toll device |
+| weighTruck | Measure commercial vehicle weight |
+| issueWeightTicket | Document certified weight |
+| dispatchPilotCar | Assign escort for oversized load |
+| escortLoad | Guide oversized shipment on route |
+| operateBridge | Control drawbridge opening |
+| controlTunnel | Manage tunnel traffic flow |
+| deliverVehicle | Drive car to destination |
+| enforceWeight | Issue overweight violation |
+| processViolation | Handle toll or weight infraction |
+| reportTraffic | Update road condition status |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| tollCollected | Payment processed |
+| transponderIssued | Device provided |
+| truckWeighed | Weight measured |
+| weightTicketIssued | Document provided |
+| pilotCarDispatched | Escort assigned |
+| loadEscorted | Oversized guided |
+| bridgeOperated | Drawbridge cycled |
+| tunnelControlled | Traffic managed |
+| vehicleDelivered | Car arrived at destination |
+| weightEnforced | Violation issued |
+| violationProcessed | Infraction handled |
+| trafficReported | Conditions updated |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| getTollRates | Retrieve current pricing |
+| getWeighStationStatus | Check if station is open |
+| getPilotCarAvailability | Find available escorts |
+| getBridgeSchedule | View drawbridge openings |
+| getTunnelConditions | Check tunnel status |
+| getViolationHistory | Review infractions |
+| getTransponderAccount | Check toll balance |
+| getTrafficConditions | View road status |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[Vehicle Arrives] --> B{Toll Road?}
+    B -->|Yes| C[collectToll]
+    B -->|No| D{Weigh Station?}
+    C --> D
+    D -->|Yes| E[weighTruck]
+    E --> F{Overweight?}
+    F -->|Yes| G[enforceWeight]
+    F -->|No| H[issueWeightTicket]
+    D -->|No| I{Oversized?}
+    H --> I
+    I -->|Yes| J[dispatchPilotCar]
+    J --> K[escortLoad]
+    I -->|No| L[Continue]
+    K --> L
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    S[ServiceProvider]
+
+    S -->|serves| MotorVehicle
+    S -->|serves| TruckingCompany
+    S -->|escorts| OversizedLoad
+    S -->|reports to| StateTransport
+    S -->|operates for| TollAuthority
+    S -->|cooperates with| LawEnforcement
+    S -->|coordinates with| PermitAgency
+    S -->|delivers for| Dealership
+    S -->|serves| Automaker
+```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { supportRoadServices } from '@headlessly/support-road-services'
+
+const road = supportRoadServices()
+
+// Check toll rates
+const rates = await road.getTollRates({
+  route: 'I-95-Express',
+  vehicleClass: 'passenger',
+  time: 'peak'
+})
+
+// Dispatch pilot car for oversized load
+const escort = await road.dispatchPilotCar({
+  loadPermit: 'OW-2024-12345',
+  origin: 'Houston, TX',
+  destination: 'Dallas, TX',
+  loadDimensions: { width: 14, height: 16, length: 80 },
+  departureTime: '2024-04-15T06:00:00'
+})
+
+// Check weigh station status
+const station = await road.getWeighStationStatus({
+  location: 'I-10-Mile-Marker-234'
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-process electronic tolls
+road.vehiclePassed(async ({ transponder, tollPoint, vehicleClass }) => {
+  await road.collectToll({
+    transponder,
+    tollPoint,
+    rate: getRateForClass(vehicleClass, getCurrentTime()),
+    method: 'electronic'
+  })
+})
+
+// Auto-dispatch pilot cars for permitted loads
+road.permitIssued(async ({ permitId, route, departureTime }) => {
+  const permit = await road.getPermitDetails({ permitId })
+
+  if (permit.requiresEscort) {
+    await road.dispatchPilotCar({
+      loadPermit: permitId,
+      route,
+      departureTime,
+      escortType: determineEscortRequirements(permit)
+    })
+  }
+})
+
+// Auto-alert for overweight violations
+road.truckWeighed(async ({ weighTicket, maxLegal, actualWeight }) => {
+  if (actualWeight > maxLegal) {
+    await road.enforceWeight({
+      weighTicket,
+      overweightAmount: actualWeight - maxLegal,
+      notifyLawEnforcement: actualWeight > maxLegal * 1.1
+    })
+  }
+})
 ```

@@ -7,58 +7,223 @@ subsector: Social Assistance
 subsectorCode: 624
 group: Individual and Family Services
 groupCode: 6241
-action: Serve
-object: Families
+action: Counsel
+object: Family
 ---
 
 # Other Individual and Family Services
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for individual and family social service operations. Models programs including crisis intervention, marriage counseling, and multi-purpose community centers.
 
 ## Overview
 
-This industry comprises establishments primarily engaged in providing nonresidential individual and family social assistance services (except those specifically directed toward children, the elderly, or persons with intellectual and/or developmental disabilities). Illustrative Examples: Community action services agencies Marriage counseling services (except by offices of mental health practitioners) Crisis intervention centers Multi-purpose social services centers Family social services agencies
+Other individual and family services provide nonresidential social assistance including crisis intervention, marriage and family counseling, community action programs, and multi-purpose social service centers. This definition exposes actions for client support, events for case tracking, and searches for service and outcome management.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| Client | Individual or family receiving services |
+| ReferralSource | Agency or professional making referral |
+| InsurancePayer | Funds counseling services |
+| GrantFunder | Provides program funding |
+| CommunityPartner | Collaborating organization |
+| Court | Legal authority in family matters |
+| HealthcareProvider | Medical professional coordinating care |
+| VolunteerNetwork | Community members providing support |
+
+## Roles
+
+| Role | Description |
+|------|-------------|
+| ExecutiveDirector | Oversees agency operations |
+| ProgramDirector | Manages service programs |
+| LicensedCounselor | Provides therapy and counseling |
+| CrisisInterventionist | Handles emergency situations |
+| CaseManager | Coordinates client services |
+| CommunityOrganizer | Leads community action initiatives |
+| IntakeSpecialist | Processes new clients |
+| VolunteerCoordinator | Manages volunteer workforce |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| Client | Individual or family receiving services |
+| Case | Service record |
+| CounselingSession | Therapy appointment |
+| CrisisIntervention | Emergency response |
+| ServicePlan | Goals and interventions |
+| Assessment | Evaluation of client needs |
+| Referral | Connection to other resources |
+| CommunityProgram | Group or community initiative |
+| Invoice | Bill for services |
+| Grant | Funding award |
+| Outcome | Measured result of services |
+| WaitList | Queue for services |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| intakeClient | Process new service request |
+| conductAssessment | Evaluate client needs |
+| developServicePlan | Create goals and interventions |
+| provideCounseling | Deliver therapy session |
+| respondToCrisis | Handle emergency situation |
+| facilitateGroup | Lead support group |
+| makeReferral | Connect to other resources |
+| coordinateServices | Arrange multiple supports |
+| conductCommunityProgram | Deliver community initiative |
+| trackOutcome | Measure service results |
+| manageVolunteers | Coordinate volunteer activities |
+| billServices | Submit claims for payment |
+| reportToGrantor | Document grant activities |
+| closeCase | Complete services |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| clientIntaked | New service request processed |
+| assessmentCompleted | Evaluation finished |
+| servicePlanDeveloped | Goals documented |
+| counselingProvided | Session completed |
+| crisisResponded | Emergency handled |
+| groupFacilitated | Support group held |
+| referralMade | Resource connection completed |
+| servicesCoordinated | Multiple supports arranged |
+| communityProgramHeld | Initiative delivered |
+| outcomeTracked | Results measured |
+| volunteerAssigned | Community member placed |
+| billingSubmitted | Claim sent |
+| grantReported | Documentation submitted |
+| caseClosed | Services completed |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| findClients | List clients by status or service |
+| getCases | Retrieve service records |
+| getCounselingSessions | List scheduled appointments |
+| findCrisisInterventions | View emergency responses |
+| getServicePlans | Retrieve goals documentation |
+| findReferrals | List resource connections |
+| getCommunityPrograms | View scheduled initiatives |
+| getOutcomes | Retrieve measured results |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[intakeClient] --> B{Crisis?}
+    B -->|Yes| C[respondToCrisis]
+    B -->|No| D[conductAssessment]
+    C --> D
+    D --> E[developServicePlan]
+    E --> F{Service Type}
+    F -->|Counseling| G[provideCounseling]
+    F -->|Group| H[facilitateGroup]
+    F -->|Community| I[conductCommunityProgram]
+    G --> J[trackOutcome]
+    H --> J
+    I --> J
+    J --> K{Goals Met?}
+    K -->|Yes| L[closeCase]
+    K -->|No| M{Additional Resources?}
+    M -->|Yes| N[makeReferral]
+    M -->|No| O[Continue Services]
+    N --> O
+    O --> F
+    L --> P[billServices]
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    A[Agency]
+
+    A -->|serves| Client
+    A -->|receives from| ReferralSource
+    A -->|bills| InsurancePayer
+    A -->|funded by| GrantFunder
+    A -->|partners with| CommunityPartner
+    A -->|coordinates with| Court
+    A -->|coordinates with| HealthcareProvider
+    A -->|engages| VolunteerNetwork
 ```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { counselFamily } from '@headlessly/counsel-family'
+
+const agency = counselFamily()
+
+// Intake family in crisis
+const caseRecord = await agency.intakeClient({
+  clientType: 'family',
+  members: ['John Smith', 'Jane Smith'],
+  presentingIssue: 'maritalConflict',
+  urgency: 'routine',
+  referralSource: 'self'
+})
+
+// Conduct assessment
+const assessment = await agency.conductAssessment({
+  caseId: caseRecord.id,
+  assessmentType: 'comprehensive',
+  domains: ['relationship', 'communication', 'stressors'],
+  assessor: 'lc-001'
+})
+
+// Develop service plan
+await agency.developServicePlan({
+  caseId: caseRecord.id,
+  assessmentId: assessment.id,
+  goals: [
+    { area: 'communication', objective: 'improveActiveListening', sessions: 8 },
+    { area: 'conflict', objective: 'developResolutionSkills', sessions: 6 }
+  ]
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Respond to crisis immediately
+agency.crisisReported(async ({ clientId, crisisType, severity }) => {
+  await agency.respondToCrisis({
+    clientId,
+    crisisType,
+    responseLevel: severity === 'imminent' ? 'immediate' : 'sameDay',
+    interventionist: await getAvailableInterventionist()
+  })
+
+  if (severity === 'imminent') {
+    await notifyEmergencyServices({
+      clientId,
+      crisisType
+    })
+  }
+})
+
+// Track outcomes at milestones
+agency.milestonReached(async ({ caseId, milestone, sessionCount }) => {
+  await agency.trackOutcome({
+    caseId,
+    milestone,
+    measurementTools: ['satisfactionSurvey', 'goalProgress'],
+    sessionCount
+  })
+})
+```
+
+## Related
+
+- [Child and Youth Services](./624110-ChildAndYouthServices.mdx)
+- [Services for the Elderly and Persons with Disabilities](./624120-ServicesForTheElderlyAndPersonsWithDisabilities.mdx)
