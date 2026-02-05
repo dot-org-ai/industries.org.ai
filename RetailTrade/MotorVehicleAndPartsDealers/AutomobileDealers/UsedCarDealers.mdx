@@ -30,7 +30,7 @@ Used car dealers specialize in retailing pre-owned automobiles, light trucks, SU
 | VehicleHistoryProvider | Supplies accident and ownership history reports |
 | WarrantyProvider | Offers extended service contracts on used vehicles |
 | InsuranceCompany | Provides vehicle and GAP coverage |
-| DMV | Handles title transfers and registration |
+| LicensingAuthority | Handles title transfers and registration |
 | Customer | Individual or business purchasing used vehicles |
 
 ## Roles
@@ -44,7 +44,7 @@ Used car dealers specialize in retailing pre-owned automobiles, light trucks, SU
 | SalesConsultant | Works customers through the sales process |
 | FinanceManager | Structures financing and sells aftermarket products |
 | ReconditioningManager | Oversees vehicle preparation and quality |
-| TitleClerk | Processes titles, registrations, and DMV paperwork |
+| TitleClerk | Processes titles, registrations, and licensing paperwork |
 
 ## Entities
 
@@ -147,7 +147,7 @@ graph LR
     D -->|pulls reports from| VehicleHistoryProvider
     D -->|sells contracts from| WarrantyProvider
     D -->|sells to| Customer
-    D -->|registers with| DMV
+    D -->|registers with| LicensingAuthority
 ```
 
 ## Usage
@@ -158,6 +158,12 @@ graph LR
 import { sellUsedCar } from '@headlessly/sell-used-car'
 
 const dealer = sellUsedCar()
+
+// Search upcoming auction inventory
+const findAuctionVehiclesResult = await dealer.findAuctionVehicles({ status: 'active' })
+
+// Retrieve accident and ownership history
+const getVehicleHistoryResult = await dealer.getVehicleHistory({ status: 'active' })
 
 // Source vehicle from auction
 const vehicle = await dealer.sourceVehicle({

@@ -31,7 +31,7 @@ Home health care agencies provide skilled nursing, therapy, and personal care se
 | DMEsupplier | Provides medical equipment for home use |
 | Pharmacy | Provides medications and infusion supplies |
 | Laboratory | Performs home specimen collection and testing |
-| CMSsurveyor | Inspects agency and enforces conditions of participation |
+| HealthRegulatorSurveyor | Inspects agency and enforces conditions of participation |
 
 ## Roles
 
@@ -166,6 +166,10 @@ graph LR
 import { careHomebound } from '@headlessly/care-homebound'
 
 const agency = careHomebound()
+
+// Check pending admissions and recertifications due
+const pendingAdmissions = await agency.getPendingAdmissions({ status: 'awaiting-start-of-care' })
+const recerts = await agency.getDueRecertifications({ dueWithin: '14-days' })
 
 // Receive and process referral
 const referral = await agency.receiveReferral({

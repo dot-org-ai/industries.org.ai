@@ -145,6 +145,9 @@ import { processTransactions } from '@headlessly/process-transactions'
 
 const processor = processTransactions()
 
+// Review current settlement positions
+const positions = await processor.getSettlementPosition({ date: '2024-04-01', participantId: 'bank-12345' })
+
 // Authorize card payment
 const auth = await processor.authorizePayment({
   cardNumber: '4111111111111111',
@@ -162,6 +165,9 @@ if (auth.approved) {
     batchId: 'batch-67890'
   })
 }
+
+// Check for open chargebacks on this merchant
+const chargebacks = await processor.findChargebacks({ merchantId: 'merch-12345', status: 'open' })
 
 await processor.submitBatch({
   batchId: 'batch-67890',

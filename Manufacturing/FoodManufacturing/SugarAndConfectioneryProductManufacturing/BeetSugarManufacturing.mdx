@@ -30,8 +30,8 @@ This U.S. industry comprises establishments primarily engaged in manufacturing r
 | FoodManufacturer | Purchases sugar for food production |
 | Retailer | Sells packaged sugar to consumers |
 | IndustrialBuyer | Uses sugar in beverages and processed foods |
-| USDA | Administers sugar programs and quotas |
-| EPA | Regulates factory emissions and waste |
+| TradeRegulator | Administers sugar programs and quotas |
+| EnvironmentalRegulator | Regulates factory emissions and waste |
 | FeedBuyer | Purchases beet pulp for animal feed |
 
 ## Roles
@@ -146,8 +146,8 @@ graph LR
     F -->|sells to| FoodManufacturer
     F -->|sells to| Retailer
     F -->|sells to| IndustrialBuyer
-    F -->|regulated by| USDA
-    F -->|regulated by| EPA
+    F -->|regulated by| TradeRegulator
+    F -->|regulated by| EnvironmentalRegulator
     F -->|sells to| FeedBuyer
 ```
 
@@ -159,6 +159,12 @@ graph LR
 import { manufactureBeetSugar } from '@headlessly/manufacture-beet-sugar'
 
 const factory = manufactureBeetSugar()
+
+// Check beet inventory by grower
+const beetLots = await factory.findBeetLots({ sugarContentMin: 16.0, status: 'available' })
+
+// Review campaign processing statistics
+const campaignStats = await factory.getCampaignStats({ campaign: 'current' })
 
 // Receive beet load
 const beets = await factory.receiveBeets({

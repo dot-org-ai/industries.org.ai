@@ -31,7 +31,7 @@ This U.S. industry comprises establishments primarily engaged in manufacturing c
 | GroceryRetailer | Purchases canned goods for consumer sale |
 | FoodserviceDistributor | Buys institutional-size canned products |
 | PrivateLabelBuyer | Contracts canning under store brands |
-| FDAInspector | Ensures canning safety and compliance |
+| FoodSafetyInspector | Ensures canning safety and compliance |
 | Distributor | Warehouses and delivers to retail |
 
 ## Roles
@@ -149,7 +149,7 @@ graph LR
     C -->|sells to| GroceryRetailer
     C -->|sells to| FoodserviceDistributor
     C -->|produces for| PrivateLabelBuyer
-    C -->|regulated by| FDAInspector
+    C -->|regulated by| FoodSafetyInspector
     C -->|ships via| Distributor
 ```
 
@@ -161,6 +161,12 @@ graph LR
 import { preserveFruitVegetable } from '@headlessly/preserve-fruit-vegetable'
 
 const cannery = preserveFruitVegetable()
+
+// Check can and container inventory
+const containers = await cannery.getInventory({ type: 'can-28oz', location: 'warehouse' })
+
+// Review incoming produce schedule
+const schedule = await cannery.getProductionSchedule({ date: 'today' })
 
 // Receive fresh tomatoes for sauce
 const batch = await cannery.receiveProduce({
@@ -210,7 +216,7 @@ cannery.retortComplete(async ({ batchId, retortId }) => {
   await cannery.logRetortRecord({
     batchId,
     retortId,
-    compliance: 'FDA-21CFR113'
+    compliance: 'thermal-process-standard'
   })
 })
 

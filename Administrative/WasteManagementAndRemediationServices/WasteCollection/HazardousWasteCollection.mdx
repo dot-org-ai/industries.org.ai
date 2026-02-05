@@ -26,7 +26,7 @@ Hazardous waste collection involves collecting, identifying, packaging, and tran
 | WasteGenerator | Industrial or commercial entity producing hazardous waste |
 | TreatmentFacility | RCRA-permitted facility treating hazardous waste |
 | DisposalFacility | Permitted facility for final waste disposal |
-| EPA | Federal environmental regulator |
+| FederalEnvironmentalAgency | Federal environmental regulator |
 | StateAgency | State environmental regulatory authority |
 | TransferStation | Permitted facility for waste consolidation |
 | LabService | Analyzes waste for characterization |
@@ -141,7 +141,7 @@ graph LR
     H -->|serves| WasteGenerator
     H -->|delivers to| TreatmentFacility
     H -->|delivers to| DisposalFacility
-    H -->|reports to| EPA
+    H -->|reports to| FederalEnvironmentalAgency
     H -->|reports to| StateAgency
     H -->|uses| TransferStation
     H -->|contracts| LabService
@@ -156,6 +156,10 @@ graph LR
 import { collectHazardousWaste } from '@headlessly/collect-hazardous-waste'
 
 const hazwaste = collectHazardousWaste()
+
+// Check open manifests and permit expirations
+const openManifests = await hazwaste.getManifests({ status: 'in-transit' })
+const permits = await hazwaste.checkPermits({ expiringWithin: 90 })
 
 // Profile a new waste stream
 const profile = await hazwaste.profileWaste({

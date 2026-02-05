@@ -7,7 +7,7 @@ subsector: Food Manufacturing
 subsectorCode: 311
 group: Dairy Product Manufacturing
 groupCode: 3115
-action: Process
+action: Produce
 object: Dry Dairy Products
 ---
 
@@ -150,9 +150,15 @@ graph LR
 ### Calling Actions
 
 ```typescript
-import { processDryDairyProducts } from '@headlessly/process-dry-dairy-products'
+import { produceDryDairyProducts } from '@headlessly/produce-dry-dairy-products'
 
-const plant = processDryDairyProducts()
+const plant = produceDryDairyProducts()
+
+// Check incoming milk deliveries
+const milkLots = await plant.findMilkLots({ status: 'en-route', date: 'today' })
+
+// Review current inventory levels
+const inventory = await plant.getInventory({ product: 'skim-milk-powder' })
 
 // Produce skim milk powder
 const milk = await plant.receiveMilk({

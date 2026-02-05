@@ -7,7 +7,7 @@ subsector: Food Manufacturing
 subsectorCode: 311
 group: Dairy Product Manufacturing
 groupCode: 3115
-action: Process
+action: Produce
 object: Creamery Butter
 ---
 
@@ -56,7 +56,7 @@ This U.S. industry comprises establishments primarily engaged in manufacturing c
 | CulturedButter | Butter made from fermented cream |
 | WhippedButter | Aerated butter product |
 | Batch | Traceable production quantity |
-| Grade | USDA quality classification |
+| Grade | Quality classification for butter |
 
 ## Actions
 
@@ -72,7 +72,7 @@ This U.S. industry comprises establishments primarily engaged in manufacturing c
 | salt | Add salt to specified level |
 | mold | Form butter into blocks or prints |
 | wrap | Package in foil or parchment |
-| grade | Evaluate and assign USDA grade |
+| grade | Evaluate and assign quality grade |
 | store | Place in cold storage |
 
 ## Events
@@ -87,7 +87,7 @@ This U.S. industry comprises establishments primarily engaged in manufacturing c
 | butterSalted | Salt incorporated |
 | butterMolded | Shaped into final form |
 | butterWrapped | Packaging completed |
-| butterGraded | USDA grade assigned |
+| butterGraded | Quality grade assigned |
 | batchReleased | Quality approved for sale |
 | orderShipped | Product dispatched |
 
@@ -101,7 +101,7 @@ This U.S. industry comprises establishments primarily engaged in manufacturing c
 | getGradeHistory | View grading results by batch |
 | getButtermilkVolume | Track byproduct production |
 | getProductionSchedule | View planned churning runs |
-| findByGrade | List butter by USDA grade |
+| findByGrade | List butter by quality grade |
 
 ## Workflow
 
@@ -148,9 +148,15 @@ graph LR
 ### Calling Actions
 
 ```typescript
-import { processCreameryButter } from '@headlessly/process-creamery-butter'
+import { produceCreameryButter } from '@headlessly/produce-creamery-butter'
 
-const plant = processCreameryButter()
+const plant = produceCreameryButter()
+
+// Check available cream lots
+const creamLots = await plant.findCreamLots({ butterfatMin: 38, status: 'available' })
+
+// Review production schedule
+const schedule = await plant.getProductionSchedule({ date: 'today' })
 
 // Receive cream and begin production
 const cream = await plant.receiveCream({

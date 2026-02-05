@@ -29,7 +29,7 @@ Medical laboratories provide diagnostic testing services including blood analysi
 | ReagentSupplier | Provides testing chemicals and consumables |
 | ReferenceLabratory | Performs send-out testing for specialized assays |
 | InstrumentVendor | Provides and services analytical equipment |
-| CMS | Oversees CLIA certification and compliance |
+| HealthRegulator | Oversees CLIA certification and compliance |
 | StateHealthDepartment | Licenses laboratory and conducts inspections |
 | CAP | Provides accreditation and proficiency testing |
 
@@ -152,7 +152,7 @@ graph LR
     L -->|orders from| ReagentSupplier
     L -->|sends to| ReferenceLaboratory
     L -->|services with| InstrumentVendor
-    L -->|certified by| CMS
+    L -->|certified by| HealthRegulator
     L -->|accredited by| CAP
 ```
 
@@ -164,6 +164,10 @@ graph LR
 import { diagnoseSamples } from '@headlessly/diagnose-samples'
 
 const lab = diagnoseSamples()
+
+// Check for unreported critical values and pending tests
+const criticals = await lab.getCriticalValues({ status: 'unreported' })
+const pending = await lab.getPendingTests({ priority: 'stat' })
 
 // Receive and accession order
 const order = await lab.receiveOrder({

@@ -29,7 +29,7 @@ Charter bus service involves providing motorcoaches for hire to transport groups
 | SchoolDistrict | Books field trips and athletic travel |
 | Corporation | Books employee and executive transport |
 | CoachManufacturer | Supplies motorcoaches and parts |
-| FMCSARegulator | Federal Motor Carrier Safety Administration |
+| TransportRegulator | Federal motor carrier safety oversight authority |
 | InsuranceProvider | Covers passenger liability and equipment |
 | FuelSupplier | Provides diesel fuel for fleet |
 
@@ -89,7 +89,7 @@ Charter bus service involves providing motorcoaches for hire to transport groups
 | driverAssigned | Operator dispatched to trip |
 | coachPrepared | Vehicle ready for service |
 | passengersLoaded | Group boarded at pickup |
-| tripExecuting | Charter in progress |
+| tripStarted | Charter in progress |
 | stopHandled | Rest break or attraction completed |
 | passengersDropped | Group discharged at destination |
 | paymentCollected | Final billing processed |
@@ -141,7 +141,7 @@ graph LR
     C -->|serves| SchoolDistrict
     C -->|serves| Corporation
     C -->|buys from| CoachManufacturer
-    C -->|regulated by| FMCSARegulator
+    C -->|regulated by| TransportRegulator
     C -->|insured by| InsuranceProvider
     C -->|fuels at| FuelSupplier
 ```
@@ -201,7 +201,7 @@ charter.coachPrepared(async ({ charterId, coachId, driver }) => {
 })
 
 // Auto-send trip updates to client contact
-charter.tripExecuting(async ({ charterId, currentLocation, nextStop }) => {
+charter.tripStarted(async ({ charterId, currentLocation, nextStop }) => {
   const booking = await charter.findCharters({ id: charterId })
 
   await sendNotification({

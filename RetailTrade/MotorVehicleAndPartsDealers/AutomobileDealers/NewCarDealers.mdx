@@ -28,7 +28,7 @@ New car dealers operate as franchised retailers selling new automobiles, light t
 | FinanceCompany | Provides retail financing and leasing for customers |
 | InsuranceProvider | Offers vehicle, GAP, and extended warranty coverage |
 | TradeInAuction | Wholesale market for disposing of trade-in vehicles |
-| DMV | State agency handling title, registration, and licensing |
+| LicensingAuthority | State agency handling title, registration, and licensing |
 | Customer | Individual or business purchasing or leasing vehicles |
 | CreditBureau | Provides consumer credit reports for financing decisions |
 | Bank | Handles dealer operating accounts and customer financing |
@@ -75,7 +75,7 @@ New car dealers operate as franchised retailers selling new automobiles, light t
 | sellFAndI | Present finance and insurance products |
 | closeDeal | Complete paperwork and collect signatures |
 | deliverVehicle | Final walkthrough and customer handoff |
-| processTitle | Submit title and registration to DMV |
+| processTitle | Submit title and registration to licensing authority |
 | scheduleService | Book first maintenance appointment |
 
 ## Events
@@ -93,7 +93,7 @@ New car dealers operate as franchised retailers selling new automobiles, light t
 | fAndISold | Finance and insurance products added to deal |
 | dealClosed | All paperwork signed and deal funded |
 | vehicleDelivered | Customer took possession of vehicle |
-| titleProcessed | Registration completed with DMV |
+| titleProcessed | Registration completed with licensing authority |
 
 ## Searches
 
@@ -142,7 +142,7 @@ graph LR
     D -->|arranges loans through| FinanceCompany
     D -->|sells coverage from| InsuranceProvider
     D -->|wholesales to| TradeInAuction
-    D -->|registers with| DMV
+    D -->|registers with| LicensingAuthority
     D -->|sells to| Customer
     D -->|pulls credit from| CreditBureau
 ```
@@ -155,6 +155,12 @@ graph LR
 import { sellNewCar } from '@headlessly/sell-new-car'
 
 const dealer = sellNewCar()
+
+// Search available vehicles by model, options, price
+const findInventoryResult = await dealer.findInventory({ status: 'in-stock', category: 'seasonal' })
+
+// Retrieve current manufacturer programs and rebates
+const getIncentivesResult = await dealer.getIncentives({ make: 'honda', month: '2024-06' })
 
 // Receive vehicle from manufacturer
 await dealer.receiveVehicle({

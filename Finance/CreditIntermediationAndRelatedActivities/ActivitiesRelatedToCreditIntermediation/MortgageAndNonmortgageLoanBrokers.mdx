@@ -145,6 +145,9 @@ import { brokerLoans } from '@headlessly/broker-loans'
 
 const broker = brokerLoans()
 
+// Retrieve available wholesale lender programs
+const products = await broker.getLenderProducts({ loanType: 'conventional', minCreditScore: 700 })
+
 // Qualify borrower for financing
 const qualification = await broker.qualifyBorrower({
   borrowerId: 'cust-12345',
@@ -161,6 +164,9 @@ const options = await broker.compareProducts({
   creditScore: qualification.creditScore,
   loanType: 'conventional'
 })
+
+// Check pending commissions
+const commissions = await broker.getCommissionsPending({ status: 'earned', lenderId: options.bestMatch.lenderId })
 
 // Submit to selected lender
 await broker.submitApplication({

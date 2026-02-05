@@ -149,6 +149,9 @@ import { insureTitles } from '@headlessly/insure-titles'
 
 const titleCo = insureTitles()
 
+// Check for existing orders on this property
+const existingOrders = await titleCo.findOrders({ parcelNumber: '123-456-789', status: 'active' })
+
 // Order title search
 const order = await titleCo.orderTitleSearch({
   propertyAddress: '456 Oak Ave, Somewhere, ST 12345',
@@ -165,6 +168,9 @@ const commitment = await titleCo.issueCommitment({
   requirements: ['payoffMortgage', 'obtainRelease'],
   effectiveDate: '2024-04-01'
 })
+
+// Verify all exceptions are cleared
+const openExceptions = await titleCo.findExceptions({ commitmentId: commitment.id, status: 'open' })
 
 // Issue owner and loan policies at closing
 await titleCo.issuePolicy({

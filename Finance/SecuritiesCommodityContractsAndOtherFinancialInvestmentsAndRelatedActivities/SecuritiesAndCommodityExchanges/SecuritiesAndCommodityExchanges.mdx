@@ -26,7 +26,7 @@ Securities and commodity exchanges provide physical and electronic marketplaces 
 | MemberFirm | Broker-dealer or FCM with trading privileges |
 | ListedCompany | Corporation with securities traded on exchange |
 | MarketMaker | Firm providing continuous quotes and liquidity |
-| SEC | Securities and Exchange Commission regulating securities exchanges |
+| SecuritiesRegulator | Securities and Exchange Commission regulating securities exchanges |
 | CFTC | Commodity Futures Trading Commission regulating futures exchanges |
 | ClearingHouse | Central counterparty settling exchange trades |
 | DataVendor | Firm redistributing market data |
@@ -131,7 +131,7 @@ graph LR
     Exchange -->|provides access to| MemberFirm
     Exchange -->|lists securities for| ListedCompany
     Exchange -->|hosts| MarketMaker
-    Exchange -->|regulated by| SEC
+    Exchange -->|regulated by| SecuritiesRegulator
     Exchange -->|regulated by| CFTC
     Exchange -->|settles through| ClearingHouse
     Exchange -->|licenses data to| DataVendor
@@ -146,6 +146,12 @@ graph LR
 import { tradeMarkets } from '@headlessly/trade-markets'
 
 const exchange = tradeMarkets()
+
+// Check current market statistics
+const stats = await exchange.getMarketStatistics({ period: 'today' })
+
+// Check for any halted securities
+const halted = await exchange.findHaltedSecurities({ status: 'active' })
 
 // List new security
 const listing = await exchange.listSecurity({

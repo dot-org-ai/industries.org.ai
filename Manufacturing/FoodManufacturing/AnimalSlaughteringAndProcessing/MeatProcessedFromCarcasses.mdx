@@ -32,7 +32,7 @@ This U.S. industry comprises establishments primarily engaged in processing or p
 | FoodserviceDistributor | Supplies restaurants and institutions |
 | DeliOperator | Buys sliced meats and cold cuts |
 | PrivateLabelBuyer | Contracts production under store brands |
-| USDAInspector | Ensures food safety compliance |
+| FoodSafetyInspector | Ensures food safety compliance |
 
 ## Roles
 
@@ -40,7 +40,7 @@ This U.S. industry comprises establishments primarily engaged in processing or p
 |------|-------------|
 | PlantManager | Oversees meat processing operations |
 | ProductDeveloper | Creates new product formulations |
-| QualityManager | Ensures USDA compliance and food safety |
+| QualityManager | Ensures regulatory compliance and food safety |
 | CuttingRoomSupervisor | Manages fabrication operations |
 | CuringSpecialist | Oversees brine and dry cure processes |
 | SmokehousOperator | Controls smoking and cooking equipment |
@@ -158,7 +158,7 @@ graph LR
     P -->|sells to| FoodserviceDistributor
     P -->|sells to| DeliOperator
     P -->|produces for| PrivateLabelBuyer
-    P -->|inspected by| USDAInspector
+    P -->|inspected by| FoodSafetyInspector
 ```
 
 ## Usage
@@ -169,6 +169,12 @@ graph LR
 import { processMeatProcessed } from '@headlessly/process-meat-processed'
 
 const plant = processMeatProcessed()
+
+// Check raw meat inventory by cut type
+const rawStock = await plant.findMeatInventory({ cut: 'pork-belly', supplier: 'midwest-packing' })
+
+// Review smokehouse availability
+const smokeSchedule = await plant.getSmokehouseSchedule({ date: 'today' })
 
 // Receive pork bellies for bacon production
 const meat = await plant.receiveMeat({

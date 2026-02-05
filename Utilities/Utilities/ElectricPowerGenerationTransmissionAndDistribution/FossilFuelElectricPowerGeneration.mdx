@@ -98,7 +98,7 @@ Fossil fuel electric power generation converts coal, natural gas, or oil into el
 | heatRateImproved | Fuel efficiency optimization achieved |
 | emissionsReportFiled | Regulatory emissions report submitted |
 | carbonCreditsTraded | Emissions allowance transaction completed |
-| getFuelPrice | Current fuel market pricing data retrieved |
+| fuelPriceChanged | Current fuel market pricing data retrieved |
 
 ## Searches
 
@@ -157,6 +157,12 @@ import { generateFossilFuel } from '@headlessly/generate-fossil-fuel'
 
 const plant = generateFossilFuel()
 
+// Retrieve current fuel stockpile levels
+const getFuelInventoryResult = await plant.getFuelInventory({ status: 'active' })
+
+// Get operational status of all generating units
+const getUnitStatusResult = await plant.getUnitStatus({ status: 'active' })
+
 // Procure fuel for upcoming operations
 const fuelOrder = await plant.procureFuel({
   fuelType: 'naturalGas',
@@ -197,7 +203,7 @@ plant.emissionsThresholdExceeded(async ({ unitId, pollutant, level }) => {
 })
 
 // Optimize operations based on fuel prices
-plant.getFuelPrice(async ({ naturalGas, coal }) => {
+plant.fuelPriceChanged(async ({ naturalGas, coal }) => {
   const gasPrice = naturalGas.perMMBtu
   const coalPrice = coal.perTon
 

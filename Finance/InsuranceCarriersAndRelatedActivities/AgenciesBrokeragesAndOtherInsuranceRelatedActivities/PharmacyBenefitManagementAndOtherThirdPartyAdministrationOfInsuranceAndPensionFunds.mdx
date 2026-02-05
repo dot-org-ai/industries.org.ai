@@ -28,7 +28,7 @@ Pharmacy benefit managers and third party administrators provide administrative 
 | Pharmacy | Retail or mail-order dispensary filling prescriptions |
 | DrugManufacturer | Pharmaceutical company producing medications |
 | InsuranceCarrier | Company delegating administration |
-| CMS | Centers for Medicare and Medicaid Services regulating plans |
+| HealthRegulator | Centers for Medicare and Medicaid Services regulating plans |
 | StateRegulator | Authority licensing administrators |
 | Wholesaler | Distributor supplying pharmacies with medications |
 
@@ -134,7 +134,7 @@ graph LR
     PBM -->|contracts with| Pharmacy
     PBM -->|negotiates with| DrugManufacturer
     PBM -->|administers for| InsuranceCarrier
-    PBM -->|regulated by| CMS
+    PBM -->|regulated by| HealthRegulator
     PBM -->|licensed by| StateRegulator
     PBM -->|sources from| Wholesaler
 ```
@@ -147,6 +147,12 @@ graph LR
 import { brokerBenefits } from '@headlessly/broker-benefits'
 
 const pbm = brokerBenefits()
+
+// Check formulary coverage for requested drug
+const formulary = await pbm.getFormularyDrugs({ tier: 'preferred', therapeutic: 'antiInflammatory' })
+
+// Review pending prior authorizations
+const pendingAuths = await pbm.findPendingAuthorizations({ status: 'awaiting', urgency: 'urgent' })
 
 // Design pharmacy benefit plan
 const plan = await pbm.designPlan({

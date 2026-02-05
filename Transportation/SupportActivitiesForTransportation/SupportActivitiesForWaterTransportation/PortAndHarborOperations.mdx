@@ -7,7 +7,7 @@ subsector: Support Activities for Transportation
 subsectorCode: 488
 group: Support Activities for Water Transportation
 groupCode: 4883
-action: Operate
+action: Manage
 object: Ports
 ---
 
@@ -155,9 +155,15 @@ graph LR
 ### Calling Actions
 
 ```typescript
-import { operatePorts } from '@headlessly/operate-ports'
+import { managePorts } from '@headlessly/manage-ports'
 
-const port = operatePorts()
+const port = managePorts()
+
+// Check berth availability for incoming vessel
+const berths = await port.getBerthAvailability({ terminal: 'container-terminal-3', dateRange: ['2024-08-10', '2024-08-14'] })
+
+// Check channel draft conditions
+const channel = await port.getChannelConditions({ channel: 'main-ship-channel', date: '2024-08-10' })
 
 // Schedule vessel call
 const vesselCall = await port.scheduleCall({

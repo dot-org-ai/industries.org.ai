@@ -25,7 +25,7 @@ Hazardous waste treatment and disposal facilities operate RCRA-permitted facilit
 |-------|-------------|
 | WasteTransporter | Licensed hauler delivering hazardous waste |
 | WasteGenerator | Industrial source of hazardous waste |
-| EPA | Federal environmental protection agency |
+| FederalEnvironmentalAgency | Federal environmental protection agency |
 | StateAgency | State environmental regulatory authority |
 | LabService | Performs waste characterization analysis |
 | InsuranceCarrier | Provides environmental liability coverage |
@@ -140,7 +140,7 @@ graph LR
 
     T -->|receives from| WasteTransporter
     T -->|serves| WasteGenerator
-    T -->|reports to| EPA
+    T -->|reports to| FederalEnvironmentalAgency
     T -->|reports to| StateAgency
     T -->|contracts| LabService
     T -->|insures with| InsuranceCarrier
@@ -156,6 +156,10 @@ graph LR
 import { treatHazardousWaste } from '@headlessly/treat-hazardous-waste'
 
 const facility = treatHazardousWaste()
+
+// Check stored waste inventory and permit status
+const wasteInventory = await facility.getWasteInventory({ storageUnit: 'area-A', status: 'awaiting-treatment' })
+const permitStatus = await facility.getPermitStatus({ expiringWithin: 90 })
 
 // Receive incoming waste shipment
 const receipt = await facility.receiveWaste({

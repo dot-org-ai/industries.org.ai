@@ -145,6 +145,9 @@ import { investAssets } from '@headlessly/invest-assets'
 
 const trustCo = investAssets()
 
+// Review existing trusts for grantor
+const trusts = await trustCo.findTrusts({ grantorId: 'grantor-12345', type: 'revocable' })
+
 // Establish new trust
 const trust = await trustCo.establishTrust({
   grantorId: 'grantor-12345',
@@ -164,6 +167,9 @@ await trustCo.acceptCustody({
     { cusip: '594918104', quantity: 500 }   // Microsoft
   ]
 })
+
+// Check pending corporate actions before distributing
+const actions = await trustCo.findPendingCorporateActions({ trustId: trust.id })
 
 // Distribute income to beneficiaries
 await trustCo.distributeIncome({

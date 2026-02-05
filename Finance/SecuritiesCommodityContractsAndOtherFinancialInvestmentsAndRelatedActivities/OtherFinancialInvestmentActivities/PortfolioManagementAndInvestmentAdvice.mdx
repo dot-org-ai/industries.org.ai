@@ -26,7 +26,7 @@ Investment advisers and portfolio managers oversee client assets on a discretion
 | Client | Individual or institution receiving investment management |
 | Custodian | Bank holding client securities and cash |
 | BrokerDealer | Firm executing trades for managed accounts |
-| SEC | Securities and Exchange Commission regulating advisers |
+| SecuritiesRegulator | Securities and Exchange Commission regulating advisers |
 | StateRegulator | Authority licensing advisers below AUM threshold |
 | FundCompany | Mutual fund or ETF provider |
 | ResearchProvider | Firm supplying investment analysis |
@@ -134,7 +134,7 @@ graph LR
     RIA -->|manages for| Client
     RIA -->|custodies with| Custodian
     RIA -->|trades through| BrokerDealer
-    RIA -->|registered with| SEC
+    RIA -->|registered with| SecuritiesRegulator
     RIA -->|licensed by| StateRegulator
     RIA -->|uses products from| FundCompany
     RIA -->|subscribes to| ResearchProvider
@@ -149,6 +149,12 @@ graph LR
 import { investPortfolios } from '@headlessly/invest-portfolios'
 
 const ria = investPortfolios()
+
+// Review accounts needing rebalancing
+const rebalanceCandidates = await ria.findRebalanceCandidates({ driftThreshold: 5 })
+
+// Check total AUM
+const aum = await ria.getAUMSummary({ asOfDate: '2024-03-31' })
 
 // Onboard new client
 const client = await ria.onboardClient({

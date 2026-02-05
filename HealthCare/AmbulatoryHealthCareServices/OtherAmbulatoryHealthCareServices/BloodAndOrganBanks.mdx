@@ -26,7 +26,7 @@ Blood and organ banks collect, process, test, store, and distribute blood produc
 | Donor | Individual providing blood or registering for organ donation |
 | Hospital | Orders blood products and performs transplants |
 | UNOS | Allocates organs through national registry |
-| FDA | Regulates blood products and manufacturing |
+| DrugRegulator | Regulates blood products and manufacturing |
 | AABB | Accredits blood banks and sets standards |
 | OPO | Coordinates organ recovery and distribution |
 | TestingLaboratory | Performs infectious disease and compatibility testing |
@@ -145,7 +145,7 @@ graph LR
     B -->|collects from| Donor
     B -->|supplies| Hospital
     B -->|coordinates with| UNOS
-    B -->|regulated by| FDA
+    B -->|regulated by| DrugRegulator
     B -->|accredited by| AABB
     B -->|partners with| OPO
     B -->|sends to| TestingLaboratory
@@ -160,6 +160,10 @@ graph LR
 import { collectBlood } from '@headlessly/collect-blood'
 
 const bank = collectBlood()
+
+// Check inventory levels and expiring units
+const inventory = await bank.getInventory({ bloodType: 'O-positive', component: 'packed-RBC' })
+const expiring = await bank.getExpiringUnits({ expiresWithin: '5-days' })
 
 // Screen and collect donation
 const donor = await bank.screenDonor({

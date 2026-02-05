@@ -28,7 +28,7 @@ Open-end investment funds are legal entities organized to pool assets consisting
 | Custodian | Bank safekeeping fund assets |
 | PortfolioManager | Professional selecting investments |
 | Distributor | Firm marketing and selling fund shares |
-| SEC | Securities and Exchange Commission regulating funds |
+| SecuritiesRegulator | Securities and Exchange Commission regulating funds |
 | Auditor | Firm verifying financial statements |
 | PricingService | Vendor providing security valuations |
 | BrokerDealer | Firm executing portfolio trades |
@@ -138,7 +138,7 @@ graph LR
     Fund -->|assets held by| Custodian
     Fund -->|managed by| PortfolioManager
     Fund -->|sold by| Distributor
-    Fund -->|regulated by| SEC
+    Fund -->|regulated by| SecuritiesRegulator
     Fund -->|audited by| Auditor
     Fund -->|priced by| PricingService
     Fund -->|trades through| BrokerDealer
@@ -153,6 +153,12 @@ graph LR
 import { poolPortfolios } from '@headlessly/pool-portfolios'
 
 const mutualFund = poolPortfolios()
+
+// Check pending transactions before NAV calculation
+const pending = await mutualFund.getPendingTransactions({ fundId: 'growth-fund-001' })
+
+// Review current portfolio holdings
+const holdings = await mutualFund.getPortfolioHoldings({ fundId: 'growth-fund-001' })
 
 // Process new subscription
 const subscription = await mutualFund.processSubscription({

@@ -89,7 +89,7 @@ This industry encompasses check cashing services, money order and traveler's che
 | ctrFiled | Currency transaction reported |
 | sarFiled | Suspicious activity reported |
 | identityVerified | Customer identification confirmed |
-| servincingPerformanceTracked | Metrics calculated |
+| servicingPerformanceTracked | Metrics calculated |
 | feesAssessed | Service charges applied |
 
 ## Searches
@@ -148,6 +148,9 @@ import { processCredit } from '@headlessly/process-credit'
 
 const msb = processCredit()
 
+// Check for reportable transactions today
+const reportable = await msb.findReportableTransactions({ date: '2024-04-01', type: 'ctr' })
+
 // Cash payroll check
 const transaction = await msb.cashCheck({
   customerId: 'cust-12345',
@@ -164,6 +167,9 @@ const moneyOrder = await msb.issueMoneyOrder({
   payee: 'Maria Garcia',
   memo: 'Family support'
 })
+
+// Review remittance volume for compliance
+const remittances = await msb.getRemittanceVolume({ corridor: 'US-MX', period: '2024-03' })
 
 // Originate payday loan
 const loan = await msb.originatePaydayLoan({

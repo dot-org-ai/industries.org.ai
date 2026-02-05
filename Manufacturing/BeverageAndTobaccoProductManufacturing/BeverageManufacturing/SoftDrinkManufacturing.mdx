@@ -30,7 +30,7 @@ This U.S. industry comprises establishments primarily engaged in manufacturing s
 | Retailer | Purchases beverages for consumer sale |
 | Distributor | Warehouses and delivers to retail accounts |
 | FoodserviceOperator | Serves beverages in restaurants and venues |
-| FDA | Regulates food safety and labeling |
+| FoodSafetyRegulator | Regulates food safety and labeling |
 | BottleRecycler | Collects and processes returnable containers |
 | EquipmentVendor | Supplies filling and packaging equipment |
 
@@ -148,7 +148,7 @@ graph LR
     M -->|sells to| Retailer
     M -->|sells to| Distributor
     M -->|sells to| FoodserviceOperator
-    M -->|regulated by| FDA
+    M -->|regulated by| FoodSafetyRegulator
     M -->|returns to| BottleRecycler
     M -->|equipment from| EquipmentVendor
 ```
@@ -161,6 +161,9 @@ graph LR
 import { bottleSoftDrinks } from '@headlessly/bottle-soft-drinks'
 
 const plant = bottleSoftDrinks()
+
+// Check syrup and CO2 inventory levels
+const inventory = await plant.getInventory({ type: 'syrup', lowStockOnly: true })
 
 // Prepare water and syrup
 await plant.treatWater({

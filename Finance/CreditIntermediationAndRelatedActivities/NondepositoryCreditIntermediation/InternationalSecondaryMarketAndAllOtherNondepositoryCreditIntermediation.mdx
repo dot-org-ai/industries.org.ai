@@ -145,6 +145,9 @@ import { lendLoans } from '@headlessly/lend-loans'
 
 const intermediary = lendLoans()
 
+// Find available loan pools by asset class
+const pools = await intermediary.findLoanPools({ assetClass: 'consumerInstallment', vintage: '2024' })
+
 // Purchase loan pool from originator
 const pool = await intermediary.purchaseLoanPool({
   originatorId: 'bank-12345',
@@ -164,6 +167,9 @@ const deal = await intermediary.structureSecuritization({
   ],
   servicer: 'servicer-67890'
 })
+
+// Check tranche ratings before issuance
+const ratings = await intermediary.getTrancheRatings({ dealId: deal.id })
 
 // Issue bonds to investors
 await intermediary.issueBonds({

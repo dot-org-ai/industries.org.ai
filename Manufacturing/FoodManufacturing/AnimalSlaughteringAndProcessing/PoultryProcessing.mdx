@@ -31,7 +31,7 @@ This U.S. industry comprises establishments primarily engaged in (1) slaughterin
 | FoodserviceDistributor | Supplies restaurants and institutions |
 | FurtherProcessor | Buys products for breading and cooking |
 | ExportTrader | Handles international poultry sales |
-| USDAInspector | Conducts continuous inspection |
+| FoodSafetyInspector | Conducts continuous inspection |
 | FeatherProcessor | Purchases feathers for rendering |
 
 ## Roles
@@ -40,7 +40,7 @@ This U.S. industry comprises establishments primarily engaged in (1) slaughterin
 |------|-------------|
 | PlantManager | Oversees poultry processing facility |
 | LiveHaulManager | Coordinates bird transport |
-| QualityManager | Ensures food safety and USDA compliance |
+| QualityManager | Ensures food safety and regulatory compliance |
 | KillFloorSupervisor | Manages slaughter operations |
 | EvisceratingOperator | Runs evisceration line |
 | CutUpSupervisor | Oversees portioning operations |
@@ -73,7 +73,7 @@ This U.S. industry comprises establishments primarily engaged in (1) slaughterin
 | scald | Loosen feathers with hot water |
 | defeather | Remove feathers mechanically |
 | eviscerate | Remove internal organs |
-| inspect | Conduct USDA inspection |
+| inspect | Conduct post-mortem inspection |
 | chill | Reduce temperature in water or air |
 | grade | Assign quality grade |
 | cutUp | Portion into parts |
@@ -93,7 +93,7 @@ This U.S. industry comprises establishments primarily engaged in (1) slaughterin
 | birdsScalded | Scalding completed |
 | birdsDefeathered | Feather removal done |
 | birdsEviscerated | Evisceration completed |
-| birdsInspected | USDA inspection passed |
+| birdsInspected | Post-mortem inspection passed |
 | birdsFailed | Birds condemned |
 | birdsChilled | Chilling completed |
 | birdsGraded | Quality grade assigned |
@@ -161,7 +161,7 @@ graph LR
     P -->|sells to| FoodserviceDistributor
     P -->|sells to| FurtherProcessor
     P -->|sells to| ExportTrader
-    P -->|inspected by| USDAInspector
+    P -->|inspected by| FoodSafetyInspector
     P -->|sells to| FeatherProcessor
 ```
 
@@ -174,6 +174,9 @@ import { processPoultry } from '@headlessly/process-poultry'
 
 const plant = processPoultry()
 
+// Check today's processing schedule
+const schedule = await plant.getProductionSchedule({ date: 'today' })
+
 // Receive broiler flock
 const flock = await plant.receiveBirds({
   grower: 'smith-poultry-farm',
@@ -183,6 +186,9 @@ const flock = await plant.receiveBirds({
   avgWeight: 6.2,
   unit: 'lbs'
 })
+
+// Check current product inventory for demand planning
+const inventory = await plant.getInventory({ cut: 'boneless-breast', location: 'cold-storage' })
 
 // Process through slaughter line
 await plant.hang({ flockId: flock.id })
@@ -204,7 +210,7 @@ await plant.chill({
   targetTemp: 40
 })
 
-await plant.grade({ flockId: flock.id, standard: 'USDA-A' })
+await plant.grade({ flockId: flock.id, standard: 'grade-A' })
 ```
 
 ### Event-Driven Automation

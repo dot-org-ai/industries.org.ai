@@ -29,8 +29,8 @@ This U.S. industry comprises establishments primarily engaged in milling rice, c
 | Retailer | Purchases packaged rice for consumer sale |
 | FoodManufacturer | Purchases rice for processed food production |
 | Exporter | Ships rice to international markets |
-| USDA | Grades rice and enforces quality standards |
-| FDA | Regulates food safety and labeling |
+| GrainGrader | Grades rice and enforces quality standards |
+| FoodSafetyRegulator | Regulates food safety and labeling |
 | EquipmentVendor | Supplies milling and sorting equipment |
 | Broker | Facilitates rice trading and logistics |
 
@@ -57,7 +57,7 @@ This U.S. industry comprises establishments primarily engaged in milling rice, c
 | Hull | Outer husk removed during dehulling |
 | Bran | Outer layers removed during whitening |
 | Broken | Fragments and broken kernels separated during grading |
-| Grade | USDA quality classification based on defects |
+| Grade | Quality classification based on defects |
 | Lot | Traceable batch of rice from receiving to packaging |
 | Specification | Customer requirements for variety and quality |
 | Blend | Mixture of rice varieties or grades |
@@ -146,8 +146,8 @@ graph LR
     M -->|sells to| Retailer
     M -->|sells to| FoodManufacturer
     M -->|sells to| Exporter
-    M -->|graded by| USDA
-    M -->|regulated by| FDA
+    M -->|graded by| GrainGrader
+    M -->|regulated by| FoodSafetyRegulator
     M -->|equipment from| EquipmentVendor
     M -->|trades via| Broker
 ```
@@ -160,6 +160,9 @@ graph LR
 import { millRice } from '@headlessly/mill-rice'
 
 const mill = millRice()
+
+// Check paddy inventory and current moisture levels
+const paddyStock = await mill.findPaddyLots({ variety: 'longGrain', maxMoisture: 14.0 })
 
 // Receive paddy rice
 const paddy = await mill.receivePaddy({

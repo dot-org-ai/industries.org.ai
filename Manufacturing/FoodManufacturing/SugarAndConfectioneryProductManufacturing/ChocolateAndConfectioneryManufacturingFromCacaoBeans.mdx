@@ -31,7 +31,7 @@ This U.S. industry comprises establishments primarily engaged in shelling, roast
 | Retailer | Purchases chocolate for consumer sale |
 | Confectioner | Uses chocolate couverture for making candies |
 | Bakery | Purchases chocolate chips and coatings |
-| FDA | Regulates food safety and chocolate standards |
+| FoodSafetyRegulator | Regulates food safety and chocolate standards |
 | FairTradeOrg | Certifies ethical sourcing practices |
 
 ## Roles
@@ -155,7 +155,7 @@ graph LR
     M -->|sells to| Retailer
     M -->|sells to| Confectioner
     M -->|sells to| Bakery
-    M -->|regulated by| FDA
+    M -->|regulated by| FoodSafetyRegulator
     M -->|certified by| FairTradeOrg
 ```
 
@@ -167,6 +167,12 @@ graph LR
 import { manufactureChocolateConfectionery } from '@headlessly/manufacture-chocolate-confectionery'
 
 const plant = manufactureChocolateConfectionery()
+
+// Check cacao bean inventory by origin
+const cacaoStock = await plant.findCacaoLots({ origin: 'ecuador', fermentationMin: 5 })
+
+// Review roast profiles for this origin
+const profiles = await plant.getRoastProfiles({ origin: 'ecuador-arriba' })
 
 // Receive single-origin cacao
 const cacao = await plant.receiveCacao({

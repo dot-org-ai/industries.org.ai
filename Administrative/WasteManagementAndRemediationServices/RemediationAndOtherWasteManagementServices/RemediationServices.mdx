@@ -24,7 +24,7 @@ Remediation services encompass cleanup of contaminated sites including soil, gro
 | Actor | Description |
 |-------|-------------|
 | PropertyOwner | Entity responsible for contaminated property |
-| EPA | Federal environmental protection agency |
+| FederalEnvironmentalAgency | Federal environmental protection agency |
 | StateAgency | State environmental regulatory authority |
 | PotentiallyResponsibleParty | Liable party under Superfund or similar law |
 | InsuranceCarrier | Provides environmental liability coverage |
@@ -146,7 +146,7 @@ graph LR
 
     R -->|serves| PropertyOwner
     R -->|serves| PotentiallyResponsibleParty
-    R -->|reports to| EPA
+    R -->|reports to| FederalEnvironmentalAgency
     R -->|reports to| StateAgency
     R -->|insures with| InsuranceCarrier
     R -->|contracts| LabService
@@ -162,6 +162,10 @@ graph LR
 import { remediateSite } from '@headlessly/remediate-site'
 
 const remediation = remediateSite()
+
+// Review active sites and pending permit approvals
+const activeSites = await remediation.findSites({ status: 'in-progress', media: 'groundwater' })
+const pendingPermits = await remediation.getPermitStatus({ status: 'pending' })
 
 // Assess contamination at site
 const assessment = await remediation.assessSite({

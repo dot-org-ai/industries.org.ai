@@ -149,6 +149,9 @@ import { bankDeposits } from '@headlessly/bank-deposits'
 
 const bank = bankDeposits()
 
+// Check existing accounts for customer
+const existing = await bank.findAccounts({ customerId: 'cust-12345', type: 'demandDeposit' })
+
 // Open new checking account
 const account = await bank.openAccount({
   customerId: 'cust-12345',
@@ -156,6 +159,9 @@ const account = await bank.openAccount({
   initialDeposit: 5000,
   features: ['overdraftProtection', 'debitCard']
 })
+
+// Review delinquent loans before new origination
+const delinquent = await bank.findDelinquentLoans({ borrowerId: 'biz-67890', daysDelinquent: 30 })
 
 // Underwrite commercial loan
 const loan = await bank.underwriteLoan({

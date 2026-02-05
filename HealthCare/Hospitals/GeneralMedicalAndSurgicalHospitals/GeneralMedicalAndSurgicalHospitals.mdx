@@ -32,7 +32,7 @@ General medical and surgical hospitals provide comprehensive inpatient diagnosti
 | PostAcuteFacility | Receives discharged patients for continued care |
 | MedicalSupplyVendor | Provides equipment and supplies |
 | JointCommission | Accredits hospital and sets standards |
-| CMSsurveyor | Inspects and enforces conditions of participation |
+| HealthRegulatorSurveyor | Inspects and enforces conditions of participation |
 
 ## Roles
 
@@ -169,6 +169,10 @@ graph LR
 import { treatInpatients } from '@headlessly/treat-inpatients'
 
 const hospital = treatInpatients()
+
+// Check bed availability and current census
+const beds = await hospital.getAvailableBeds({ unit: 'surgical-floor', type: 'semi-private' })
+const census = await hospital.getCensus({ unit: 'surgical-floor' })
 
 // Admit patient from emergency department
 const admission = await hospital.admitPatient({

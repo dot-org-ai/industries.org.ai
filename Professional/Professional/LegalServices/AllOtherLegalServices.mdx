@@ -7,7 +7,7 @@ subsector: Professional, Scientific, and Technical Services
 subsectorCode: 541
 group: Legal Services
 groupCode: 5411
-action: Support
+action: Advise
 object: Legal Cases
 ---
 
@@ -141,9 +141,15 @@ graph LR
 ### Calling Actions
 
 ```typescript
-import { supportLegalCases } from '@headlessly/support-legal-cases'
+import { adviseLegalCases } from '@headlessly/advise-legal-cases'
 
-const legal = supportLegalCases()
+const legal = adviseLegalCases()
+
+// Find open process service assignments
+const pending = await legal.findServiceJobs({ status: 'pending', region: 'denver-metro' })
+
+// Check upcoming filing deadlines
+const deadlines = await legal.getDeadlines({ daysAhead: 7, type: 'service' })
 
 // Assign process service job
 const service = await legal.assignService({

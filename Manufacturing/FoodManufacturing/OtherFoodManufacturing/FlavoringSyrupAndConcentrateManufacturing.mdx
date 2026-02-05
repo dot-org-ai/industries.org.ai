@@ -41,7 +41,7 @@ This industry comprises establishments primarily engaged in manufacturing flavor
 | FlavorChemist | Develops and maintains flavor formulations |
 | BlendingOperator | Combines ingredients to specification |
 | CookingOperator | Heats and dissolves sugar syrups |
-| QualityTechnician | Tests Brix, pH, and flavor profile |
+| QualityTechnician | Tests sweetness, pH, and flavor profile |
 | PackagingOperator | Operates filling and sealing equipment |
 | WarehouseManager | Manages bulk storage and shipping |
 | RegulatoryManager | Ensures ingredient compliance |
@@ -56,7 +56,7 @@ This industry comprises establishments primarily engaged in manufacturing flavor
 | Colorant | Visual appearance ingredient |
 | SimpleSyrup | Dissolved sugar base |
 | Concentrate | Finished flavoring product |
-| BrixLevel | Sugar concentration measurement |
+| QualitySpec | Target ranges for sweetness, pH, and flavor |
 | Formula | Proprietary recipe specification |
 | Batch | Traceable production lot |
 | BagInBox | Packaging format for fountain use |
@@ -160,6 +160,12 @@ graph LR
 import { manufactureFlavoringSyrup } from '@headlessly/manufacture-flavoring-syrup'
 
 const plant = manufactureFlavoringSyrup()
+
+// Check raw material inventory
+const ingredients = await plant.getIngredients({ category: 'sweeteners', lowStockOnly: true })
+
+// Review pending bottler orders
+const orders = await plant.getOrders({ customer: 'bottler', status: 'pending' })
 
 // Produce cola concentrate
 const batch = await plant.dissolve({

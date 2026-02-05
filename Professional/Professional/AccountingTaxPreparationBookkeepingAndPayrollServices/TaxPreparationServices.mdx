@@ -24,7 +24,7 @@ Tax preparation services assist individuals and small businesses with completing
 | Actor | Description |
 |-------|-------------|
 | Taxpayer | Individual or business requiring tax return preparation |
-| IRS | Internal Revenue Service processing federal returns |
+| TaxAuthority | Internal Revenue Service processing federal returns |
 | StateTaxAgency | State department of revenue processing state returns |
 | Employer | Entity providing W-2 and income documentation |
 | FinancialInstitution | Bank providing 1099-INT and other income forms |
@@ -68,7 +68,7 @@ Tax preparation services assist individuals and small businesses with completing
 | calculateRefund | Determine tax due or refund amount |
 | reviewReturn | Quality check return for accuracy and completeness |
 | obtainSignature | Get client approval and signature on return |
-| fileElectronically | Transmit return to IRS and state agencies |
+| fileElectronically | Transmit return to tax authority and state agencies |
 | processPayment | Collect preparation fees from client |
 | trackRefund | Monitor status of client refund |
 | fileExtension | Submit request for additional filing time |
@@ -86,7 +86,7 @@ Tax preparation services assist individuals and small businesses with completing
 | returnReviewed | Quality check completed |
 | signatureObtained | Client approved and signed return |
 | returnFiled | Tax return transmitted electronically |
-| returnAccepted | IRS acknowledged receipt of return |
+| returnAccepted | Tax authority acknowledged receipt of return |
 | returnRejected | Filing error requiring correction |
 | refundIssued | Taxpayer received refund |
 | deadlineApproaching | Filing deadline within warning threshold |
@@ -130,7 +130,7 @@ graph LR
     T[TaxService]
 
     T -->|prepares for| Taxpayer
-    T -->|files with| IRS
+    T -->|files with| TaxAuthority
     T -->|files with| StateTaxAgency
     T -->|receives forms from| Employer
     T -->|receives forms from| FinancialInstitution
@@ -147,6 +147,12 @@ graph LR
 import { prepareTaxReturns } from '@headlessly/prepare-tax-returns'
 
 const tax = prepareTaxReturns()
+
+// Find today's scheduled appointments
+const todayAppts = await tax.findAppointments({ date: '2024-03-25', status: 'confirmed' })
+
+// Check prior year returns for returning client
+const priorReturns = await tax.getClientReturns({ clientId: 'client-smith', years: [2022, 2023] })
 
 // Schedule new client appointment
 const appointment = await tax.scheduleAppointment({

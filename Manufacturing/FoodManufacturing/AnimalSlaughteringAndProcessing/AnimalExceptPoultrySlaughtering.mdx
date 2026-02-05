@@ -28,7 +28,7 @@ This U.S. industry comprises establishments primarily engaged in slaughtering an
 | SheepRancher | Supplies lambs and sheep |
 | Feedlot | Finishes cattle before slaughter |
 | LivestockAuction | Facilitates animal purchasing |
-| USDAInspector | Conducts ante and post-mortem inspection |
+| FoodSafetyInspector | Conducts ante and post-mortem inspection |
 | MeatPacker | Purchases carcasses for further processing |
 | RetailGrocer | Buys boxed beef for retail sale |
 | FoodserviceDistributor | Supplies restaurants and institutions |
@@ -39,7 +39,7 @@ This U.S. industry comprises establishments primarily engaged in slaughtering an
 | Role | Description |
 |------|-------------|
 | PlantManager | Oversees slaughter facility operations |
-| QualityManager | Ensures USDA compliance and food safety |
+| QualityManager | Ensures regulatory compliance and food safety |
 | LivestockReceiver | Handles incoming animal inspection |
 | KillFloorSupervisor | Manages slaughter line operations |
 | FabricationSupervisor | Oversees carcass breakdown |
@@ -58,7 +58,7 @@ This U.S. industry comprises establishments primarily engaged in slaughtering an
 | BoxedBeef | Vacuum-packed cuts for distribution |
 | Offal | Edible organ meats |
 | Hide | Animal skin for leather processing |
-| InspectionMark | USDA approval stamp |
+| InspectionMark | Regulatory approval stamp |
 | GradeStamp | Quality grade designation |
 | ColdStorage | Refrigerated holding facility |
 
@@ -74,10 +74,10 @@ This U.S. industry comprises establishments primarily engaged in slaughtering an
 | skin | Remove hide from carcass |
 | eviscerate | Remove internal organs |
 | split | Divide carcass into halves |
-| inspect | Conduct USDA post-mortem inspection |
+| inspect | Conduct post-mortem inspection |
 | chill | Rapidly cool carcasses |
 | fabricate | Break carcass into primal cuts |
-| grade | Assign USDA quality grade |
+| grade | Assign quality grade |
 | package | Vacuum pack cuts |
 | ship | Dispatch refrigerated loads |
 
@@ -89,7 +89,7 @@ This U.S. industry comprises establishments primarily engaged in slaughtering an
 | animalStunned | Humane stunning completed |
 | animalSlaughtered | Slaughter process completed |
 | carcassEviscerated | Organs removed |
-| carcassInspected | USDA inspection passed |
+| carcassInspected | Post-mortem inspection passed |
 | carcassFailed | Carcass condemned by inspector |
 | carcassChilled | Target temperature reached |
 | carcassFabricated | Primal cuts separated |
@@ -103,7 +103,7 @@ This U.S. industry comprises establishments primarily engaged in slaughtering an
 |--------|-------------|
 | findLivestock | List animals in holding pens |
 | getCarcassInventory | Check carcass and cut inventory |
-| getInspectionRecords | View USDA inspection results |
+| getInspectionRecords | View inspection results |
 | getGradeDistribution | Analyze quality grade breakdown |
 | getOrders | Retrieve orders by customer |
 | getYieldData | View yield by lot and supplier |
@@ -142,7 +142,7 @@ graph LR
     P -->|buys from| SheepRancher
     P -->|buys from| Feedlot
     P -->|buys from| LivestockAuction
-    P -->|inspected by| USDAInspector
+    P -->|inspected by| FoodSafetyInspector
     P -->|sells to| MeatPacker
     P -->|sells to| RetailGrocer
     P -->|sells to| FoodserviceDistributor
@@ -157,6 +157,9 @@ graph LR
 import { processAnimalSlaughtering } from '@headlessly/process-animal-slaughtering'
 
 const plant = processAnimalSlaughtering()
+
+// Check livestock in holding pens
+const penInventory = await plant.findLivestock({ status: 'resting', species: 'beef-cattle' })
 
 // Receive cattle lot
 const lot = await plant.receiveLivestock({
@@ -182,10 +185,12 @@ await plant.stun({
 await plant.slaughter({ animalId: lot.animals[0].id })
 await plant.eviscerate({ carcassId: lot.animals[0].carcassId })
 
+// Check cold chain capacity before processing
+const coldChain = await plant.getColdChainStatus({ location: 'chill-room-1' })
+
 // Await inspection
 const inspection = await plant.inspect({
-  carcassId: lot.animals[0].carcassId,
-  inspector: 'usda-dr-smith'
+  carcassId: lot.animals[0].carcassId
 })
 
 if (inspection.passed) {
@@ -215,7 +220,7 @@ plant.carcassChilled(async ({ carcassId, species }) => {
 plant.carcassFabricated(async ({ carcassId }) => {
   await plant.grade({
     carcassId,
-    standard: 'USDA-beef'
+    standard: 'beef-quality'
   })
 })
 

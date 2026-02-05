@@ -153,6 +153,9 @@ import { lendConsumerLoans } from '@headlessly/lend-consumer-loans'
 
 const lender = lendConsumerLoans()
 
+// Check origination volume for current quarter
+const volume = await lender.getOriginationVolume({ channel: 'online', period: '2024-Q1' })
+
 // Submit loan application
 const application = await lender.submitApplication({
   borrowerId: 'cust-12345',
@@ -161,6 +164,9 @@ const application = await lender.submitApplication({
   income: 65000,
   employmentStatus: 'fullTime'
 })
+
+// Check for existing loans by this borrower
+const existingLoans = await lender.findLoans({ borrowerId: 'cust-12345', status: 'active' })
 
 // Pull credit and underwrite
 const credit = await lender.pullCredit({ borrowerId: 'cust-12345' })

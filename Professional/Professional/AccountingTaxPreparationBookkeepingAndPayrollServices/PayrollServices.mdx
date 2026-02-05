@@ -25,7 +25,7 @@ Payroll services collect employee hours and compensation data, calculate wages a
 |-------|-------------|
 | Employer | Business client outsourcing payroll processing |
 | Employee | Worker receiving wages through payroll service |
-| IRS | Federal agency receiving employment tax deposits |
+| TaxAuthority | Federal agency receiving employment tax deposits |
 | StateAgency | State department collecting income and unemployment taxes |
 | Bank | Financial institution for direct deposits and tax payments |
 | GarnishmentHolder | Creditor with court order for wage withholding |
@@ -129,7 +129,7 @@ graph LR
 
     P -->|processes for| Employer
     P -->|pays| Employee
-    P -->|deposits with| IRS
+    P -->|deposits with| TaxAuthority
     P -->|files with| StateAgency
     P -->|transfers via| Bank
     P -->|remits to| GarnishmentHolder
@@ -145,6 +145,9 @@ graph LR
 import { processPayroll } from '@headlessly/process-payroll'
 
 const payroll = processPayroll()
+
+// Find payrolls with pending issues
+const pendingPayrolls = await payroll.findPayrolls({ status: 'pending-review', clientId: 'client-123' })
 
 // Process regular payroll
 const result = await payroll.processPayroll({

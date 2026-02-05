@@ -147,6 +147,9 @@ import { insureProperty } from '@headlessly/insure-property'
 
 const carrier = insureProperty()
 
+// Check catastrophe exposure for region
+const exposure = await carrier.getCatastropheExposure({ region: 'ST-12345', peril: 'windstorm' })
+
 // Quote homeowners policy
 const quote = await carrier.quotePolicy({
   lineOfBusiness: 'homeowners',
@@ -163,6 +166,9 @@ const policy = await carrier.issuePolicy({
   effectiveDate: '2024-04-01',
   paymentPlan: 'annual'
 })
+
+// Check claims pipeline before reporting new claim
+const openClaims = await carrier.getClaimsPipeline({ policyId: policy.id, status: 'open' })
 
 // Report and process claim
 const claim = await carrier.reportClaim({

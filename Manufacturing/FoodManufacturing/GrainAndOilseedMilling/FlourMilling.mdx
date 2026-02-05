@@ -30,7 +30,7 @@ This U.S. industry comprises establishments primarily engaged in milling flour o
 | FoodManufacturer | Purchases flour for processed food products |
 | Distributor | Warehouses and delivers flour to customers |
 | GrainInspector | Grades and certifies wheat quality |
-| FDA | Regulates food safety and enrichment requirements |
+| FoodSafetyRegulator | Regulates food safety and enrichment requirements |
 | Commodity Exchange | Provides price discovery and hedging instruments |
 | EquipmentVendor | Supplies and services milling equipment |
 
@@ -60,7 +60,7 @@ This U.S. industry comprises establishments primarily engaged in milling flour o
 | Lot | Traceable quantity of flour from specific wheat |
 | TestResult | Lab analysis of wheat or flour properties |
 | Contract | Agreement for flour supply at specified terms |
-| Enrichment | Vitamins and minerals added per FDA requirements |
+| Enrichment | Vitamins and minerals added per regulatory requirements |
 
 ## Actions
 
@@ -145,7 +145,7 @@ graph LR
     M -->|sells to| FoodManufacturer
     M -->|sells to| Distributor
     M -->|graded by| GrainInspector
-    M -->|regulated by| FDA
+    M -->|regulated by| FoodSafetyRegulator
     M -->|hedges on| Commodity Exchange
     M -->|equipment from| EquipmentVendor
 ```
@@ -158,6 +158,12 @@ graph LR
 import { millFlour } from '@headlessly/mill-flour'
 
 const mill = millFlour()
+
+// Check wheat inventory by class and protein
+const wheatStock = await mill.findWheatLots({ class: 'hardRedWinter', proteinMin: 12.0 })
+
+// Review pending customer orders
+const orders = await mill.findOrders({ status: 'pending', shipBy: 'this-week' })
 
 // Receive and grade wheat
 const wheat = await mill.receiveWheat({

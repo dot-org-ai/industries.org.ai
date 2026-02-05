@@ -162,6 +162,12 @@ import { flyNonscheduledAir } from '@headlessly/fly-nonscheduled-air'
 
 const specialty = flyNonscheduledAir()
 
+// Find aircraft configured for medical missions
+const aircraft = await specialty.findAircraft({ missionType: 'air-ambulance', range: 500, available: true })
+
+// Check weather for mission planning
+const weather = await specialty.checkWeather({ route: ['KJFK', 'KBOS'], timeframe: '6-hours' })
+
 // Request air ambulance mission
 const medicalMission = await specialty.requestMission({
   type: 'airAmbulance',

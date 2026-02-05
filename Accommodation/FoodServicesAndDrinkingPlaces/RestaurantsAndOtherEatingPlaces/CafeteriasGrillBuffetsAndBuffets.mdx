@@ -93,7 +93,7 @@ Cafeterias, grill buffets, and buffets prepare and serve meals for immediate con
 | stationClosed | Service area broken down |
 | wasteRecorded | Discarded food documented |
 | productionAdjusted | Quantities modified for demand |
-| temperatureAlert | Food outside safe range detected |
+| temperatureExceeded | Food outside safe range detected |
 | mealPeriodEnded | Service time concluded |
 
 ## Searches
@@ -162,6 +162,10 @@ import { serveBuffets } from '@headlessly/serve-buffets'
 
 const cafeteria = serveBuffets()
 
+// Check station status and inventory before lunch service
+const stations = await cafeteria.getStationStatus()
+const inventory = await cafeteria.getInventoryLevels({ mealPeriod: 'lunch' })
+
 // Open hot food station for lunch
 await cafeteria.openStation({
   station: 'hot-entrees',
@@ -204,7 +208,7 @@ cafeteria.temperatureChecked(async ({ station, readings }) => {
   const violations = readings.filter(r => r.temp < 140 || r.temp > 165)
 
   if (violations.length > 0) {
-    await cafeteria.temperatureAlert({
+    await cafeteria.temperatureExceeded({
       station,
       violations,
       action: 'immediate-correction-required'

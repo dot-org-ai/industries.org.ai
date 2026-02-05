@@ -30,7 +30,7 @@ This U.S. industry comprises establishments primarily engaged in manufacturing s
 | Bakery | Uses shortening in baked goods |
 | Retailer | Sells branded cooking oils and margarines |
 | Foodservice | Purchases frying oils for restaurants |
-| FDA | Regulates food safety and labeling |
+| FoodSafetyRegulator | Regulates food safety and labeling |
 | EquipmentVendor | Supplies refining and packaging equipment |
 | Broker | Facilitates oil trading and logistics |
 
@@ -150,7 +150,7 @@ graph LR
     R -->|sells to| Bakery
     R -->|sells to| Retailer
     R -->|sells to| Foodservice
-    R -->|regulated by| FDA
+    R -->|regulated by| FoodSafetyRegulator
     R -->|equipment from| EquipmentVendor
     R -->|trades via| Broker
 ```
@@ -163,6 +163,12 @@ graph LR
 import { millFatsOils } from '@headlessly/mill-fats-oils'
 
 const refinery = millFatsOils()
+
+// Check crude oil inventory by type
+const crudeStock = await refinery.findCrudeOilLots({ type: 'soybeanOil', maxFFA: 1.0 })
+
+// Review blend formulations
+const blends = await refinery.getBlends({ product: 'fryingOil' })
 
 // Receive crude soybean oil
 const crude = await refinery.receiveCrudeOil({

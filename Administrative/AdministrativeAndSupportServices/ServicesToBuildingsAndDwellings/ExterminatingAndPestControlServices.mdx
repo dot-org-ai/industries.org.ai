@@ -28,7 +28,7 @@ Exterminating and pest control services eliminate and prevent infestations of in
 | PropertyManager | Oversees pest control for multiple units |
 | ChemicalSupplier | Provides pesticides and treatment products |
 | EquipmentVendor | Supplies application equipment and traps |
-| EPARegulator | Enforces pesticide use regulations |
+| EnvironmentalRegulator | Enforces pesticide use regulations |
 | StateAgricultureDept | Issues pest control operator licenses |
 | HealthDepartment | Enforces sanitation and pest standards |
 
@@ -138,7 +138,7 @@ graph LR
     P -->|services| PropertyManager
     P -->|purchases from| ChemicalSupplier
     P -->|equips from| EquipmentVendor
-    P -->|regulated by| EPARegulator
+    P -->|regulated by| EnvironmentalRegulator
     P -->|licensed by| StateAgricultureDept
     P -->|reports to| HealthDepartment
 ```
@@ -151,6 +151,10 @@ graph LR
 import { exterminatePests } from '@headlessly/exterminate-pests'
 
 const pestControl = exterminatePests()
+
+// Check upcoming contracts and technician schedules
+const contracts = await pestControl.getContracts({ status: 'active', renewalWithin: 30 })
+const techs = await pestControl.findTechnicians({ certification: 'licensed-applicator', available: '2024-04-01' })
 
 // Inspect property
 const inspection = await pestControl.inspectProperty({

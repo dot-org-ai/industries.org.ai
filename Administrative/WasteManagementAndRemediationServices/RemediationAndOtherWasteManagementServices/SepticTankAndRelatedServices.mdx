@@ -161,6 +161,10 @@ import { serviceSepticSystem } from '@headlessly/service-septic-system'
 
 const septic = serviceSepticSystem()
 
+// Check overdue accounts and truck availability
+const overdue = await septic.findOverdueService({ monthsSinceLastPump: 36 })
+const trucks = await septic.getEquipmentStatus({ type: 'vacuumTruck', status: 'available' })
+
 // Schedule septic pumping
 const appointment = await septic.scheduleService({
   customerId: 'homeowner-123',

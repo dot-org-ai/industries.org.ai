@@ -27,7 +27,7 @@ Health insurance carriers underwrite medical, hospital, and supplemental health 
 | Employer | Group sponsor providing health benefits to employees |
 | Provider | Physician, hospital, or facility delivering care |
 | Pharmacy | Retail or mail-order dispensary filling prescriptions |
-| CMS | Centers for Medicare and Medicaid Services regulating plans |
+| HealthRegulator | Centers for Medicare and Medicaid Services regulating plans |
 | StateRegulator | Insurance commissioner overseeing carrier operations |
 | PharmacyBenefitManager | Entity managing prescription drug benefits |
 | Broker | Agent selling group health coverage |
@@ -131,7 +131,7 @@ graph LR
     HIC -->|contracts with| Employer
     HIC -->|pays| Provider
     HIC -->|coordinates with| Pharmacy
-    HIC -->|regulated by| CMS
+    HIC -->|regulated by| HealthRegulator
     HIC -->|licensed by| StateRegulator
     HIC -->|partners with| PharmacyBenefitManager
     HIC -->|sold by| Broker
@@ -145,6 +145,12 @@ graph LR
 import { insureHealth } from '@headlessly/insure-health'
 
 const healthPlan = insureHealth()
+
+// Check provider network coverage for requested plan
+const providers = await healthPlan.getProviderNetwork({ specialty: 'primaryCare', region: 'northeast' })
+
+// Review pending authorizations
+const pendingAuths = await healthPlan.findPendingAuthorizations({ status: 'awaiting', urgency: 'routine' })
 
 // Enroll new member
 const enrollment = await healthPlan.enrollMember({

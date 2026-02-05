@@ -31,7 +31,7 @@ Kidney dialysis centers provide life-sustaining outpatient hemodialysis and peri
 | VascularSurgeon | Creates and maintains dialysis access |
 | Laboratory | Performs monthly and routine lab monitoring |
 | DialysateSupplier | Provides dialysis solutions and consumables |
-| CMSsurveyor | Inspects facility and enforces regulations |
+| HealthRegulatorSurveyor | Inspects facility and enforces regulations |
 
 ## Roles
 
@@ -162,6 +162,10 @@ graph LR
 import { treatKidneys } from '@headlessly/treat-kidneys'
 
 const center = treatKidneys()
+
+// Check treatment schedule and access issues for the shift
+const schedule = await center.getSchedule({ day: 'monday', shift: 'AM' })
+const accessIssues = await center.getAccessIssues({ status: 'unresolved' })
 
 // Enroll new ESRD patient
 const patient = await center.enrollPatient({

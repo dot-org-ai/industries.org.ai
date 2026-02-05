@@ -7,7 +7,7 @@ subsector: Food Manufacturing
 subsectorCode: 311
 group: Dairy Product Manufacturing
 groupCode: 3115
-action: Process
+action: Produce
 object: Cheese
 ---
 
@@ -154,9 +154,13 @@ graph LR
 ### Calling Actions
 
 ```typescript
-import { processCheese } from '@headlessly/process-cheese'
+import { produceCheese } from '@headlessly/produce-cheese'
 
-const plant = processCheese()
+const plant = produceCheese()
+
+// Check milk availability and aging cave inventory
+const milkLots = await plant.findMilkLots({ butterfatMin: 3.4, status: 'available' })
+const agingInventory = await plant.getAgingInventory({ variety: 'cheddar' })
 
 // Start cheddar production
 const milk = await plant.receiveMilk({

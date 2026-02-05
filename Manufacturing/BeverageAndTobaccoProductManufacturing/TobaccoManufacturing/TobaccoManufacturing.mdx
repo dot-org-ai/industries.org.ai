@@ -30,7 +30,7 @@ This industry comprises establishments primarily engaged in stemming and redryin
 | PackagingSupplier | Provides packs, cartons, and tins |
 | Distributor | Warehouses and delivers to retailers |
 | Retailer | Sells tobacco products to consumers |
-| FDA | Regulates tobacco products and labeling |
+| TobaccoRegulator | Regulates tobacco products and labeling |
 | TTB | Administers tobacco excise taxes |
 | StateRegulator | Enforces state tobacco laws |
 
@@ -46,7 +46,7 @@ This industry comprises establishments primarily engaged in stemming and redryin
 | CigarRoller | Hand-rolls premium cigars using binder and wrapper leaves |
 | RollingOperator | Runs cigarette or cigar making machines |
 | PackagingOperator | Operates packaging lines |
-| ComplianceManager | Manages FDA and TTB reporting |
+| ComplianceManager | Manages regulatory and excise tax reporting |
 
 ## Entities
 
@@ -152,7 +152,7 @@ graph LR
     M -->|buys from| PackagingSupplier
     M -->|sells to| Distributor
     M -->|sells to| Retailer
-    M -->|regulated by| FDA
+    M -->|regulated by| TobaccoRegulator
     M -->|taxed by| TTB
     M -->|licensed by| StateRegulator
 ```
@@ -165,6 +165,9 @@ graph LR
 import { manufactureTobacco } from '@headlessly/manufacture-tobacco'
 
 const plant = manufactureTobacco()
+
+// Check leaf inventory by type and grade
+const leafStock = await plant.getLeafInventory({ type: 'virginia-flue-cured', gradeMin: 'B1F' })
 
 // Receive tobacco leaf
 const leaf = await plant.receiveLeaf({

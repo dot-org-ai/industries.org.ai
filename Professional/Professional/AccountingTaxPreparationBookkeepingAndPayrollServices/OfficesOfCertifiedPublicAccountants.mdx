@@ -25,8 +25,8 @@ CPA firms provide auditing, attestation, tax planning, and advisory services for
 |-------|-------------|
 | Client | Business or individual receiving accounting services |
 | PCAOB | Public Company Accounting Oversight Board regulating audits |
-| SEC | Securities and Exchange Commission requiring filings |
-| IRS | Internal Revenue Service administering tax law |
+| SecuritiesRegulator | Securities and Exchange Commission requiring filings |
+| TaxAuthority | Internal Revenue Service administering tax law |
 | StateBoard | State licensing authority for CPA certification |
 | Bank | Financial institution relying on audited statements |
 | Investor | Stakeholder using financial information for decisions |
@@ -130,8 +130,8 @@ graph LR
 
     C -->|audits| Client
     C -->|regulated by| PCAOB
-    C -->|files with| SEC
-    C -->|reports to| IRS
+    C -->|files with| SecuritiesRegulator
+    C -->|reports to| TaxAuthority
     C -->|licensed by| StateBoard
     C -->|provides assurance to| Bank
     C -->|serves| Investor
@@ -146,6 +146,12 @@ graph LR
 import { auditFinances } from '@headlessly/audit-finances'
 
 const cpa = auditFinances()
+
+// Check upcoming filing deadlines
+const deadlines = await cpa.getDeadlines({ type: 'audit-report', daysAhead: 30 })
+
+// Find active engagements by status
+const engagements = await cpa.findEngagements({ status: 'fieldwork', clientType: 'public' })
 
 // Accept new audit engagement
 const engagement = await cpa.acceptEngagement({

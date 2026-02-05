@@ -26,7 +26,7 @@ Investment banks underwrite securities offerings, maintain markets in financial 
 | Issuer | Corporation or government raising capital through securities |
 | InstitutionalInvestor | Pension fund, mutual fund, or hedge fund trading securities |
 | RetailInvestor | Individual buying and selling securities |
-| SEC | Securities and Exchange Commission regulating markets |
+| SecuritiesRegulator | Securities and Exchange Commission regulating markets |
 | FINRA | Self-regulatory organization overseeing broker-dealers |
 | Exchange | NYSE, NASDAQ, or other trading venue |
 | Custodian | Bank holding securities on behalf of investors |
@@ -70,7 +70,7 @@ Investment banks underwrite securities offerings, maintain markets in financial 
 | allocateShares | Distribute securities among participating investors |
 | executeOrder | Process buy or sell instruction in market |
 | makeMarket | Provide continuous bid and ask quotes |
-| settledTrade | Complete transfer of securities and funds |
+| settleTrade | Complete transfer of securities and funds |
 | publishResearch | Release investment analysis and recommendations |
 | adviseOnMA | Provide strategic guidance on mergers and acquisitions |
 | manageRisk | Monitor and hedge position exposures |
@@ -113,7 +113,7 @@ graph TD
     C --> D[formSyndicate]
     D --> E[priceOffering]
     E --> F[allocateShares]
-    F --> G[settledTrade]
+    F --> G[settleTrade]
     G --> H[publishResearch]
 ```
 
@@ -126,7 +126,7 @@ graph LR
     IB -->|raises capital for| Issuer
     IB -->|sells securities to| InstitutionalInvestor
     IB -->|serves| RetailInvestor
-    IB -->|regulated by| SEC
+    IB -->|regulated by| SecuritiesRegulator
     IB -->|member of| FINRA
     IB -->|trades on| Exchange
     IB -->|settles through| Custodian
@@ -141,6 +141,9 @@ graph LR
 import { tradeSecurities } from '@headlessly/trade-securities'
 
 const bank = tradeSecurities()
+
+// Review active deal pipeline
+const deals = await bank.findDeals({ stage: 'structuring', type: 'IPO' })
 
 // Originate IPO deal
 const deal = await bank.originateDeal({
@@ -162,6 +165,9 @@ const pricing = await bank.priceOffering({
   dealId: deal.id,
   bookBuildingResults: { totalDemand: 3.5, priceIndication: 21 }
 })
+
+// Check current positions before trading
+const positions = await bank.getPositions({ security: 'AAPL', clientId: 'client-67890' })
 
 // Execute secondary market trade
 const order = await bank.executeOrder({
@@ -188,7 +194,7 @@ bank.offeringPriced(async ({ dealId, finalPrice, totalShares }) => {
 
 // Settle trades automatically
 bank.orderExecuted(async ({ orderId, security, quantity, price }) => {
-  await bank.settledTrade({
+  await bank.settleTrade({
     orderId,
     settlementDate: addBusinessDays(2),
     custodianInstructions: { security, quantity, price }

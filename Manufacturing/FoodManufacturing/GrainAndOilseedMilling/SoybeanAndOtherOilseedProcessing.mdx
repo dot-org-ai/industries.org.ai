@@ -30,7 +30,7 @@ This U.S. industry comprises establishments primarily engaged in crushing oilsee
 | FoodManufacturer | Uses protein and lecithin in food products |
 | BiodieselProducer | Purchases soybean oil for biofuel |
 | Exporter | Ships meal and oil to international markets |
-| EPA | Regulates solvent emissions and waste |
+| EnvironmentalRegulator | Regulates solvent emissions and waste |
 | CommodityExchange | Provides price discovery and hedging |
 | EquipmentVendor | Supplies extraction and processing equipment |
 
@@ -148,7 +148,7 @@ graph LR
     P -->|sells to| FoodManufacturer
     P -->|sells to| BiodieselProducer
     P -->|sells to| Exporter
-    P -->|regulated by| EPA
+    P -->|regulated by| EnvironmentalRegulator
     P -->|hedges on| CommodityExchange
     P -->|equipment from| EquipmentVendor
 ```
@@ -161,6 +161,12 @@ graph LR
 import { millSoybean } from '@headlessly/mill-soybean'
 
 const crusher = millSoybean()
+
+// Check current seed inventory and oil yields
+const seedStock = await crusher.findSeedLots({ variety: 'soybean', oilContentMin: 19.0 })
+
+// Review market prices for crush margin calculation
+const prices = await crusher.getMarketPrices()
 
 // Receive soybeans
 const beans = await crusher.receiveSeed({

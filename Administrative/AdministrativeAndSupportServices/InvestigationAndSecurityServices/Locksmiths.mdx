@@ -153,6 +153,10 @@ import { serviceLocks } from '@headlessly/service-locks'
 
 const locksmith = serviceLocks()
 
+// Check emergency queue and technician availability
+const emergencies = await locksmith.getServiceCalls({ status: 'pending', type: 'emergency' })
+const techs = await locksmith.findTechnicians({ availability: 'on-call', specialty: 'residential' })
+
 // Dispatch emergency lockout
 const emergency = await locksmith.dispatchEmergency({
   customerPhone: '555-1234',

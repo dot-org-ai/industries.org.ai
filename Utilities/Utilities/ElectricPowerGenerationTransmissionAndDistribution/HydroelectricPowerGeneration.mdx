@@ -96,7 +96,7 @@ Hydroelectric power generation harnesses flowing or falling water to drive turbi
 | fishPassageMonitored | Fish migration data recorded |
 | safetyInspectionPassed | Dam safety inspection completed successfully |
 | emergencyShutdownTriggered | Automatic or manual emergency stop initiated |
-| getSpotPrice | Current electricity spot market price retrieved |
+| spotPriceChanged | Current electricity spot market price retrieved |
 
 ## Searches
 
@@ -154,6 +154,12 @@ import { generateHydroelectricPower } from '@headlessly/generate-hydroelectric-p
 
 const plant = generateHydroelectricPower()
 
+// Retrieve current and historical water levels
+const getReservoirLevelsResult = await plant.getReservoirLevels({ status: 'active' })
+
+// Get operational status of all turbine units
+const getTurbineStatusResult = await plant.getTurbineStatus({ status: 'active' })
+
 // Monitor reservoir status
 const reservoir = await plant.monitorReservoir({
   damId: 'grand-coulee',
@@ -190,7 +196,7 @@ plant.reservoirLevelChanged(async ({ damId, level, threshold }) => {
 })
 
 // Optimize output based on market prices
-plant.getSpotPrice(async ({ price }) => {
+plant.spotPriceChanged(async ({ price }) => {
   const forecast = await plant.getInflowForecast()
 
   if (price >= 50.00 && forecast.waterAvailable) {

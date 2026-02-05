@@ -31,7 +31,7 @@ This U.S. industry comprises establishments primarily engaged in converting pape
 | FoodProcessor | Buys sanitary food containers |
 | ChemicalCompany | Purchases fiber drums for materials |
 | Distributor | Wholesales container products |
-| FDARegulator | Oversees food contact compliance |
+| FoodContactRegulator | Oversees food contact compliance |
 
 ## Roles
 
@@ -43,7 +43,7 @@ This U.S. industry comprises establishments primarily engaged in converting pape
 | WindingOperator | Operates spiral and convolute winding |
 | FormingOperator | Runs carton forming and sealing equipment |
 | QualityTech | Tests barrier properties and integrity |
-| ComplianceOfficer | Ensures FDA and food safety compliance |
+| ComplianceOfficer | Ensures food contact and safety compliance |
 
 ## Entities
 
@@ -103,7 +103,7 @@ This U.S. industry comprises establishments primarily engaged in converting pape
 | getOrders | List pending customer orders |
 | getProduction | Monitor line output |
 | getBarrierSpecs | Retrieve coating requirements |
-| getCompliance | Check FDA certification status |
+| getCompliance | Check food contact certification status |
 | getQuality | Review test results |
 
 ## Workflow
@@ -142,7 +142,7 @@ graph LR
     M -->|sells to| FoodProcessor
     M -->|sells to| ChemicalCompany
     M -->|sells to| Distributor
-    M -->|regulated by| FDARegulator
+    M -->|regulated by| FoodContactRegulator
 ```
 
 ## Usage
@@ -153,6 +153,12 @@ graph LR
 import { manufacturePaperboardContainer } from '@headlessly/manufacture-paperboard-container'
 
 const plant = manufacturePaperboardContainer()
+
+// Check available stock
+const stock = await plant.findPaperboard({ status: 'available' })
+
+// Check finished goods inventory
+const inventory = await plant.getInventory({ lowStockOnly: true })
 
 // Coat board with barrier
 const coated = await plant.coatBoard({

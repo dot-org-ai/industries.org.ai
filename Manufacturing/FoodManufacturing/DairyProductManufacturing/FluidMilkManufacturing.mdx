@@ -7,7 +7,7 @@ subsector: Food Manufacturing
 subsectorCode: 311
 group: Dairy Product Manufacturing
 groupCode: 3115
-action: Process
+action: Produce
 object: Fluid Milk
 ---
 
@@ -30,7 +30,7 @@ This U.S. industry comprises establishments primarily engaged in (1) manufacturi
 | FoodserviceDistributor | Distributes to restaurants and institutions |
 | SchoolDistributor | Supplies milk to school lunch programs |
 | EquipmentVendor | Supplies pasteurizers and homogenizers |
-| Regulator | USDA and state dairy inspectors |
+| DairyInspector | Conducts dairy safety inspections |
 
 ## Roles
 
@@ -55,7 +55,7 @@ This U.S. industry comprises establishments primarily engaged in (1) manufacturi
 | DairySubstitute | Plant-based milk alternatives |
 | Tanker | Bulk transport vessel for raw milk |
 | Batch | Traceable production quantity |
-| SCC | Somatic cell count quality metric |
+| QualityTest | Somatic cell count and composition analysis |
 | Container | Retail packaging unit |
 | ShelfLife | Product freshness window |
 
@@ -140,7 +140,7 @@ graph LR
     P -->|sells to| FoodserviceDistributor
     P -->|sells to| SchoolDistributor
     P -->|equipment from| EquipmentVendor
-    P -->|inspected by| Regulator
+    P -->|inspected by| DairyInspector
 ```
 
 ## Usage
@@ -148,9 +148,15 @@ graph LR
 ### Calling Actions
 
 ```typescript
-import { processFluidMilk } from '@headlessly/process-fluid-milk'
+import { produceFluidMilk } from '@headlessly/produce-fluid-milk'
 
-const plant = processFluidMilk()
+const plant = produceFluidMilk()
+
+// Check incoming tanker schedule
+const tankers = await plant.findTankers({ status: 'en-route', date: 'today' })
+
+// Review supplier quality history
+const supplierHistory = await plant.getSupplierHistory({ farmId: 'meadow-dairy' })
 
 // Receive and test incoming raw milk
 const delivery = await plant.receiveRawMilk({
