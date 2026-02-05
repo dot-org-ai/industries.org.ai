@@ -8,63 +8,215 @@ subsectorCode: 311
 group: Seafood Product Preparation and Packaging
 groupCode: 3117
 action: Process
-object: Seafood Product
+object: Seafood
 ---
 
 # Seafood Product Preparation and Packaging
 
-> TODO: Business-as-Code definition
+> Business-as-Code definition for seafood processing operations. Models receiving catch, filleting, smoking, freezing, canning, and packaging of fish, shellfish, and other marine products.
 
 ## Overview
 
-This industry comprises establishments primarily engaged in one or more of the following: (1) canning seafood (including soup); (2) smoking, salting, and drying seafood; (3) eviscerating fresh fish by removing heads, fins, scales, bones, and entrails; (4) shucking and packing fresh shellfish; (5) processing marine fats and oils; and (6) freezing seafood. Establishments known as "floating factory ships" that are engaged in the gathering and processing of seafood into canned seafood products are i
+This industry comprises establishments primarily engaged in one or more of the following: (1) canning seafood (including soup); (2) smoking, salting, and drying seafood; (3) eviscerating fresh fish by removing heads, fins, scales, bones, and entrails; (4) shucking and packing fresh shellfish; (5) processing marine fats and oils; and (6) freezing seafood.
 
 ## Actors
 
 | Actor | Description |
 |-------|-------------|
-| TODO | TODO |
+| CommercialFisher | Supplies wild-caught fish and shellfish |
+| AquacultureFarm | Provides farm-raised seafood |
+| FishAuction | Facilitates seafood purchasing |
+| PackagingSupplier | Provides trays, vacuum bags, and cans |
+| GroceryRetailer | Purchases fresh and frozen seafood |
+| FoodserviceDistributor | Distributes to restaurants |
+| ExportBuyer | Purchases for international markets |
+| CanningSupplier | Provides cans and retort equipment |
 
 ## Roles
 
 | Role | Description |
 |------|-------------|
-| TODO | TODO |
+| PlantManager | Oversees seafood processing facility |
+| QualityManager | Ensures safety and HACCP compliance |
+| ReceivingManager | Inspects incoming catch |
+| FilletOperator | Performs fish filleting |
+| SmokehouseOperator | Controls smoking and curing |
+| CanningOperator | Runs canning and retort lines |
+| PackagingOperator | Operates vacuum sealing and IQF |
+| ColdStorageManager | Manages frozen inventory |
 
 ## Entities
 
 | Entity | Description |
 |--------|-------------|
-| TODO | TODO |
+| WholeRound | Unprocessed fish as caught |
+| Fillet | Boneless fish portion |
+| Steak | Cross-cut portion with bone |
+| Loin | Premium cut from large fish |
+| ShelledShellfish | Shucked oysters, clams, or mussels |
+| CannedSeafood | Retort-processed shelf-stable product |
+| SmokedFish | Cured and smoked product |
+| IQFSeafood | Individually frozen pieces |
+| FishOil | Extracted marine oil |
+| Batch | Traceable production lot |
 
 ## Actions
 
 | Action | Description |
 |--------|-------------|
-| TODO | TODO |
+| receiveCatch | Accept and inspect incoming seafood |
+| grade | Assess quality and size |
+| headAndGut | Remove heads and viscera |
+| scale | Remove fish scales |
+| fillet | Cut boneless portions |
+| portion | Cut to specified weights |
+| smoke | Apply smoking and curing process |
+| brine | Soak in salt solution |
+| shuck | Remove shellfish from shells |
+| freeze | IQF or blast freeze product |
+| can | Fill and seal cans |
+| retort | Thermal process canned goods |
+| vacuum | Package in vacuum-sealed bags |
+| ship | Dispatch refrigerated or frozen loads |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| TODO | TODO |
+| catchReceived | Seafood accepted and graded |
+| fishProcessed | Headed, gutted, and scaled |
+| fishFilleted | Boneless portions created |
+| fishPortioned | Cut to specification |
+| fishSmoked | Smoking cycle completed |
+| shellfishShucked | Meat removed from shells |
+| productFrozen | Freezing completed |
+| productCanned | Cans filled and sealed |
+| retortComplete | Thermal processing done |
+| qualityApproved | Product released |
+| orderShipped | Product dispatched |
 
 ## Searches
 
 | Search | Description |
 |--------|-------------|
-| TODO | TODO |
+| findCatch | List incoming seafood by species |
+| getInventory | Check stock by product type |
+| getOrders | Retrieve orders by customer |
+| getYieldData | Analyze yield by species |
+| getQualityReports | View grading and test results |
+| getColdChainStatus | Monitor temperature logs |
+| getTraceability | Track lot through supply chain |
 
 ## Workflow
 
 ```mermaid
 graph TD
-    A[TODO] --> B[TODO]
+    A[receiveCatch] --> B[grade]
+    B --> C{Species Type?}
+    C -->|Finfish| D[headAndGut]
+    C -->|Shellfish| E[shuck]
+    D --> F[scale]
+    F --> G[fillet]
+    G --> H[portion]
+    E --> I{Product Form?}
+    H --> I
+    I -->|Fresh| J[vacuum]
+    I -->|Frozen| K[freeze]
+    I -->|Smoked| L[brine]
+    I -->|Canned| M[can]
+    L --> N[smoke]
+    N --> J
+    M --> O[retort]
+    K --> P[package]
+    J --> P
+    O --> P
+    P --> Q[ship]
 ```
 
 ## Actor Relationships
 
 ```mermaid
 graph LR
-    A[TODO] -->|TODO| B[TODO]
+    P[Processor]
+
+    P -->|buys from| CommercialFisher
+    P -->|buys from| AquacultureFarm
+    P -->|buys from| FishAuction
+    P -->|buys from| PackagingSupplier
+    P -->|buys from| CanningSupplier
+    P -->|sells to| GroceryRetailer
+    P -->|sells to| FoodserviceDistributor
+    P -->|sells to| ExportBuyer
+```
+
+## Usage
+
+### Calling Actions
+
+```typescript
+import { processSeafood } from '@headlessly/process-seafood'
+
+const plant = processSeafood()
+
+// Receive salmon catch
+const catch_ = await plant.receiveCatch({
+  source: 'pacific-fleet',
+  species: 'atlantic-salmon',
+  quantity: 10000,
+  unit: 'lbs',
+  temperature: 32
+})
+
+await plant.grade({
+  catchId: catch_.id,
+  gradeSpec: 'sashimi-grade'
+})
+
+// Process into portions
+await plant.headAndGut({ catchId: catch_.id })
+await plant.scale({ catchId: catch_.id })
+await plant.fillet({ catchId: catch_.id })
+await plant.portion({
+  catchId: catch_.id,
+  targetWeight: 6,
+  unit: 'oz'
+})
+
+await plant.freeze({
+  catchId: catch_.id,
+  method: 'IQF',
+  targetTemp: -20
+})
+```
+
+### Event-Driven Automation
+
+```typescript
+// Auto-process based on order type
+plant.fishFilleted(async ({ catchId, orderId }) => {
+  const order = await plant.getOrders({ orderId })
+
+  if (order.productForm === 'smoked') {
+    await plant.brine({
+      catchId,
+      saltPercent: 3,
+      duration: 8,
+      unit: 'hours'
+    })
+  } else if (order.productForm === 'fresh') {
+    await plant.vacuum({
+      catchId,
+      bagType: 'modified-atmosphere'
+    })
+  }
+})
+
+// Auto-ship when frozen
+plant.productFrozen(async ({ catchId, orderId }) => {
+  await plant.ship({
+    catchId,
+    orderId,
+    method: 'frozen-container'
+  })
+})
 ```
